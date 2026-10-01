@@ -22,7 +22,7 @@ A beginner stock screener for the NIFTY 50 + NIFTY NEXT 50 universe, built as a 
 Requires Node.js and npm. This repo has **three separate `package.json`s** (root, `web/`, `server/`) and no npm workspaces configured, so each needs its own install.
 
 ```bash
-git clone https://github.com/OWNER/StockPilot.git
+git clone https://github.com/AlfredBateman/StockPilot.git
 cd StockPilot
 # from the repo root
 npm install
