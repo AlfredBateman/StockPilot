@@ -1,0 +1,32 @@
+{
+  "pe": {
+    "term": "P/E",
+    "definition": "Price-to-Earnings ratio: a stock's price divided by its earnings per share over the last 12 months.",
+    "whatItMeans": "Shows how many rupees investors are paying for each rupee of profit the company makes. Lower generally means cheaper relative to earnings, but a very low P/E can also mean the market expects trouble ahead.",
+    "source": "TODO"
+  },
+  "marketCap": {
+    "term": "Market Cap",
+    "definition": "Market capitalization: the total value of all of a company's outstanding shares (share price x number of shares).",
+    "whatItMeans": "A quick measure of company size. StockPilot groups companies into Large/Mid/Small buckets based on this number.",
+    "source": "TODO"
+  },
+  "debtToEquity": {
+    "term": "Debt/Equity",
+    "definition": "Debt-to-Equity ratio: a company's total debt divided by its shareholders' equity.",
+    "whatItMeans": "Shows how much a company relies on borrowed money versus its own capital. A lower ratio usually means less financial risk.",
+    "source": "TODO"
+  },
+  "profitMargin": {
+    "term": "Profit Margin",
+    "definition": "Net profit divided by revenue, shown as a percentage.",
+    "whatItMeans": "Shows how much of every rupee of sales a company actually keeps as profit. Higher generally means a more efficient or higher-priced business.",
+    "source": "TODO"
+  },
+  "change1m": {
+    "term": "1-Month Change",
+    "definition": "The percentage change in closing price over the last 4 weeks of available data.",
+    "whatItMeans": "A snapshot of recent price momentum. Positive means the stock has risen over that period, negative means it has fallen.",
+    "source": "TODO"
+  }
+}

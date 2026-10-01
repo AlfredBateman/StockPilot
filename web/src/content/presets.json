@@ -1,0 +1,28 @@
+[
+  {
+    "name": "Low Debt, Steady Profit",
+    "description": "Low debt, steady profit: limited borrowing with a consistently positive margin.",
+    "filters": [
+      { "field": "debtToEquity", "op": "lt", "value": 0.5 },
+      { "field": "profitMargin", "op": "gt", "value": 0.1 }
+    ]
+  },
+  {
+    "name": "Large & Cheap",
+    "description": "Large, established companies trading at a low P/E.",
+    "filters": [
+      { "field": "marketCapBucket", "op": "in", "value": ["Large"] },
+      { "field": "pe", "op": "lt", "value": 20 }
+    ]
+  },
+  {
+    "name": "Recent Gainers",
+    "description": "Stocks whose price has risen over the last month.",
+    "filters": [{ "field": "change1m", "op": "gt", "value": 5 }]
+  },
+  {
+    "name": "High Margin Business",
+    "description": "Businesses that keep an unusually large share of revenue as profit.",
+    "filters": [{ "field": "profitMargin", "op": "gt", "value": 0.2 }]
+  }
+]
