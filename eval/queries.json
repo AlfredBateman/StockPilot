@@ -1,0 +1,344 @@
+[
+  {
+    "id": "s01",
+    "query": "cheap stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "pe", "op": "lt", "value": 20 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s02",
+    "query": "expensive stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "pe", "op": "gt", "value": 40 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s03",
+    "query": "profitable companies",
+    "category": "simple",
+    "expectedFilters": [{ "field": "profitMargin", "op": "gt", "value": 0 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s04",
+    "query": "low debt stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "debtToEquity", "op": "lt", "value": 0.5 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s05",
+    "query": "high debt stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "debtToEquity", "op": "gt", "value": 1 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s06",
+    "query": "small cap stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "marketCapBucket", "op": "eq", "value": "Small" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s07",
+    "query": "midcap stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "marketCapBucket", "op": "eq", "value": "Mid" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s08",
+    "query": "large cap stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "marketCapBucket", "op": "eq", "value": "Large" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s09",
+    "query": "technology stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "sector", "op": "eq", "value": "Technology" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "s10",
+    "query": "healthcare stocks",
+    "category": "simple",
+    "expectedFilters": [{ "field": "sector", "op": "eq", "value": "Healthcare" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v01",
+    "query": "cheap profitable midcaps",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 20 },
+      { "field": "profitMargin", "op": "gt", "value": 0 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Mid" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v02",
+    "query": "cheap profitable midcaps that fell this month",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 20 },
+      { "field": "profitMargin", "op": "gt", "value": 0 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Mid" },
+      { "field": "change1m", "op": "lt", "value": 0 }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v03",
+    "query": "low debt tech stocks",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "debtToEquity", "op": "lt", "value": 0.5 },
+      { "field": "sector", "op": "eq", "value": "Technology" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v04",
+    "query": "expensive large cap healthcare stocks",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "pe", "op": "gt", "value": 40 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Large" },
+      { "field": "sector", "op": "eq", "value": "Healthcare" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v05",
+    "query": "profitable small caps that rose this month",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "profitMargin", "op": "gt", "value": 0 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Small" },
+      { "field": "change1m", "op": "gt", "value": 0 }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v06",
+    "query": "high debt energy stocks",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "debtToEquity", "op": "gt", "value": 1 },
+      { "field": "sector", "op": "eq", "value": "Energy" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v07",
+    "query": "cheap financial services stocks",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 20 },
+      { "field": "sector", "op": "eq", "value": "Financial Services" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v08",
+    "query": "low debt profitable large caps",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "debtToEquity", "op": "lt", "value": 0.5 },
+      { "field": "profitMargin", "op": "gt", "value": 0 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Large" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v09",
+    "query": "expensive tech stocks that fell this month",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "pe", "op": "gt", "value": 40 },
+      { "field": "sector", "op": "eq", "value": "Technology" },
+      { "field": "change1m", "op": "lt", "value": 0 }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v10",
+    "query": "cheap small cap banking stocks",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 20 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Small" },
+      { "field": "sector", "op": "eq", "value": "Financial Services" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v11",
+    "query": "profitable midcap pharma stocks",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "profitMargin", "op": "gt", "value": 0 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Mid" },
+      { "field": "sector", "op": "eq", "value": "Healthcare" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v12",
+    "query": "high debt consumer cyclical stocks",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "debtToEquity", "op": "gt", "value": 1 },
+      { "field": "sector", "op": "eq", "value": "Consumer Cyclical" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v13",
+    "query": "low debt utilities that rose this month",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "debtToEquity", "op": "lt", "value": 0.5 },
+      { "field": "sector", "op": "eq", "value": "Utilities" },
+      { "field": "change1m", "op": "gt", "value": 0 }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v14",
+    "query": "cheap industrials",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 20 },
+      { "field": "sector", "op": "eq", "value": "Industrials" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "v15",
+    "query": "profitable real estate stocks that fell this month",
+    "category": "vague",
+    "expectedFilters": [
+      { "field": "profitMargin", "op": "gt", "value": 0 },
+      { "field": "sector", "op": "eq", "value": "Real Estate" },
+      { "field": "change1m", "op": "lt", "value": 0 }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n01",
+    "query": "P/E under 15",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "pe", "op": "lt", "value": 15 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n02",
+    "query": "P/E over 30",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "pe", "op": "gt", "value": 30 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n03",
+    "query": "debt to equity below 1",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "debtToEquity", "op": "lt", "value": 1 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n04",
+    "query": "debt to equity above 2",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "debtToEquity", "op": "gt", "value": 2 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n05",
+    "query": "profit margin over 20",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "profitMargin", "op": "gt", "value": 0.2 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n06",
+    "query": "margin under 10",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "profitMargin", "op": "lt", "value": 0.1 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n07",
+    "query": "1 month change above 5",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "change1m", "op": "gt", "value": 5 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n08",
+    "query": "P/E under 10 and debt to equity below 0.5",
+    "category": "numeric",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 10 },
+      { "field": "debtToEquity", "op": "lt", "value": 0.5 }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n09",
+    "query": "cheap stocks with P/E under 12",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "pe", "op": "lt", "value": 12 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "n10",
+    "query": "P/E below 25 in the technology sector",
+    "category": "numeric",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 25 },
+      { "field": "sector", "op": "eq", "value": "Technology" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "u01",
+    "query": "safe stocks",
+    "category": "unanswerable",
+    "expectedFilters": [],
+    "status": "unreviewed"
+  },
+  {
+    "id": "u02",
+    "query": "high growth stocks",
+    "category": "unanswerable",
+    "expectedFilters": [],
+    "status": "unreviewed"
+  },
+  {
+    "id": "u03",
+    "query": "best stocks to buy",
+    "category": "unanswerable",
+    "expectedFilters": [],
+    "status": "unreviewed"
+  },
+  {
+    "id": "u04",
+    "query": "stocks with low volatility",
+    "category": "unanswerable",
+    "expectedFilters": [],
+    "status": "unreviewed"
+  },
+  {
+    "id": "u05",
+    "query": "blue chip companies",
+    "category": "unanswerable",
+    "expectedFilters": [],
+    "status": "unreviewed"
+  }
+]

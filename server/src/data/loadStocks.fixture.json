@@ -1,0 +1,45 @@
+{
+  "asOf": "2026-01-01T00:00:00.000Z",
+  "source": "fixture",
+  "stocks": [
+    {
+      "ticker": "RELIANCE.NS",
+      "name": "Reliance Industries Limited",
+      "sector": "Energy",
+      "price": 1246.9,
+      "marketCap": 16869579816960,
+      "pe": 22.59,
+      "debtToEquity": 36.65,
+      "profitMargin": 0.0661,
+      "weeklyCloses": [
+        { "date": "2025-09-22", "close": 1377.6 },
+        { "date": "2025-09-29", "close": 1360.2 }
+      ]
+    },
+    {
+      "ticker": "TCS.NS",
+      "name": "Tata Consultancy Services Limited",
+      "sector": "Information Technology",
+      "price": 2123.3,
+      "marketCap": 7683000000000,
+      "pe": 21.4,
+      "debtToEquity": 8.2,
+      "profitMargin": 0.19,
+      "weeklyCloses": [
+        { "date": "2025-09-22", "close": 2200.1 },
+        { "date": "2025-09-29", "close": 2185.5 }
+      ]
+    },
+    {
+      "ticker": "MISSINGDATA.NS",
+      "name": null,
+      "sector": null,
+      "price": null,
+      "marketCap": null,
+      "pe": null,
+      "debtToEquity": null,
+      "profitMargin": null,
+      "weeklyCloses": []
+    }
+  ]
+}
