@@ -12,3 +12,7 @@ coverage/
 .DS_Store
 Thumbs.db
 .claude/settings.local.json
+/CLAUDE.md
+/docs/VIVA_NOTES.md
+/docs/PROGRESS.md
+/.claude/

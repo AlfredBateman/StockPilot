@@ -1,4 +1,0 @@
-{"permissions":{
- "allow":["Bash(npm run:*)","Bash(npm test:*)","Bash(git status)","Bash(git diff:*)","Bash(git log:*)","Bash(git remote -v)","Bash(gh auth status)","Bash(gh repo view:*)"],
- "ask":["Bash(npm install:*)","Bash(curl:*)","Bash(git push:*)","Bash(gh repo create:*)","Bash(gh repo edit:*)"],
- "deny":["Read(./.env)","Read(./server/.env)","Read(**/.env)","Bash(rm -rf:*)","Bash(sudo:*)","Bash(git push --force:*)","Bash(git push -f:*)"]}}
