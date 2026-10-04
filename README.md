@@ -1,6 +1,6 @@
 # StockPilot
 
-Final-year B.Tech CSE project. Educational use only, not financial advice.
+Final-year B.E. CSE project. Educational use only, not financial advice.
 
 A beginner stock screener for the NIFTY 50 + NIFTY NEXT 50 universe, built as a final-year B.Tech project.
 
