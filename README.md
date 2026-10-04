@@ -16,6 +16,7 @@ A beginner stock screener for the NIFTY 50 + NIFTY NEXT 50 universe, built as a 
 - **Not live data.** The app never calls a market data API at request time; it reads one JSON snapshot taken at a point in time (see [Data source](#data-source)).
 - **Not a general NLP system.** The query box matches a fixed, documented vocabulary of terms and a few numeric-phrase patterns — it is not a language model unless you configure one, and even then the model only ever produces the same restricted filter shape.
 - **Not backed by a database, auth, or an ORM.** There is no user accounts system and nothing here is production-hardened.
+- **Not complete.** The Explainer (`server/src/explain`) is specified in `CLAUDE.md` but not built yet.
 
 ## Quick start
 

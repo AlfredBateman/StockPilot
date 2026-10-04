@@ -54,7 +54,7 @@ Any field except `ticker` and `weeklyCloses` may be `null` if Yahoo Finance had 
 
 ## `POST /api/screen`
 
-The one endpoint that answers "which stocks match this?" — filters, then searches, then sorts, then paginates, in that order. **This is the only place filtering logic runs**; `web/src/components/engine`-equivalent logic does not exist client-side.
+The one endpoint that answers "which stocks match this?" — filters, then searches, then sorts, then paginates, in that order. **Filtering logic runs only on the server.**
 
 **Request body** (all fields optional; an empty body `{}` is valid and returns page 1 of everything):
 ```json
