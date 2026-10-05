@@ -4,6 +4,32 @@ Final-year B.E. CSE project. Educational use only, not financial advice.
 
 A beginner stock screener for the NIFTY 50 + NIFTY NEXT 50 universe, built as a final-year B.Tech project.
 
+## Screenshots
+
+![StockPilot screener page showing the results table of NIFTY stocks with ticker, price, market cap, P/E, debt/equity and profit margin columns](docs/screenshots/01-screener.png)
+
+The screener results table, with sortable columns and a compare checkbox and star on each row.
+
+![Query box with the text "cheap profitable midcaps that fell this month", four applied filters, a "Parsed by: Rules" badge and four filter chips](docs/screenshots/02-query-box.png)
+
+The query "cheap profitable midcaps that fell this month" turned into four filters by the rule parser, shown as notes, a "Parsed by: Rules" badge, and removable chips.
+
+![Stock detail drawer for Adani Enterprises showing a weekly closing price chart and key numbers](docs/screenshots/03-stock-detail.png)
+
+The stock detail drawer for Adani Enterprises: a weekly closing price chart and a grid of key numbers.
+
+![Compare drawer with an indexed performance line chart and a side-by-side table for BEL, CIPLA and ETERNAL](docs/screenshots/04-compare.png)
+
+The compare drawer for three stocks: a line chart indexed to 100 above a side-by-side metrics table.
+
+![Watchlist page listing three starred stocks in a table](docs/screenshots/05-watchlist.png)
+
+The Watchlist page showing three starred stocks.
+
+<img src="docs/screenshots/06-mobile.png" alt="StockPilot screener on a 375 pixel wide phone screen, with each stock shown as a stacked card" width="280">
+
+The screener at phone width, where the table becomes stacked cards.
+
 ## What this is
 
 - A screener over a **fixed, in-memory snapshot** of ~100 Indian stocks (`data/stocks.json`): filter by sector, market-cap bucket, P/E, debt/equity, profit margin, and 1-month price change; sort, paginate, search by name/ticker, star a watchlist, and compare up to 3 stocks side by side.
