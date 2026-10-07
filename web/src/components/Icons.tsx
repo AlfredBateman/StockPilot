@@ -1,4 +1,4 @@
-// Every icon in the app, as inline SVG (CLAUDE.md: no icon fonts, no CDN).
+// Every icon in the app, as inline SVG (no icon fonts, no CDN).
 // One file so the stroke width and size are consistent everywhere, and so a
 // glyph like the close "x" isn't copy-pasted into four components. All are
 // decorative (aria-hidden); the button or text next to them carries the name.
