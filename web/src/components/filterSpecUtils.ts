@@ -36,29 +36,9 @@ const FIELD_LABELS: Record<FilterField, string> = {
   change1m: "1-Month Change",
 };
 
-/** A short, human-readable label for one filter, for a FilterChips pill. */
-export function describeFilter(filter: Filter): string {
-  const label = FIELD_LABELS[filter.field];
-  const isPercent = filter.field === "profitMargin";
-  const fmt = (n: number) => (isPercent ? `${(n * 100).toFixed(0)}%` : String(n));
-
-  switch (filter.op) {
-    case "eq":
-      return `${label}: ${filter.value}`;
-    case "in":
-      return `${label}: ${filter.value.join(", ")}`;
-    case "lt":
-      return `${label} < ${fmt(filter.value)}`;
-    case "gt":
-      return `${label} > ${fmt(filter.value)}`;
-    case "between":
-      return `${label}: ${fmt(filter.value[0])}-${fmt(filter.value[1])}`;
-  }
-}
-
 /**
- * The same description as describeFilter, split in two so FilterChips can show
- * the field name muted and the value bold: { label: "P/E", value: "< 30" }.
+ * The description of one filter split in two so FilterChips can show the field
+ * name muted and the value bold: { label: "P/E", value: "< 30" }.
  */
 export function describeFilterParts(filter: Filter): { label: string; value: string } {
   const label = FIELD_LABELS[filter.field];
@@ -77,4 +57,10 @@ export function describeFilterParts(filter: Filter): { label: string; value: str
     case "between":
       return { label, value: `${fmt(filter.value[0])}-${fmt(filter.value[1])}` };
   }
+}
+
+/** A short, human-readable label for one filter, for a FilterChips pill. */
+export function describeFilter(filter: Filter): string {
+  const { label, value } = describeFilterParts(filter);
+  return filter.op === "lt" || filter.op === "gt" ? `${label} ${value}` : `${label}: ${value}`;
 }
