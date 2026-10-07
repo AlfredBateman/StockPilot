@@ -9,7 +9,7 @@ import { fixTypos } from "../server/src/nl/typoFix.js";
 import { zeroResultHelp } from "../server/src/nl/zeroResultHelp.js";
 
 // Scores the offline pipeline (typo fix + rule parser, always) and, if an LLM
-// key is configured, the LLM tier ALONE (callLlm, no guard/cache/ollama/rules
+// key is configured, the LLM tier ALONE (callLlm, no guard/cache/rules
 // fallback) against a hand-built set of queries. It also checks that the
 // server's zero-result help finds a suggestion where one is expected, and
 // times every LLM call. Never touches app code, only calls exported functions.
@@ -148,7 +148,7 @@ function buildReport(rows: Row[], llmConfigured: boolean): string {
     ""
   );
   lines.push(
-    "The LLM column is the cloud LLM called alone, with no guard, cache, Ollama or rules fallback. A failed call (timeout, HTTP error, or a reply discarded by validation) scores as no filters and intent \"filter\".",
+    "The LLM column is the cloud LLM called alone, with no guard, cache or rules fallback. A failed call (timeout, HTTP error, or a reply discarded by validation) scores as no filters and intent \"filter\".",
     ""
   );
 

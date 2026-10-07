@@ -3,9 +3,8 @@ import { filterNote } from "./filterLabel.js";
 import { callLlm, isLlmConfigured } from "./llmClient.js";
 import { llmGuard, type LlmGuard } from "./llmGuard.js";
 import type { LlmReply, ParseIntent } from "./llmPrompt.js";
-import { callOllama } from "./ollamaClient.js";
 import { readCacheEntry, writeCacheEntry } from "./nlCache.js";
-import { parseQuery, type ParseResult, type ParseTier } from "./ruleParser.js";
+import { parseQuery, type ParseResult } from "./ruleParser.js";
 import { fixTypos } from "./typoFix.js";
 
 /** Longer text is cut to this before anything reads it. Real screening requests are a line, not an essay. */
@@ -42,8 +41,7 @@ export type ParseOptions = {
  *   1. Cut to 200 characters, fix typos, run the rule parser (always).
  *   2. Rules found filters and understood every word -> done, no network.
  *   3. Cache (identical query seen before) -> done.
- *   4. Not DEMO_MODE: cloud LLM (if configured and the guard allows it),
- *      then Ollama (if configured).
+ *   4. Not DEMO_MODE: cloud LLM (if configured and the guard allows it).
  *   5. Nothing better answered -> the rules result, with a notice saying the
  *      AI helper is resting.
  *
@@ -81,9 +79,9 @@ export async function parseWithTiers(rawQuery: string, options: ParseOptions = {
   }
 
   if (process.env.DEMO_MODE !== "true") {
-    const answered = await askModels(fixed.text, options);
-    if (answered) {
-      const result = fromReply(base, answered.reply, answered.tier);
+    const reply = await askLlm(fixed.text, options);
+    if (reply) {
+      const result = fromReply(base, reply);
       await writeCacheEntry(query, {
         filters: result.filters,
         notes: result.notes,
@@ -98,19 +96,10 @@ export async function parseWithTiers(rawQuery: string, options: ParseOptions = {
   return { ...base, notice: [base.notice, AI_RESTING_NOTICE].filter(Boolean).join(" ") };
 }
 
-/** Cloud first (rate-limited and capped), then the local model. Null if neither gave a valid reply. */
-async function askModels(
-  text: string,
-  { ip = "unknown", guard = llmGuard }: ParseOptions
-): Promise<{ reply: LlmReply; tier: ParseTier } | null> {
+/** The cloud LLM (rate-limited and capped). Null if it is off, over its limit or gave no valid reply. */
+async function askLlm(text: string, { ip = "unknown", guard = llmGuard }: ParseOptions): Promise<LlmReply | null> {
   // Only take a slot from the guard when a call will actually be made.
-  if (isLlmConfigured() && guard.tryAcquire(ip)) {
-    const reply = await callLlm(text);
-    if (reply) return { reply, tier: "llm" };
-  }
-
-  const local = await callOllama(text);
-  return local ? { reply: local, tier: "ollama" } : null;
+  return isLlmConfigured() && guard.tryAcquire(ip) ? callLlm(text) : null;
 }
 
 /**
@@ -120,7 +109,8 @@ async function askModels(
  * rules' result. Any other intent is an answer only and applies no filters,
  * so asking a question never clears the user's current screen.
  */
-function fromReply(base: QueryResult, reply: LlmReply, tier: ParseTier): QueryResult {
+function fromReply(base: QueryResult, reply: LlmReply): QueryResult {
+  const tier = "llm";
   if (reply.intent !== "filter") {
     return { ...base, filters: [], notes: [], unmatched: [], intent: reply.intent, answer: reply.answer, tier };
   }

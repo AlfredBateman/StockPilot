@@ -157,7 +157,7 @@ Turns free text into a `FilterSpec`, or (through the LLM tier) into a short educ
 - `filters`: same `FilterSpec` shape `/api/screen` accepts; can be fed straight into it. Empty for a question, advice or off-topic reply.
 - `notes`: one plain-language line per filter (the rule parser's vocabulary note, or for an LLM answer a line generated from the filter itself, so notes always describe the filters actually returned).
 - `unmatched`: leftover words nothing understood, after stripping stopwords.
-- `tier`: which source produced the result: `"rules"` (offline dictionary), `"llm"` (cloud model), `"ollama"` (local model), or `"cache"` (a saved model answer for this exact query, re-served without a network call).
+- `tier`: which source produced the result: `"rules"` (offline dictionary), `"llm"` (cloud model), or `"cache"` (a saved model answer for this exact query, re-served without a network call).
 - `intent`: `"filter"` (a screening request), `"question"` (e.g. "what is P/E"), `"advice"` (e.g. "should I buy X"), or `"offtopic"`. Only the LLM tier can return anything other than `"filter"`.
 - `answer`: plain text (at most 3 sentences, tags stripped) for the three non-filter intents, else `null`. Advice always ends with "This is educational, not financial advice."; off-topic always ends with a line pointing back to screening. Both lines are added by the server, not the model.
 - `correctedQuery`: the query after offline typo fixes ("Showing results for ..."), or `null` when nothing was fixed.

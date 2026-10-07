@@ -4,7 +4,7 @@
 
 "Rules" means the offline pipeline the app runs first: typo fix, then the rule parser. It always answers intent "filter", so it can never get a question, advice or off-topic query right on intent.
 
-The LLM column is the cloud LLM called alone, with no guard, cache, Ollama or rules fallback. A failed call (timeout, HTTP error, or a reply discarded by validation) scores as no filters and intent "filter".
+The LLM column is the cloud LLM called alone, with no guard, cache or rules fallback. A failed call (timeout, HTTP error, or a reply discarded by validation) scores as no filters and intent "filter".
 
 ## Overall
 

@@ -46,7 +46,6 @@ beforeEach(() => {
   vi.stubEnv("LLM_API_KEY", "test-key");
   vi.stubEnv("LLM_MODEL", "test-model");
   vi.stubEnv("LLM_DAILY_CAP", "");
-  vi.stubEnv("OLLAMA_MODEL", "");
   vi.stubEnv("DEMO_MODE", "false");
 
   // Cache is a miss unless a test says otherwise; writes go nowhere.
@@ -297,38 +296,9 @@ describe("parseWithTiers — guardrails", () => {
   });
 });
 
-describe("parseWithTiers — Ollama tier", () => {
-  it('takes over with tier "ollama" after the cloud tier fails', async () => {
-    vi.stubEnv("OLLAMA_MODEL", "test-local-model");
-    const fetchMock = vi
-      .fn()
-      .mockRejectedValueOnce(new Error("no internet"))
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ response: filterReply() }) });
-    vi.stubGlobal("fetch", fetchMock);
-
-    const result = await parse(PARTIAL_QUERY);
-
-    expect(result.tier).toBe("ollama");
-    expect(result.filters).toEqual(VALID_FILTERS);
-    expect(fetchMock.mock.calls[1]?.[0]).toBe("http://localhost:11434/api/generate");
-  });
-
-  it("is skipped without a request when OLLAMA_MODEL is unset", async () => {
-    const fetchMock = vi.fn().mockRejectedValue(new Error("no internet"));
-    vi.stubGlobal("fetch", fetchMock);
-
-    const result = await parse(PARTIAL_QUERY);
-
-    // Only the cloud attempt was made; Ollama was never contacted.
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(result.tier).toBe("rules");
-  });
-});
-
 describe("parseWithTiers — DEMO_MODE", () => {
   it("makes zero network calls and answers from cache", async () => {
     vi.stubEnv("DEMO_MODE", "true");
-    vi.stubEnv("OLLAMA_MODEL", "test-local-model");
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
     vi.mocked(readCacheEntry).mockResolvedValue({ filters: VALID_FILTERS, notes: [], unmatched: [] });
@@ -341,7 +311,6 @@ describe("parseWithTiers — DEMO_MODE", () => {
 
   it("makes zero network calls and falls back to rules with a notice on a cache miss", async () => {
     vi.stubEnv("DEMO_MODE", "true");
-    vi.stubEnv("OLLAMA_MODEL", "test-local-model");
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 

@@ -68,12 +68,11 @@ cp .env.example server/.env
 
 | Variable | Purpose | If blank |
 | --- | --- | --- |
-| `DEMO_MODE` | `true` skips the LLM/Ollama tiers entirely and makes zero network calls — only the cache and the offline rule parser answer queries. | Defaults to off (network tiers are attempted). |
+| `DEMO_MODE` | `true` skips the LLM tier entirely and makes zero network calls — only the cache and the offline rule parser answer queries. | Defaults to off (network tiers are attempted). |
 | `LLM_PROVIDER` | `nvidia`, `gemini` or `groq`. | Cloud LLM tier is skipped. |
 | `LLM_API_KEY` | API key for that provider. | Cloud LLM tier is skipped. |
 | `LLM_MODEL` | Model name, read as-is and never guessed. | Cloud LLM tier is skipped. |
 | `LLM_DAILY_CAP` | Most cloud LLM calls per UTC day, across all users. | Defaults to `300`. |
-| `OLLAMA_MODEL` | Local Ollama model name (`http://localhost:11434`). | Ollama tier is skipped without a request. |
 | `PORT` | Port the Express server listens on. | Defaults to `3001`. |
 
 Every one of these is optional. With `server/.env` absent entirely, or with `DEMO_MODE=true`, the app runs fully offline against `data/stocks.json` and the offline rule parser — this is the safest default for a demo or a viva.
@@ -121,7 +120,6 @@ graph LR
     Snapshot[("data/stocks.json<br/>loaded once, cached in memory")]
     Cache[("data/nlCache.json<br/>successful model answers")]
     LLM(["NVIDIA / Gemini / Groq API"])
-    Ollama(["Local Ollama<br/>(localhost:11434)"])
 
     UI -- "fetch (web/src/api/client.ts is\nthe only file that calls fetch)" --> Proxy
     Proxy --> Routes
@@ -130,7 +128,6 @@ graph LR
     Engine --> Snapshot
     NL --> Cache
     NL -. "only if LLM_* set,\nnever in DEMO_MODE" .-> LLM
-    NL -. "only if OLLAMA_MODEL set,\nnever in DEMO_MODE" .-> Ollama
 ```
 
 ## AI tier flow
@@ -160,14 +157,8 @@ Gemini/Groq (5s)"]
     LLMCall -- "valid reply" --> Remember1["Save to data/nlCache.json
 tier = llm"]
     LLMCall -- "timeout / error / invalid JSON
-/ fails a schema" --> OllamaTry{"OLLAMA_MODEL set?"}
-    Guard -- no --> OllamaTry
-    OllamaTry -- yes --> OllamaCall["Call local Ollama
-(3s timeout)"]
-    OllamaCall -- "valid reply" --> Remember2["Save to data/nlCache.json
-tier = ollama"]
-    OllamaCall -- "fails / not running" --> Resting
-    OllamaTry -- no --> Resting
+/ fails a schema" --> Resting
+    Guard -- no --> Resting
 ```
 
 A model reply is `{intent, filters, answer}`. `intent` is `filter`, `question`, `advice` or `offtopic`. A `filter` reply's filters go through the same zod `FilterSpecSchema` every other filter source uses, and anything that doesn't validate is discarded and treated as "this tier didn't answer", never trusted as-is. The other intents carry a plain-text answer of at most 3 sentences; advice never recommends buying or selling and always ends with a fixed "educational, not financial advice" line. The LLM only ever sees the user's own text, the allowed field/operator names, and the vocabulary's plain-language definitions (`server/src/nl/llmPrompt.ts`), **never any stock data or keys.**
@@ -176,7 +167,7 @@ When the filters match zero stocks, the route (not the LLM) re-runs the screen w
 
 ## Eval summary
 
-`eval/queries.json` holds 40 hand-written queries (10 simple, 15 vague/compound, 10 with explicit numbers, 5 unanswerable), each with an expected `FilterSpec` — every one currently marked `"status": "unreviewed"`, meaning a human hasn't checked each expectation by hand yet. `npm run eval` scores the rule parser always, and the LLM tier alone (no Ollama/cache/rules fallback) only if a key is configured. Current results (`eval/results.md`, offline run, no key configured):
+`eval/queries.json` holds 40 hand-written queries (10 simple, 15 vague/compound, 10 with explicit numbers, 5 unanswerable), each with an expected `FilterSpec` — every one currently marked `"status": "unreviewed"`, meaning a human hasn't checked each expectation by hand yet. `npm run eval` scores the rule parser always, and the LLM tier alone (no cache/rules fallback) only if a key is configured. Current results (`eval/results.md`, offline run, no key configured):
 
 | Tier | Precision | Recall | Full-query match |
 | --- | --- | --- | --- |

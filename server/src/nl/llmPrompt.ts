@@ -8,9 +8,7 @@ import {
 } from "../engine/filterSpec.js";
 import { VOCABULARY } from "./vocabulary.js";
 
-// The prompt and the output check are shared by llmClient.ts (cloud) and
-// ollamaClient.ts (local) so both tiers ask for exactly the same thing and
-// are held to exactly the same standard.
+// The prompt and the output check used by llmClient.ts (the cloud tier).
 
 /** What the user's text was: a screening request, a general question, a buy/sell question, or something else. */
 export const INTENTS = ["filter", "question", "advice", "offtopic"] as const;

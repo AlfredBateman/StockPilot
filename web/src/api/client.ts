@@ -172,7 +172,7 @@ export async function getStock(ticker: string): Promise<Stock> {
 
 // --- Natural-language query (mirrors server/src/nl/parseOrchestrator.ts) ---
 
-export type ParseTier = "rules" | "llm" | "ollama" | "cache";
+export type ParseTier = "rules" | "llm" | "cache";
 
 /** filter = a screening request; the others come with a plain-text answer and no filters. */
 export type ParseIntent = "filter" | "question" | "advice" | "offtopic";

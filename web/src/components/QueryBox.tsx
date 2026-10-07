@@ -14,7 +14,6 @@ type QueryState = { kind: "idle" } | { kind: "loading" } | { kind: "ready"; resu
 const TIER_LABELS: Record<ParseTier, string> = {
   rules: "Rules",
   llm: "LLM",
-  ollama: "Ollama",
   cache: "Cached",
 };
 

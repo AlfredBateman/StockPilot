@@ -1,7 +1,7 @@
 import type { Filter, FilterField, FilterSpec } from "../engine/filterSpec.js";
 import { VOCABULARY } from "./vocabulary.js";
 
-export type ParseTier = "rules" | "llm" | "ollama" | "cache";
+export type ParseTier = "rules" | "llm" | "cache";
 
 export type ParseResult = {
   filters: FilterSpec;
