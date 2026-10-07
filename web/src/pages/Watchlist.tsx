@@ -44,7 +44,6 @@ export function Watchlist() {
       cancelled = true;
     };
     // tickerKey is the stable form of the tickers array dependency.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickerKey]);
 
   function toggleCompare(ticker: string) {

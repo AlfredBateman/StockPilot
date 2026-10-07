@@ -71,7 +71,6 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
       cancelled = true;
     };
     // tickers is a new array reference every render; tickerKey is the stable form of the same dependency.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickerKey]);
 
   return (

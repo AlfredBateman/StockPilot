@@ -136,14 +136,6 @@ export function IconSort({ direction, ...props }: IconProps & { direction: "asc"
   );
 }
 
-export function IconFilter(props: IconProps) {
-  return (
-    <Svg {...props}>
-      <path d="M4 6h16M7 12h10M10 18h4" />
-    </Svg>
-  );
-}
-
 /** Offline demo mode: a signal arc with a slash through it. */
 export function IconOffline(props: IconProps) {
   return (

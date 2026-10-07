@@ -41,9 +41,5 @@ export function useWatchlist() {
     setTickers((current) => (current.includes(ticker) ? current.filter((t) => t !== ticker) : [...current, ticker]));
   }
 
-  function isWatched(ticker: string) {
-    return tickers.includes(ticker);
-  }
-
-  return { tickers, toggle, isWatched };
+  return { tickers, toggle };
 }
