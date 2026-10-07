@@ -5,11 +5,11 @@
 //
 // Only scripts import this file. No server route does, so the running app
 // (and DEMO_MODE in particular) never makes a call to Yahoo.
+import { setTimeout as sleep } from "node:timers/promises";
 import YahooFinance from "yahoo-finance2";
 import { debtToEquityRatio } from "./debtToEquity.js";
 import type { Stock, WeeklyClose } from "./stockSchema.js";
 
-const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 const DEFAULT_RETRY_DELAY_MS = 1000;
 
 const yahooFinance = new YahooFinance({
@@ -21,7 +21,7 @@ const yahooFinance = new YahooFinance({
 
 /** Converts a UTC Date to the NSE trading day (IST) as "YYYY-MM-DD". */
 function toIstDateString(date: Date): string {
-  return new Date(date.getTime() + IST_OFFSET_MS).toISOString().slice(0, 10);
+  return date.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // en-CA prints YYYY-MM-DD
 }
 
 /** Fetches one ticker's summary and ~1 year of weekly closes. Throws on any Yahoo error. */
@@ -86,7 +86,7 @@ export async function fetchStocks(
         stock = await fetchOne(ticker);
       } catch (err) {
         lastError = err instanceof Error ? err.message : String(err);
-        if (attempt === 1) await new Promise((r) => setTimeout(r, retryDelayMs));
+        if (attempt === 1) await sleep(retryDelayMs);
       }
     }
 

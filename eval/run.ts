@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { setTimeout as sleep } from "node:timers/promises";
 import { readSnapshotFromFile } from "../server/src/data/loadStocks.js";
 import type { Filter, FilterSpec } from "../server/src/engine/filterSpec.js";
 import { callLlm } from "../server/src/nl/llmClient.js";
@@ -241,10 +242,6 @@ function buildReport(rows: Row[], llmConfigured: boolean): string {
   lines.push("");
 
   return lines.join("\n");
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function main() {
