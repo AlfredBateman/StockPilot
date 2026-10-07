@@ -10,7 +10,6 @@ import { AI_RESTING_NOTICE, TRUNCATED_NOTICE, parseWithTiers } from "./parseOrch
 // real data/nlCache.json. Each test gets a fresh guard so rate limits from
 // one test never leak into another.
 vi.mock("./nlCache.js", () => ({
-  normalizeQuery: (q: string) => q.trim().toLowerCase(),
   readCacheEntry: vi.fn(),
   writeCacheEntry: vi.fn(),
 }));
