@@ -1,4 +1,4 @@
-import { COMPARATORS, NUMERIC_FIELDS, parseQuery } from "./ruleParser.js";
+import { COMPARATORS, NUMERIC_FIELDS, escapeRegExp, parseQuery } from "./ruleParser.js";
 import { SECTORS, SECTOR_SYNONYMS, VAGUE_TERM_WORDS } from "./vocabulary.js";
 
 // Fixes small spelling mistakes ("chep tecnology stocks") before the rule
@@ -77,10 +77,6 @@ export type TypoFix = {
   corrections: { from: string; to: string }[];
 };
 
-function escapeRegExp(text: string): string {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 /**
  * Corrects the words the rule parser could not use. A correction is kept only
  * if it makes the rule parser find more filters than before, so "best stocks"
@@ -89,9 +85,10 @@ function escapeRegExp(text: string): string {
 export function fixTypos(query: string): TypoFix {
   let text = query;
   const corrections: TypoFix["corrections"] = [];
-  let filterCount = parseQuery(text).filters.length;
+  const parsed = parseQuery(query);
+  let filterCount = parsed.filters.length;
 
-  for (const word of parseQuery(query).unmatched) {
+  for (const word of parsed.unmatched) {
     if (KNOWN_WORDS.has(word) || /\d/.test(word)) continue;
 
     const fix = nearestKnownWord(word, allowedDistance(word));

@@ -36,7 +36,7 @@ export const COMPARATORS: { words: string[]; op: "lt" | "gt" }[] = [
   { words: ["over", "above", "more than", "greater than"], op: "gt" },
 ];
 
-function escapeRegExp(text: string): string {
+export function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
@@ -89,7 +89,7 @@ export function parseQuery(query: string): ParseResult {
 
   for (const term of VOCABULARY) {
     if (term.pattern.test(text)) {
-      byField.set(term.field, { filter: term.filter, note: term.note });
+      byField.set(term.filter.field, { filter: term.filter, note: term.note });
       remaining = remaining.replace(term.pattern, " ");
     }
   }
@@ -104,7 +104,6 @@ export function parseQuery(query: string): ParseResult {
   const unmatched = remaining
     .replace(/[^\p{L}\p{N}\s]/gu, " ")
     .split(/\s+/)
-    .map((word) => word.trim())
     .filter((word) => word.length > 0 && !STOPWORDS.has(word));
 
   const matches = [...byField.values()];

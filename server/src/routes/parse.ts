@@ -3,13 +3,10 @@ import { loadStocks } from "../data/loadStocks.js";
 import { parseWithTiers } from "../nl/parseOrchestrator.js";
 import { zeroResultHelp } from "../nl/zeroResultHelp.js";
 
-// POST /api/parse — turns free text into a FilterSpec (or, through the LLM
-// tier, a short educational answer), see nl/parseOrchestrator.ts for the
-// order of tiers. Unlike /api/screen, the request body is never
-// zod-validated and this always answers 200: the whole point of this endpoint
-// is graceful degradation on arbitrary text (including a missing or
-// non-string `query`, treated as ""), never a 400 for "didn't understand
-// you". The orchestrator never throws, so there is no error path here either.
+// POST /api/parse — free text in, FilterSpec (or a short answer) out; tier
+// order is in nl/parseOrchestrator.ts. Unlike /api/screen the body is never
+// zod-validated and this always answers 200 (a missing or non-string `query`
+// is treated as ""): graceful degradation, never a 400 for "didn't understand".
 export const parseRouter = Router();
 
 parseRouter.post("/", async (req, res) => {
@@ -23,7 +20,7 @@ parseRouter.post("/", async (req, res) => {
       const snapshot = await loadStocks();
       result.suggestions = zeroResultHelp(snapshot.stocks, result.filters, result.unmatched);
     } catch {
-      result.suggestions = [];
+      // Data not loadable: the answer keeps its empty suggestions.
     }
   }
 

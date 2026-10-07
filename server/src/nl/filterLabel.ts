@@ -1,5 +1,5 @@
 import type { Filter, FilterField } from "../engine/filterSpec.js";
-import { VAGUE_VOCABULARY } from "./vocabulary.js";
+import { VAGUE_TERMS } from "./vocabulary.js";
 
 // Plain-language text for a filter that did not come from the rule parser
 // (an LLM answer, or a filter in a zero-result suggestion). The field names
@@ -48,14 +48,17 @@ function sameFilter(a: Filter, b: Filter): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
+function vagueTerm(filter: Filter) {
+  return VAGUE_TERMS.find((t) => sameFilter(t.filter, filter));
+}
+
 /** The vague word ("low debt") if this filter is exactly one, else describeFilter's text. */
 export function filterShortLabel(filter: Filter): string {
-  const term = VAGUE_VOCABULARY.find((t) => sameFilter(t.filter, filter));
+  const term = vagueTerm(filter);
   return term ? term.note.split(" = ")[0] : describeFilter(filter);
 }
 
 /** A note line like the rule parser's: the vocabulary note when it matches, else describeFilter's text. */
 export function filterNote(filter: Filter): string {
-  const term = VAGUE_VOCABULARY.find((t) => sameFilter(t.filter, filter));
-  return term ? term.note : describeFilter(filter);
+  return vagueTerm(filter)?.note ?? describeFilter(filter);
 }
