@@ -24,7 +24,7 @@ export const StockSchema = z.object({
   pe: z.number().nullable(),
   /**
    * Total debt / total equity as a true ratio (1.2 = debt is 1.2x equity). Yahoo reports this
-   * as a percentage (119.6); snapshot.ts divides by 100 on the way in. null for banks and
+   * as a percentage (119.6); yahooFetch.ts divides by 100 on the way in. null for banks and
    * other financials, where Yahoo reports no D/E.
    */
   debtToEquity: z.number().nullable(),
