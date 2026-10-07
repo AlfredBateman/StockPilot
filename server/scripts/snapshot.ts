@@ -46,16 +46,6 @@ async function main() {
 
   await writeFile(OUTPUT_PATH, JSON.stringify(snapshot, null, 2) + "\n", "utf-8");
   console.log(`\nWrote ${stocks.length} stocks to ${OUTPUT_PATH}`);
-
-  console.log("\nSample of 5 stocks (cross-check against Google Finance):");
-  const sample = stocks.slice(0, 5);
-  for (const s of sample) {
-    console.log(
-      `  ${s.ticker.padEnd(14)} ${(s.name ?? "n/a").padEnd(35)} price=${s.price ?? "n/a"} marketCap=${
-        s.marketCap ?? "n/a"
-      } pe=${s.pe ?? "n/a"} debtToEquity=${s.debtToEquity ?? "n/a"} profitMargin=${s.profitMargin ?? "n/a"}`
-    );
-  }
 }
 
 main().catch((err) => {

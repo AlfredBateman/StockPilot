@@ -5,15 +5,11 @@ name: Daily ingest
 # (server/scripts/mongoStatus.ts). End-of-day data, never live.
 #
 # 12:30 UTC is 18:00 IST, after the NSE close at 15:30 IST. GitHub only runs
-# schedule and workflow_dispatch from the default branch; the push trigger,
-# limited to this file, lets the workflow be tested from another branch.
+# schedule and workflow_dispatch from the default branch.
 on:
   schedule:
     - cron: "30 12 * * 1-5"
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/workflows/ingest.yml"
 
 jobs:
   ingest:
