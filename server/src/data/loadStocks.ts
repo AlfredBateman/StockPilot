@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { mongoSource } from "./mongoSource.js";
 import { SnapshotSchema, type Snapshot, type Stock } from "./stockSchema.js";
 
 const DEFAULT_DATA_PATH = path.resolve(import.meta.dirname, "../../../data/stocks.json");
@@ -8,9 +9,9 @@ const DEFAULT_DATA_PATH = path.resolve(import.meta.dirname, "../../../data/stock
 export const STOCKS_TTL_MS = 10 * 60 * 1000;
 
 /**
- * Where a snapshot comes from. Today the only implementation is the JSON file;
- * a database source would be a second implementation in this folder, and
- * nothing outside server/src/data would need to change.
+ * Where a snapshot comes from. Two implementations: the JSON file (below) and
+ * MongoDB (mongoSource.ts). Nothing outside server/src/data knows which one
+ * is in use; routes only ever see a Snapshot.
  */
 export interface StockSource {
   /** Returns a zod-validated snapshot, or rejects. */
@@ -65,8 +66,75 @@ export function createStockLoader(
   };
 }
 
-/** The app-wide loader every route uses: data/stocks.json, re-read at most every 10 minutes. */
-export const loadStocks = createStockLoader(jsonFileSource());
+export type DataSourceKind = "mongo" | "file";
+
+/** Remembers which source produced each snapshot, for getDataStatus(). */
+const servedFrom = new WeakMap<Snapshot, DataSourceKind>();
+
+/**
+ * Tries `primary` (Mongo) and, on any error, serves `fallback` (the JSON
+ * file) instead. Logs only when it switches from primary to fallback, so one
+ * outage is one log line, not one per reload.
+ */
+export function withFallback(
+  primary: StockSource,
+  fallback: StockSource,
+  log: (message: string) => void = console.warn
+): StockSource {
+  let usingFallback = false;
+  return {
+    async load() {
+      try {
+        const snapshot = await primary.load();
+        usingFallback = false;
+        servedFrom.set(snapshot, "mongo");
+        return snapshot;
+      } catch (err) {
+        if (!usingFallback) {
+          const reason = err instanceof Error ? err.message : String(err);
+          log(`MongoDB unavailable (${reason}), serving data/stocks.json instead`);
+          usingFallback = true;
+        }
+        const snapshot = await fallback.load();
+        servedFrom.set(snapshot, "file");
+        return snapshot;
+      }
+    },
+  };
+}
+
+/**
+ * Picks the source on every load, so it follows the current env:
+ * DEMO_MODE=true reads only the JSON file and never touches the network;
+ * otherwise Mongo first, the JSON file if Mongo is unreachable or empty.
+ */
+export function defaultSource(
+  mongo: StockSource = mongoSource(),
+  file: StockSource = jsonFileSource()
+): StockSource {
+  const online = withFallback(mongo, file);
+  return {
+    async load() {
+      if (process.env.DEMO_MODE === "true") {
+        const snapshot = await file.load();
+        servedFrom.set(snapshot, "file");
+        return snapshot;
+      }
+      return online.load();
+    },
+  };
+}
+
+/** The app-wide loader every route uses, re-read at most every 10 minutes. */
+export const loadStocks = createStockLoader(defaultSource());
+
+/** Which source the current snapshot came from, and its asOf. For /api/health. */
+export async function getDataStatus(
+  load: () => Promise<Snapshot> = loadStocks
+): Promise<{ dataSource: DataSourceKind; asOf: string }> {
+  const snapshot = await load();
+  return { dataSource: servedFrom.get(snapshot) ?? "file", asOf: snapshot.asOf };
+}
 
 export function findStock(snapshot: Snapshot, ticker: string): Stock | undefined {
   const needle = ticker.trim().toUpperCase();

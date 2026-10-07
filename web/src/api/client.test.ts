@@ -7,7 +7,7 @@ describe("getHealth", () => {
   });
 
   it("returns the parsed health payload", async () => {
-    const payload = { data: { status: "ok", demoMode: true } };
+    const payload = { data: { status: "ok", demoMode: true, dataSource: "file", asOf: "2026-10-06T12:30:00.000Z" } };
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getHealth } from "./api/client";
+import { formatAsOfDate } from "./components/format";
 import { IconInfo, IconOffline, LogoMark } from "./components/Icons";
 import { Screener } from "./pages/Screener";
 import { Watchlist } from "./pages/Watchlist";
@@ -14,14 +15,25 @@ const TABS: { view: View; label: string }[] = [
 export function App() {
   const [view, setView] = useState<View>("screener");
   const [demoMode, setDemoMode] = useState(false);
+  // undefined until the health check answers; null if the server has no data date.
+  const [dataAsOf, setDataAsOf] = useState<string | null | undefined>(undefined);
 
-  // The server decides this (DEMO_MODE), so ask it rather than guessing. If
-  // the health check fails the page still works; it just shows no badge.
+  // The server decides these (DEMO_MODE, which data it loaded), so ask it
+  // rather than guessing. If the health check fails the page still works; it
+  // just shows no badge and no data date.
   useEffect(() => {
     getHealth()
-      .then((response) => setDemoMode(response.data.demoMode))
+      .then((response) => {
+        setDemoMode(response.data.demoMode);
+        setDataAsOf(response.data.asOf);
+      })
       .catch(() => {});
   }, []);
+
+  const asOfLabel =
+    dataAsOf === undefined
+      ? null
+      : `Data as of ${dataAsOf === null ? "n/a" : formatAsOfDate(dataAsOf)}, end of day, not live`;
 
   return (
     <div className="min-h-dvh">
@@ -63,17 +75,24 @@ export function App() {
             ))}
           </nav>
 
-          {demoMode && (
-            <span
-              title="No live data sources or network calls; answers come from the saved snapshot, cache, and offline parser."
-              className="ml-auto inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border border-warning/25 bg-warning-soft px-3 text-label text-warning"
-            >
-              <IconOffline size={14} />
-              <span className="hidden sm:inline">Offline demo mode</span>
-              <span className="sm:hidden">Offline</span>
-            </span>
-          )}
+          <div className="ml-auto flex shrink-0 items-center gap-3">
+            {asOfLabel && <span className="hidden text-label text-stone-500 lg:inline">{asOfLabel}</span>}
+            {demoMode && (
+              <span
+                title="No live data sources or network calls; answers come from the saved snapshot, cache, and offline parser."
+                className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border border-warning/25 bg-warning-soft px-3 text-label text-warning"
+              >
+                <IconOffline size={14} />
+                <span className="hidden sm:inline">Offline demo mode</span>
+                <span className="sm:hidden">Offline</span>
+              </span>
+            )}
+          </div>
         </div>
+        {/* Below lg the header row has no room, so the data date gets its own line. */}
+        {asOfLabel && (
+          <p className="mx-auto max-w-7xl px-4 pb-2 text-label text-stone-500 md:px-6 lg:hidden">{asOfLabel}</p>
+        )}
       </header>
 
       {/* The disclaimer is a proper note on every page, not a caption (docs/DESIGN.md section 19). */}

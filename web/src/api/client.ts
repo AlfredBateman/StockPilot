@@ -10,6 +10,10 @@
 export type HealthData = {
   status: string;
   demoMode: boolean;
+  /** Where the server's stock data came from; null if it could not load any. */
+  dataSource: "mongo" | "file" | null;
+  /** ISO timestamp of the end-of-day data being served; null if none could be loaded. */
+  asOf: string | null;
 };
 
 export type HealthResponse = {

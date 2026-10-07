@@ -1,0 +1,39 @@
+name: Daily ingest
+
+# Fetches every ticker from Yahoo Finance and upserts it into MongoDB
+# (server/scripts/ingest.ts), then prints what Mongo holds
+# (server/scripts/mongoStatus.ts). End-of-day data, never live.
+#
+# 12:30 UTC is 18:00 IST, after the NSE close at 15:30 IST. GitHub only runs
+# schedule and workflow_dispatch from the default branch; the push trigger,
+# limited to this file, lets the workflow be tested from another branch.
+on:
+  schedule:
+    - cron: "30 12 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/ingest.yml"
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+      - name: Ingest all tickers into MongoDB
+        working-directory: server
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: npm run ingest
+      - name: Report MongoDB contents
+        if: always()
+        working-directory: server
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: npm run mongo:status

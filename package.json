@@ -10,6 +10,8 @@
     "test": "npm test --prefix web && npm test --prefix server",
     "build": "npm run build --prefix web && npm run build --prefix server",
     "snapshot": "npm run snapshot --prefix server",
+    "ingest": "npm run ingest --prefix server",
+    "seed": "npm run seed --prefix server --",
     "eval": "npm run eval --prefix server"
   },
   "devDependencies": {

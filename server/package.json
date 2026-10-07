@@ -8,12 +8,16 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "snapshot": "tsx scripts/snapshot.ts",
+    "ingest": "tsx scripts/ingest.ts",
+    "seed": "tsx scripts/seed.ts",
+    "mongo:status": "tsx scripts/mongoStatus.ts",
     "eval": "tsx ../eval/run.ts"
   },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^18.0.2",
     "express": "^5.2.1",
+    "mongodb": "^7.7.0",
     "yahoo-finance2": "^4.0.2",
     "zod": "^4.6.5"
   },
