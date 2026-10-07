@@ -1,6 +1,14 @@
 import { useLayoutEffect, useRef } from "react";
 import type { SortField, SortSpec, Stock } from "../api/client";
-import { displayTicker, formatMarketCapCrore, formatPercent, formatPrice, formatRatio } from "./format";
+import {
+  debtToEquityNote,
+  displayTicker,
+  formatDebtToEquity,
+  formatMarketCapCrore,
+  formatPercent,
+  formatPrice,
+  formatRatio,
+} from "./format";
 import { IconChevron, IconSort, IconStar } from "./Icons";
 import { MetricHelp, type GlossaryKey } from "./MetricHelp";
 import { animateRowsIn } from "./motion";
@@ -33,6 +41,8 @@ type Column = {
   width: string;
   truncate?: boolean;
   render: (stock: Stock) => string;
+  /** Optional hover text for this cell (e.g. why a bank has no Debt/Equity). */
+  title?: (stock: Stock) => string | undefined;
   /** When set, a MetricHelp "?" appears next to this column's header/label. */
   metricKey?: GlossaryKey;
 };
@@ -56,7 +66,8 @@ const COLUMNS: Column[] = [
     label: "Debt/Equity",
     align: "right",
     width: "w-32",
-    render: (s) => formatRatio(s.debtToEquity),
+    render: (s) => formatDebtToEquity(s.debtToEquity),
+    title: debtToEquityNote,
     metricKey: "debtToEquity",
   },
   {
@@ -305,7 +316,7 @@ export function StockTable({
                       return (
                         <td
                           key={column.field}
-                          title={column.truncate ? value : undefined}
+                          title={column.truncate ? value : column.title?.(stock)}
                           className={`h-13 px-3 ${column.truncate ? "truncate" : "whitespace-nowrap"} ${
                             isNumber ? "text-right tabular-nums" : "text-left"
                           } ${tone}`}
@@ -382,6 +393,7 @@ export function StockTable({
                         {column.metricKey && <MetricHelp metric={column.metricKey} />}
                       </dt>
                       <dd
+                        title={column.title?.(stock)}
                         className={`text-body font-medium tabular-nums ${value === "n/a" ? "text-stone-500" : "text-stone-900"}`}
                       >
                         {value}

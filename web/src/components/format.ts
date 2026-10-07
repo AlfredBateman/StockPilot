@@ -20,9 +20,24 @@ export function formatMarketCapCrore(value: number | null): string {
   return `${crore.toLocaleString("en-IN")} Cr`;
 }
 
-export function formatRatio(value: number | null): string {
+/** One decimal, with an optional unit suffix (e.g. "×" for debt/equity: 1.2×). A missing value is "n/a" without the suffix. */
+export function formatRatio(value: number | null, suffix = ""): string {
   if (value === null) return NA;
-  return value.toFixed(1);
+  return `${value.toFixed(1)}${suffix}`;
+}
+
+/** Debt/equity is a true ratio (see server/src/data/debtToEquity.ts), shown as a multiple: "1.2×". */
+export function formatDebtToEquity(value: number | null): string {
+  return formatRatio(value, "×");
+}
+
+const DEBT_TO_EQUITY_FINANCIALS_NOTE = "Debt works differently for banks and financials, so the ratio isn't comparable.";
+
+/** Hover text explaining why a stock has no D/E. Only financials get one; for anyone else a missing value is just missing data. */
+export function debtToEquityNote(stock: { sector: string | null; debtToEquity: number | null }): string | undefined {
+  return stock.debtToEquity === null && stock.sector === "Financial Services"
+    ? DEBT_TO_EQUITY_FINANCIALS_NOTE
+    : undefined;
 }
 
 /** profitMargin is stored as a fraction (0.15 = 15%); this is the one place that turns it back into a percent for display. */

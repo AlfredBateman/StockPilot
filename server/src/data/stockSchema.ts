@@ -22,7 +22,11 @@ export const StockSchema = z.object({
   marketCap: z.number().nullable(),
   /** Trailing P/E ratio. */
   pe: z.number().nullable(),
-  /** Raw ratio as reported by Yahoo's financialData.debtToEquity. */
+  /**
+   * Total debt / total equity as a true ratio (1.2 = debt is 1.2x equity). Yahoo reports this
+   * as a percentage (119.6); snapshot.ts divides by 100 on the way in. null for banks and
+   * other financials, where Yahoo reports no D/E.
+   */
   debtToEquity: z.number().nullable(),
   /** Raw fraction as reported by Yahoo's financialData.profitMargins (e.g. 0.066 = 6.6%). */
   profitMargin: z.number().nullable(),

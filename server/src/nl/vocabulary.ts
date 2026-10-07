@@ -32,13 +32,13 @@ const VAGUE_TERMS: VocabTerm[] = [
     field: "debtToEquity",
     // Same threshold as the "Low Debt, Steady Profit" preset (content/presets.json), so the two agree.
     filter: { field: "debtToEquity", op: "lt", value: 0.5 },
-    note: "low debt = debt/equity below 0.5",
+    note: "low debt = debt/equity ratio below 0.5 (debt under half of equity)",
   },
   {
     pattern: /\bhigh[\s-]?debt\b/,
     field: "debtToEquity",
     filter: { field: "debtToEquity", op: "gt", value: 1 },
-    note: "high debt = debt/equity above 1",
+    note: "high debt = debt/equity ratio above 1 (debt greater than equity)",
   },
   {
     pattern: /\bsmall[\s-]?caps?\b/,

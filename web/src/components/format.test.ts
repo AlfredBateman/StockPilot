@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   displayTicker,
+  debtToEquityNote,
   formatAsOfDate,
+  formatDebtToEquity,
   formatMarketCapCrore,
   formatPercent,
   formatPrice,
@@ -36,6 +38,35 @@ describe("formatRatio", () => {
 
   it("renders null as n/a", () => {
     expect(formatRatio(null)).toBe("n/a");
+  });
+});
+
+describe("formatRatio with a suffix", () => {
+  it("appends the suffix to a number but not to n/a", () => {
+    expect(formatRatio(1.1956, "×")).toBe("1.2×");
+    expect(formatRatio(null, "×")).toBe("n/a");
+  });
+});
+
+describe("formatDebtToEquity", () => {
+  it("shows a ratio as a multiple", () => {
+    expect(formatDebtToEquity(1.1956)).toBe("1.2×");
+    expect(formatDebtToEquity(0.32)).toBe("0.3×");
+  });
+
+  it("renders null as n/a", () => {
+    expect(formatDebtToEquity(null)).toBe("n/a");
+  });
+});
+
+describe("debtToEquityNote", () => {
+  it("explains a missing D/E for financials", () => {
+    expect(debtToEquityNote({ sector: "Financial Services", debtToEquity: null })).toMatch(/banks and financials/);
+  });
+
+  it("has no note when a financial does report D/E, or a non-financial is missing it", () => {
+    expect(debtToEquityNote({ sector: "Financial Services", debtToEquity: 2 })).toBeUndefined();
+    expect(debtToEquityNote({ sector: "Energy", debtToEquity: null })).toBeUndefined();
   });
 });
 

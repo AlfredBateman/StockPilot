@@ -11,7 +11,7 @@ export function makeStock(overrides: Partial<Stock> = {}): Stock {
     price: 100,
     marketCap: 1_500_000_000_000,
     pe: 20,
-    debtToEquity: 50,
+    debtToEquity: 0.5,
     profitMargin: 0.1,
     weeklyCloses: [],
     ...overrides,

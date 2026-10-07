@@ -9,7 +9,7 @@
       "price": 2993.5,
       "marketCap": 4259670917120,
       "pe": 51.898403,
-      "debtToEquity": 119.56,
+      "debtToEquity": 1.1956,
       "profitMargin": 0.06546,
       "weeklyCloses": [
         {
@@ -237,7 +237,7 @@
       "price": 1803.3,
       "marketCap": 4154729431040,
       "pe": 30.799318,
-      "debtToEquity": 64.051,
+      "debtToEquity": 0.64051,
       "profitMargin": 0.32431,
       "weeklyCloses": [
         {
@@ -465,7 +465,7 @@
       "price": 8936,
       "marketCap": 1284859625472,
       "pe": 61.67012,
-      "debtToEquity": 85.146,
+      "debtToEquity": 0.85146,
       "profitMargin": 0.07906,
       "weeklyCloses": [
         {
@@ -693,7 +693,7 @@
       "price": 2468.7,
       "marketCap": 2366605099008,
       "pe": 49.61214,
-      "debtToEquity": 17.847,
+      "debtToEquity": 0.17847,
       "profitMargin": 0.12813,
       "weeklyCloses": [
         {
@@ -1149,7 +1149,7 @@
       "price": 11394,
       "marketCap": 3131115044864,
       "pe": 27.125988,
-      "debtToEquity": 56.352,
+      "debtToEquity": 0.56352,
       "profitMargin": 0.16251,
       "weeklyCloses": [
         {
@@ -1377,7 +1377,7 @@
       "price": 1023.7,
       "marketCap": 6368349126656,
       "pe": 31.440416,
-      "debtToEquity": 314.833,
+      "debtToEquity": 3.14833,
       "profitMargin": 0.43495,
       "weeklyCloses": [
         {
@@ -1605,7 +1605,7 @@
       "price": 1852.2,
       "marketCap": 2963973341184,
       "pe": 29.32088,
-      "debtToEquity": 256.404,
+      "debtToEquity": 2.56404,
       "profitMargin": 0.06471,
       "weeklyCloses": [
         {
@@ -1833,7 +1833,7 @@
       "price": 398.25,
       "marketCap": 2911119343616,
       "pe": 47.2981,
-      "debtToEquity": 0.273,
+      "debtToEquity": 0.00273,
       "profitMargin": 0.21403,
       "weeklyCloses": [
         {
@@ -2061,7 +2061,7 @@
       "price": 1831.7,
       "marketCap": 11427349790720,
       "pe": 38.24008,
-      "debtToEquity": 100.415,
+      "debtToEquity": 1.00415,
       "profitMargin": 0.1314,
       "weeklyCloses": [
         {
@@ -2289,7 +2289,7 @@
       "price": 1375.2,
       "marketCap": 1110966927360,
       "pe": 32.978416,
-      "debtToEquity": 1.778,
+      "debtToEquity": 0.01778,
       "profitMargin": 0.12009,
       "weeklyCloses": [
         {
@@ -2517,7 +2517,7 @@
       "price": 424.55,
       "marketCap": 2616386387968,
       "pe": 8.400276,
-      "debtToEquity": 11.629,
+      "debtToEquity": 0.11629,
       "profitMargin": 0.18138,
       "weeklyCloses": [
         {
@@ -2745,7 +2745,7 @@
       "price": 1218.3,
       "marketCap": 1014830071808,
       "pe": 30.687658,
-      "debtToEquity": 18.605,
+      "debtToEquity": 0.18605,
       "profitMargin": 0.09996,
       "weeklyCloses": [
         {
@@ -2973,7 +2973,7 @@
       "price": 7500.5,
       "marketCap": 2059050024960,
       "pe": 35.640297,
-      "debtToEquity": 2.048,
+      "debtToEquity": 0.02048,
       "profitMargin": 0.23211999,
       "weeklyCloses": [
         {
@@ -3201,7 +3201,7 @@
       "price": 338.35,
       "marketCap": 3114644799488,
       "pe": 735.54346,
-      "debtToEquity": 14.826,
+      "debtToEquity": 0.14826,
       "profitMargin": 0.00642,
       "weeklyCloses": [
         {
@@ -3429,7 +3429,7 @@
       "price": 3141.5,
       "marketCap": 2130730942464,
       "pe": 37.50597,
-      "debtToEquity": 135.044,
+      "debtToEquity": 1.35044,
       "profitMargin": 0.03093,
       "weeklyCloses": [
         {
@@ -3657,7 +3657,7 @@
       "price": 1257.2,
       "marketCap": 3401689595904,
       "pe": 19.579504,
-      "debtToEquity": 7.058,
+      "debtToEquity": 0.07058,
       "profitMargin": 0.12966,
       "weeklyCloses": [
         {
@@ -4113,7 +4113,7 @@
       "price": 565.05,
       "marketCap": 1227316396032,
       "pe": 61.7541,
-      "debtToEquity": 15.885,
+      "debtToEquity": 0.15885,
       "profitMargin": 0.019,
       "weeklyCloses": [
         {
@@ -4341,7 +4341,7 @@
       "price": 976.9,
       "marketCap": 2168558977024,
       "pe": 13.2568865,
-      "debtToEquity": 72.598,
+      "debtToEquity": 0.72598,
       "profitMargin": 0.05549,
       "weeklyCloses": [
         {
@@ -4569,7 +4569,7 @@
       "price": 1944.9,
       "marketCap": 4569720422400,
       "pe": 43.200798,
-      "debtToEquity": 3.016,
+      "debtToEquity": 0.03016,
       "profitMargin": 0.22644,
       "weeklyCloses": [
         {
@@ -5025,7 +5025,7 @@
       "price": 4975.5,
       "marketCap": 1923859611648,
       "pe": null,
-      "debtToEquity": 1112.706,
+      "debtToEquity": 11.12706,
       "profitMargin": -0.053969998,
       "weeklyCloses": [
         {
@@ -5253,7 +5253,7 @@
       "price": 1028,
       "marketCap": 4163753213952,
       "pe": 13.194712,
-      "debtToEquity": 9.541,
+      "debtToEquity": 0.09541,
       "profitMargin": 0.16370001,
       "weeklyCloses": [
         {
@@ -5481,7 +5481,7 @@
       "price": 267.5,
       "marketCap": 3351913168896,
       "pe": 16.887627,
-      "debtToEquity": 3.293,
+      "debtToEquity": 0.03293,
       "profitMargin": 0.25937998,
       "weeklyCloses": [
         {
@@ -5709,7 +5709,7 @@
       "price": 232.32,
       "marketCap": 1534041915392,
       "pe": 72.14907,
-      "debtToEquity": 16.286,
+      "debtToEquity": 0.16286,
       "profitMargin": 0.55006003,
       "weeklyCloses": [
         {
@@ -5937,7 +5937,7 @@
       "price": 1268.1,
       "marketCap": 3095404478464,
       "pe": 12.520735,
-      "debtToEquity": 95.374,
+      "debtToEquity": 0.95374,
       "profitMargin": 0.13065,
       "weeklyCloses": [
         {
@@ -6393,7 +6393,7 @@
       "price": 3914,
       "marketCap": 5385139781632,
       "pe": 32.49751,
-      "debtToEquity": 97.64,
+      "debtToEquity": 0.9764,
       "profitMargin": 0.05588,
       "weeklyCloses": [
         {
@@ -6621,7 +6621,7 @@
       "price": 3071,
       "marketCap": 3687540850688,
       "pe": 18.702803,
-      "debtToEquity": 125.278,
+      "debtToEquity": 1.25278,
       "profitMargin": 0.08609,
       "weeklyCloses": [
         {
@@ -6849,7 +6849,7 @@
       "price": 12222,
       "marketCap": 3842628124672,
       "pe": 26.786184,
-      "debtToEquity": 0.096,
+      "debtToEquity": 0.00096,
       "profitMargin": 0.07269,
       "weeklyCloses": [
         {
@@ -7077,7 +7077,7 @@
       "price": 1059,
       "marketCap": 1030735593472,
       "pe": 71.07383,
-      "debtToEquity": 32.367,
+      "debtToEquity": 0.32367,
       "profitMargin": 0.16723,
       "weeklyCloses": [
         {
@@ -7305,7 +7305,7 @@
       "price": 1380.5,
       "marketCap": 2662037979136,
       "pe": 69.86336,
-      "debtToEquity": 8.621,
+      "debtToEquity": 0.08621,
       "profitMargin": 0.15623,
       "weeklyCloses": [
         {
@@ -7533,7 +7533,7 @@
       "price": 326.85,
       "marketCap": 3169355563008,
       "pe": 9.998471,
-      "debtToEquity": 128.345,
+      "debtToEquity": 1.28345,
       "profitMargin": 0.14531,
       "weeklyCloses": [
         {
@@ -7761,7 +7761,7 @@
       "price": 233.93,
       "marketCap": 2942904565760,
       "pe": 6.762937,
-      "debtToEquity": 42.548,
+      "debtToEquity": 0.42548,
       "profitMargin": 0.06181,
       "weeklyCloses": [
         {
@@ -7989,7 +7989,7 @@
       "price": 266.1,
       "marketCap": 2474890756096,
       "pe": 13.024963,
-      "debtToEquity": 150.813,
+      "debtToEquity": 1.50813,
       "profitMargin": 0.33797002,
       "weeklyCloses": [
         {
@@ -8217,7 +8217,7 @@
       "price": 1249,
       "marketCap": 16902058409984,
       "pe": 22.630913,
-      "debtToEquity": 36.653,
+      "debtToEquity": 0.36653,
       "profitMargin": 0.066149995,
       "weeklyCloses": [
         {
@@ -8673,7 +8673,7 @@
       "price": 1012.5,
       "marketCap": 2382457995264,
       "pe": 17.86975,
-      "debtToEquity": 276.215,
+      "debtToEquity": 2.76215,
       "profitMargin": 0.50009996,
       "weeklyCloses": [
         {
@@ -9129,7 +9129,7 @@
       "price": 1864,
       "marketCap": 4472360140800,
       "pe": 37.02821,
-      "debtToEquity": 5.517,
+      "debtToEquity": 0.05517,
       "profitMargin": 0.20188999,
       "weeklyCloses": [
         {
@@ -9357,7 +9357,7 @@
       "price": 2121.4,
       "marketCap": 7675410120704,
       "pe": 15.409311,
-      "debtToEquity": 10.211,
+      "debtToEquity": 0.10211,
       "profitMargin": 0.18052,
       "weeklyCloses": [
         {
@@ -9585,7 +9585,7 @@
       "price": 1001.4,
       "marketCap": 991075565568,
       "pe": 60.58076,
-      "debtToEquity": 12.159,
+      "debtToEquity": 0.12159,
       "profitMargin": 0.078379996,
       "weeklyCloses": [
         {
@@ -9813,7 +9813,7 @@
       "price": 301.3,
       "marketCap": 1109685436416,
       "pe": null,
-      "debtToEquity": 70.364,
+      "debtToEquity": 0.70364,
       "profitMargin": 0.22814,
       "weeklyCloses": [
         {
@@ -10041,7 +10041,7 @@
       "price": 183.55,
       "marketCap": 2289660592128,
       "pe": 20.78709,
-      "debtToEquity": 89.017,
+      "debtToEquity": 0.89017,
       "profitMargin": 0.04602,
       "weeklyCloses": [
         {
@@ -10269,7 +10269,7 @@
       "price": 1541.1,
       "marketCap": 1365296676864,
       "pe": 26.667242,
-      "debtToEquity": 7.269,
+      "debtToEquity": 0.07269,
       "profitMargin": 0.086780004,
       "weeklyCloses": [
         {
@@ -10497,7 +10497,7 @@
       "price": 4950,
       "marketCap": 4392195981312,
       "pe": 76.412476,
-      "debtToEquity": 195.001,
+      "debtToEquity": 1.95001,
       "profitMargin": 0.062319998,
       "weeklyCloses": [
         {
@@ -10725,7 +10725,7 @@
       "price": 2805.9,
       "marketCap": 1496196448256,
       "pe": 82.794334,
-      "debtToEquity": 36.034,
+      "debtToEquity": 0.36034,
       "profitMargin": 0.08637,
       "weeklyCloses": [
         {
@@ -10953,7 +10953,7 @@
       "price": 11062,
       "marketCap": 3254104358912,
       "pe": 38.188282,
-      "debtToEquity": 29.432,
+      "debtToEquity": 0.29432,
       "profitMargin": 0.092930004,
       "weeklyCloses": [
         {
@@ -11181,7 +11181,7 @@
       "price": 164.16,
       "marketCap": 1624090738688,
       "pe": 13.028571,
-      "debtToEquity": 27.398,
+      "debtToEquity": 0.27398,
       "profitMargin": 0.13919,
       "weeklyCloses": [
         {
@@ -11409,7 +11409,7 @@
       "price": 7340,
       "marketCap": 1555407437824,
       "pe": 98.010414,
-      "debtToEquity": 1.547,
+      "debtToEquity": 0.01547,
       "profitMargin": 0.21349001,
       "weeklyCloses": [
         {
@@ -11637,7 +11637,7 @@
       "price": 1398.7,
       "marketCap": 1710546354176,
       "pe": 57.630817,
-      "debtToEquity": 194.5,
+      "debtToEquity": 1.945,
       "profitMargin": 0.095769994,
       "weeklyCloses": [
         {
@@ -11865,7 +11865,7 @@
       "price": 1306.1,
       "marketCap": 2151376748544,
       "pe": 125.4659,
-      "debtToEquity": 346.548,
+      "debtToEquity": 3.46548,
       "profitMargin": 0.13095,
       "weeklyCloses": [
         {
@@ -12093,7 +12093,7 @@
       "price": 208.33,
       "marketCap": 4017580670976,
       "pe": 28.152702,
-      "debtToEquity": 82.332,
+      "debtToEquity": 0.82332,
       "profitMargin": 0.24148001,
       "weeklyCloses": [
         {
@@ -12321,7 +12321,7 @@
       "price": 390.65,
       "marketCap": 970693804032,
       "pe": 21.921997,
-      "debtToEquity": 1.205,
+      "debtToEquity": 0.01205,
       "profitMargin": 0.11128,
       "weeklyCloses": [
         {
@@ -12549,7 +12549,7 @@
       "price": 11354,
       "marketCap": 1263626485760,
       "pe": 14.274938,
-      "debtToEquity": 0.012,
+      "debtToEquity": 0.00012,
       "profitMargin": 7.34641,
       "weeklyCloses": [
         {
@@ -13005,7 +13005,7 @@
       "price": 315.85,
       "marketCap": 1349495947264,
       "pe": 7.8765593,
-      "debtToEquity": 54.332,
+      "debtToEquity": 0.54332,
       "profitMargin": 0.034679998,
       "weeklyCloses": [
         {
@@ -13233,7 +13233,7 @@
       "price": 4981,
       "marketCap": 1199764930560,
       "pe": 46.13746,
-      "debtToEquity": 26.875,
+      "debtToEquity": 0.26875,
       "profitMargin": 0.13376,
       "weeklyCloses": [
         {
@@ -13461,7 +13461,7 @@
       "price": 47815,
       "marketCap": 1410356084736,
       "pe": 59.843555,
-      "debtToEquity": 0.8,
+      "debtToEquity": 0.008,
       "profitMargin": 0.11328,
       "weeklyCloses": [
         {
@@ -13917,7 +13917,7 @@
       "price": 912.7,
       "marketCap": 1437929963520,
       "pe": 114.94962,
-      "debtToEquity": 1.446,
+      "debtToEquity": 0.01446,
       "profitMargin": 0.0975,
       "weeklyCloses": [
         {
@@ -14145,7 +14145,7 @@
       "price": 1768,
       "marketCap": 1509988630528,
       "pe": 26.12293,
-      "debtToEquity": 695.283,
+      "debtToEquity": 6.95283,
       "profitMargin": 0.40549,
       "weeklyCloses": [
         {
@@ -14373,7 +14373,7 @@
       "price": 5090,
       "marketCap": 1410948005888,
       "pe": 59.769844,
-      "debtToEquity": 0.431,
+      "debtToEquity": 0.00431,
       "profitMargin": 0.18694,
       "weeklyCloses": [
         {
@@ -14601,7 +14601,7 @@
       "price": 9398,
       "marketCap": 2494873731072,
       "pe": 84.94984,
-      "debtToEquity": 0.042,
+      "debtToEquity": 0.00042,
       "profitMargin": 0.26046,
       "weeklyCloses": [
         {
@@ -14829,7 +14829,7 @@
       "price": 661.8,
       "marketCap": 1638161186816,
       "pe": 36.807564,
-      "debtToEquity": 0.673,
+      "debtToEquity": 0.00673,
       "profitMargin": 0.65791,
       "weeklyCloses": [
         {
@@ -15057,7 +15057,7 @@
       "price": 3800.9,
       "marketCap": 2479121498112,
       "pe": 81.09451,
-      "debtToEquity": 9.913,
+      "debtToEquity": 0.09913,
       "profitMargin": 0.042919997,
       "weeklyCloses": [
         {
@@ -15285,7 +15285,7 @@
       "price": 172.54,
       "marketCap": 1134464204800,
       "pe": 11.4873495,
-      "debtToEquity": 27.809,
+      "debtToEquity": 0.27809,
       "profitMargin": 0.06698,
       "weeklyCloses": [
         {
@@ -15513,7 +15513,7 @@
       "price": 868.2,
       "marketCap": 888433410048,
       "pe": 46.32871,
-      "debtToEquity": 34.899,
+      "debtToEquity": 0.34899,
       "profitMargin": 0.12086,
       "weeklyCloses": [
         {
@@ -15741,7 +15741,7 @@
       "price": 2442.2,
       "marketCap": 1047883087872,
       "pe": 35.585022,
-      "debtToEquity": 2.364,
+      "debtToEquity": 0.02364,
       "profitMargin": 0.61625,
       "weeklyCloses": [
         {
@@ -15969,7 +15969,7 @@
       "price": 4822.4,
       "marketCap": 3225100484608,
       "pe": 34.641186,
-      "debtToEquity": 0.16,
+      "debtToEquity": 0.0016,
       "profitMargin": 0.27591,
       "weeklyCloses": [
         {
@@ -16197,7 +16197,7 @@
       "price": 598.25,
       "marketCap": 2527796920320,
       "pe": 14.804503,
-      "debtToEquity": 39.034,
+      "debtToEquity": 0.39034,
       "profitMargin": 0.38068,
       "weeklyCloses": [
         {
@@ -16425,7 +16425,7 @@
       "price": 2134.1,
       "marketCap": 1734044024832,
       "pe": 35.008205,
-      "debtToEquity": 5.484,
+      "debtToEquity": 0.05484,
       "profitMargin": 0.07004,
       "weeklyCloses": [
         {
@@ -16653,7 +16653,7 @@
       "price": 745.05,
       "marketCap": 1077793587200,
       "pe": 49.373756,
-      "debtToEquity": 18.987,
+      "debtToEquity": 0.18987,
       "profitMargin": 0.20868999,
       "weeklyCloses": [
         {
@@ -16881,7 +16881,7 @@
       "price": 138.17,
       "marketCap": 1951131500544,
       "pe": 5.6534367,
-      "debtToEquity": 58.446,
+      "debtToEquity": 0.58446,
       "profitMargin": 0.0392,
       "weeklyCloses": [
         {
@@ -17109,7 +17109,7 @@
       "price": 80.31,
       "marketCap": 1049531711488,
       "pe": 14.628415,
-      "debtToEquity": 773.347,
+      "debtToEquity": 7.73347,
       "profitMargin": 0.97271,
       "weeklyCloses": [
         {
@@ -17337,7 +17337,7 @@
       "price": 1140,
       "marketCap": 1159936475136,
       "pe": 42.792793,
-      "debtToEquity": 43.613,
+      "debtToEquity": 0.43613,
       "profitMargin": 0.04818,
       "weeklyCloses": [
         {
@@ -17565,7 +17565,7 @@
       "price": 1143.4,
       "marketCap": 1142511894528,
       "pe": 27.745693,
-      "debtToEquity": 42.238,
+      "debtToEquity": 0.42238,
       "profitMargin": 0.22692,
       "weeklyCloses": [
         {
@@ -17793,7 +17793,7 @@
       "price": 4147.2,
       "marketCap": 1229484064768,
       "pe": 23.546246,
-      "debtToEquity": 9.874,
+      "debtToEquity": 0.09874,
       "profitMargin": 0.118669994,
       "weeklyCloses": [
         {
@@ -18021,7 +18021,7 @@
       "price": 2225,
       "marketCap": 897520500736,
       "pe": 33.53429,
-      "debtToEquity": 4.481,
+      "debtToEquity": 0.04481,
       "profitMargin": 0.20120001,
       "weeklyCloses": [
         {
@@ -18249,7 +18249,7 @@
       "price": 2862.2,
       "marketCap": 1149083058176,
       "pe": 10.104497,
-      "debtToEquity": 393.56,
+      "debtToEquity": 3.9356,
       "profitMargin": 0.55502,
       "weeklyCloses": [
         {
@@ -18477,7 +18477,7 @@
       "price": 1580.7,
       "marketCap": 1610006396928,
       "pe": 60.936775,
-      "debtToEquity": 3.776,
+      "debtToEquity": 0.03776,
       "profitMargin": 0.17202,
       "weeklyCloses": [
         {
@@ -18705,7 +18705,7 @@
       "price": 344.05,
       "marketCap": 1135399927808,
       "pe": 4.359478,
-      "debtToEquity": 536.837,
+      "debtToEquity": 5.36837,
       "profitMargin": 0.54484004,
       "weeklyCloses": [
         {
@@ -19161,7 +19161,7 @@
       "price": 308.95,
       "marketCap": 813534543872,
       "pe": 5.083087,
-      "debtToEquity": 607.463,
+      "debtToEquity": 6.07463,
       "profitMargin": 0.6889,
       "weeklyCloses": [
         {
@@ -19389,7 +19389,7 @@
       "price": 162.4,
       "marketCap": 1710271758336,
       "pe": 39.03846,
-      "debtToEquity": 43.908,
+      "debtToEquity": 0.43908,
       "profitMargin": 0.033570003,
       "weeklyCloses": [
         {
@@ -19617,7 +19617,7 @@
       "price": 22435,
       "marketCap": 809471574016,
       "pe": 49.634956,
-      "debtToEquity": 8.013,
+      "debtToEquity": 0.08013,
       "profitMargin": 0.07445,
       "weeklyCloses": [
         {
@@ -19845,7 +19845,7 @@
       "price": 3917.9,
       "marketCap": 1395244531712,
       "pe": 82.72593,
-      "debtToEquity": 2.213,
+      "debtToEquity": 0.02213,
       "profitMargin": 0.19017,
       "weeklyCloses": [
         {
@@ -20073,7 +20073,7 @@
       "price": 3301.9,
       "marketCap": 1175874306048,
       "pe": 79.29635,
-      "debtToEquity": 4.483,
+      "debtToEquity": 0.04483,
       "profitMargin": 0.15769,
       "weeklyCloses": [
         {
@@ -20301,7 +20301,7 @@
       "price": 19665,
       "marketCap": 1779486949376,
       "pe": 89.0625,
-      "debtToEquity": 23.271,
+      "debtToEquity": 0.23271,
       "profitMargin": 0.17543,
       "weeklyCloses": [
         {
@@ -20529,7 +20529,7 @@
       "price": 342.95,
       "marketCap": 1446114885632,
       "pe": 26.751171,
-      "debtToEquity": 502.931,
+      "debtToEquity": 5.02931,
       "profitMargin": 0.39678,
       "weeklyCloses": [
         {
@@ -20745,7 +20745,7 @@
       "price": 447.5,
       "marketCap": 1648048209920,
       "pe": 39.323376,
-      "debtToEquity": 44.095,
+      "debtToEquity": 0.44095,
       "profitMargin": 0.04809,
       "weeklyCloses": [
         {
@@ -20945,7 +20945,7 @@
       "price": 366.6,
       "marketCap": 1171411435520,
       "pe": 30.372826,
-      "debtToEquity": 168.051,
+      "debtToEquity": 1.68051,
       "profitMargin": 0.060890004,
       "weeklyCloses": [
         {
@@ -21173,7 +21173,7 @@
       "price": 4940.5,
       "marketCap": 1879207444480,
       "pe": 79.12396,
-      "debtToEquity": 85.446,
+      "debtToEquity": 0.85446,
       "profitMargin": 0.13874,
       "weeklyCloses": [
         {
@@ -21401,7 +21401,7 @@
       "price": 4178.9,
       "marketCap": 1985922859008,
       "pe": 57.911583,
-      "debtToEquity": 306.09,
+      "debtToEquity": 3.0609,
       "profitMargin": 0.05691,
       "weeklyCloses": [
         {
@@ -21857,7 +21857,7 @@
       "price": 1398.8,
       "marketCap": 993225539584,
       "pe": 58.625317,
-      "debtToEquity": 4.611,
+      "debtToEquity": 0.04611,
       "profitMargin": 0.14917,
       "weeklyCloses": [
         {
@@ -22085,7 +22085,7 @@
       "price": 427.25,
       "marketCap": 1445170905088,
       "pe": 42.725,
-      "debtToEquity": 15.869,
+      "debtToEquity": 0.15869,
       "profitMargin": 0.14035,
       "weeklyCloses": [
         {
@@ -22313,7 +22313,7 @@
       "price": 262.2,
       "marketCap": 1023839109120,
       "pe": 11.515152,
-      "debtToEquity": 48.044,
+      "debtToEquity": 0.48044,
       "profitMargin": 0.23205,
       "weeklyCloses": [
         {
@@ -22541,7 +22541,7 @@
       "price": 1170,
       "marketCap": 1167079505920,
       "pe": 26.063711,
-      "debtToEquity": 42.304,
+      "debtToEquity": 0.42304,
       "profitMargin": 0.15784,
       "weeklyCloses": [
         {

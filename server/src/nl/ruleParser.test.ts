@@ -22,11 +22,13 @@ describe("parseQuery — vocabulary terms", () => {
   it('parses "low debt"', () => {
     const result = parseQuery("low debt stocks");
     expect(result.filters).toEqual([{ field: "debtToEquity", op: "lt", value: 0.5 }]);
+    expect(result.notes).toEqual(["low debt = debt/equity ratio below 0.5 (debt under half of equity)"]);
   });
 
   it('parses "high debt"', () => {
     const result = parseQuery("high debt stocks");
     expect(result.filters).toEqual([{ field: "debtToEquity", op: "gt", value: 1 }]);
+    expect(result.notes).toEqual(["high debt = debt/equity ratio above 1 (debt greater than equity)"]);
   });
 
   it('parses "small cap"', () => {

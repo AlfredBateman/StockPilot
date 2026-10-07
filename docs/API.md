@@ -32,7 +32,7 @@ Looks up one stock by ticker (case-insensitive, whitespace-trimmed).
     "price": 2993.5,
     "marketCap": 4259670917120,
     "pe": 51.9,
-    "debtToEquity": 119.56,
+    "debtToEquity": 1.1956,
     "profitMargin": 0.0655,
     "weeklyCloses": [{ "date": "2025-09-22", "close": 2543.7 }, "... ~52 weekly bars, oldest first"]
   }
@@ -79,7 +79,7 @@ The one endpoint that answers "which stocks match this?" — filters, then searc
 | `sector` | text | `eq`, `in` |
 | `marketCapBucket` (`"Large"` \| `"Mid"` \| `"Small"`) | text | `eq`, `in` |
 | `pe` | number | `eq`, `in`, `lt`, `gt`, `between` |
-| `debtToEquity` | number | `eq`, `in`, `lt`, `gt`, `between` |
+| `debtToEquity` | number (ratio — `1` = debt equals equity; `null` for banks/financials) | `eq`, `in`, `lt`, `gt`, `between` |
 | `profitMargin` | number (fraction — 0.1 = 10%) | `eq`, `in`, `lt`, `gt`, `between` |
 | `change1m` | number (percent — 5 = +5%) | `eq`, `in`, `lt`, `gt`, `between` |
 

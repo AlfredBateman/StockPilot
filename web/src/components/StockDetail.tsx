@@ -97,11 +97,12 @@ export function StockDetail({ ticker, onClose }: StockDetailProps) {
   const { stock } = state;
   const change = change1mPercent(stock.weeklyCloses);
   const closes = stock.weeklyCloses;
-  const tiles: { label: string; value: string; tone?: string }[] = [
+  const tiles: { label: string; value: string; tone?: string; title?: string }[] = [
     // Price is the hero above, so it isn't repeated here.
     ...STOCK_METRICS.filter((metric) => metric.label !== "Price").map((metric) => ({
       label: metric.label,
       value: metric.value(stock),
+      title: metric.title?.(stock),
     })),
     { label: "1M Change", value: formatSignedPercent(change), tone: changeTone(change) },
     { label: "Sector", value: stock.sector ?? "n/a" },
@@ -215,7 +216,7 @@ export function StockDetail({ ticker, onClose }: StockDetailProps) {
                 className={`truncate text-h3 tabular-nums ${
                   tile.value === "n/a" ? "font-normal text-stone-500" : (tile.tone ?? "text-stone-900")
                 }`}
-                title={tile.value}
+                title={tile.title ?? tile.value}
               >
                 {tile.value}
               </dd>

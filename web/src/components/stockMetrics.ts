@@ -1,12 +1,19 @@
 import type { Stock, WeeklyClose } from "../api/client";
-import { formatMarketCapCrore, formatPercent, formatPrice, formatRatio } from "./format";
+import {
+  debtToEquityNote,
+  formatDebtToEquity,
+  formatMarketCapCrore,
+  formatPercent,
+  formatPrice,
+  formatRatio,
+} from "./format";
 
 /** The headline metrics shown for one stock, shared by StockDetail and CompareView. */
-export const STOCK_METRICS: { label: string; value: (s: Stock) => string }[] = [
+export const STOCK_METRICS: { label: string; value: (s: Stock) => string; title?: (s: Stock) => string | undefined }[] = [
   { label: "Price", value: (s) => formatPrice(s.price) },
   { label: "Market Cap", value: (s) => formatMarketCapCrore(s.marketCap) },
   { label: "P/E", value: (s) => formatRatio(s.pe) },
-  { label: "Debt/Equity", value: (s) => formatRatio(s.debtToEquity) },
+  { label: "Debt/Equity", value: (s) => formatDebtToEquity(s.debtToEquity), title: debtToEquityNote },
   { label: "Profit Margin", value: (s) => formatPercent(s.profitMargin) },
 ];
 

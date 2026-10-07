@@ -214,6 +214,7 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
                         return (
                           <td
                             key={stock.ticker}
+                            title={metric.title?.(stock)}
                             className={`whitespace-nowrap px-3 py-3 text-right tabular-nums ${
                               value === "n/a" ? "text-stone-500" : "font-semibold text-stone-900"
                             }`}
@@ -255,6 +256,7 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
                         <div key={metric.label} className="flex flex-col gap-0.5">
                           <dt className="text-label text-stone-500">{metric.label}</dt>
                           <dd
+                            title={metric.title?.(stock)}
                             className={`text-body tabular-nums ${value === "n/a" ? "text-stone-500" : "font-semibold text-stone-900"}`}
                           >
                             {value}

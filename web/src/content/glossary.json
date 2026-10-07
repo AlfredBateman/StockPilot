@@ -13,8 +13,8 @@
   },
   "debtToEquity": {
     "term": "Debt/Equity",
-    "definition": "Debt-to-Equity ratio: a company's total debt divided by its shareholders' equity.",
-    "whatItMeans": "Shows how much a company relies on borrowed money versus its own capital. A lower ratio usually means less financial risk.",
+    "definition": "Debt-to-Equity ratio: a company's total debt divided by its shareholders' equity. Shown as a multiple, so 1.2× means debt is 1.2 times equity.",
+    "whatItMeans": "Shows how much a company relies on borrowed money versus its own capital. A lower ratio usually means less financial risk. Banks and other financials show n/a because debt works differently for them, so the ratio isn't comparable.",
     "source": "TODO"
   },
   "profitMargin": {

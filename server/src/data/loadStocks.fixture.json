@@ -9,7 +9,7 @@
       "price": 1246.9,
       "marketCap": 16869579816960,
       "pe": 22.59,
-      "debtToEquity": 36.65,
+      "debtToEquity": 0.3665,
       "profitMargin": 0.0661,
       "weeklyCloses": [
         { "date": "2025-09-22", "close": 1377.6 },
@@ -23,7 +23,7 @@
       "price": 2123.3,
       "marketCap": 7683000000000,
       "pe": 21.4,
-      "debtToEquity": 8.2,
+      "debtToEquity": 0.082,
       "profitMargin": 0.19,
       "weeklyCloses": [
         { "date": "2025-09-22", "close": 2200.1 },

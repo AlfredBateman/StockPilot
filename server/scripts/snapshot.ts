@@ -10,6 +10,7 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import YahooFinance from "yahoo-finance2";
+import { debtToEquityRatio } from "../src/data/debtToEquity.js";
 import { TICKERS } from "../src/data/tickers.js";
 import { SnapshotSchema, type Stock, type WeeklyClose } from "../src/data/stockSchema.js";
 
@@ -51,7 +52,8 @@ async function fetchOneStock(symbol: string): Promise<Stock> {
     price: summary.price?.regularMarketPrice ?? null,
     marketCap: summary.price?.marketCap ?? summary.summaryDetail?.marketCap ?? null,
     pe: summary.summaryDetail?.trailingPE ?? null,
-    debtToEquity: summary.financialData?.debtToEquity ?? null,
+    // Yahoo reports D/E as a percentage; the rest of the app uses a true ratio.
+    debtToEquity: debtToEquityRatio(summary.financialData?.debtToEquity),
     profitMargin: summary.financialData?.profitMargins ?? null,
     weeklyCloses,
   };
