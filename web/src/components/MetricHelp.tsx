@@ -123,7 +123,11 @@ export function MetricHelp({ metric }: MetricHelpProps) {
       <button
         ref={triggerRef}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={(e) => {
+          // The "?" sits beside a sortable header's own button; it must never reach a clickable parent.
+          e.stopPropagation();
+          setOpen((o) => !o);
+        }}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={open ? popoverId : undefined}
@@ -145,7 +149,9 @@ export function MetricHelp({ metric }: MetricHelpProps) {
             onKeyDown={handlePopoverKeyDown}
             // A portal still bubbles React events to the parent, so a click in here must not reach a clickable row.
             onClick={(e) => e.stopPropagation()}
-            className="fixed z-50 flex outline-none max-h-[calc(100dvh-2rem)] flex-col overflow-hidden rounded-xl border border-stone-200 bg-elevated text-left text-body font-normal normal-case tracking-normal text-stone-700 shadow-e2"
+            // The text styles are set outright (not left to inherit) so nothing from a table header, such as
+            // nowrap, uppercase or letter-spacing, can ever change how the popover reads.
+            className="fixed z-50 flex outline-none max-h-[calc(100dvh-2rem)] max-w-[calc(100vw-2rem)] flex-col overflow-hidden whitespace-normal break-words rounded-xl border border-stone-200 bg-elevated text-left text-body font-normal normal-case tracking-normal text-stone-700 shadow-e2"
           >
             <div className="flex shrink-0 items-start justify-between gap-3 px-4 pt-4 pb-3">
               <h3 id={titleId} className="text-h3 text-stone-900">
