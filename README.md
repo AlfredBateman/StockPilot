@@ -69,9 +69,10 @@ cp .env.example server/.env
 | Variable | Purpose | If blank |
 | --- | --- | --- |
 | `DEMO_MODE` | `true` skips the LLM/Ollama tiers entirely and makes zero network calls — only the cache and the offline rule parser answer queries. | Defaults to off (network tiers are attempted). |
-| `LLM_PROVIDER` | `gemini` or `groq`. | Cloud LLM tier is skipped. |
+| `LLM_PROVIDER` | `nvidia`, `gemini` or `groq`. | Cloud LLM tier is skipped. |
 | `LLM_API_KEY` | API key for that provider. | Cloud LLM tier is skipped. |
 | `LLM_MODEL` | Model name, read as-is and never guessed. | Cloud LLM tier is skipped. |
+| `LLM_DAILY_CAP` | Most cloud LLM calls per UTC day, across all users. | Defaults to `300`. |
 | `OLLAMA_MODEL` | Local Ollama model name (`http://localhost:11434`). | Ollama tier is skipped without a request. |
 | `PORT` | Port the Express server listens on. | Defaults to `3001`. |
 
@@ -119,7 +120,7 @@ graph LR
     end
     Snapshot[("data/stocks.json<br/>loaded once, cached in memory")]
     Cache[("data/nlCache.json<br/>successful model answers")]
-    LLM(["Gemini / Groq API"])
+    LLM(["NVIDIA / Gemini / Groq API"])
     Ollama(["Local Ollama<br/>(localhost:11434)"])
 
     UI -- "fetch (web/src/api/client.ts is\nthe only file that calls fetch)" --> Proxy
@@ -134,27 +135,44 @@ graph LR
 
 ## AI tier flow
 
-`POST /api/parse` never fails and never depends on a network call to answer — the rule parser is always the floor. `server/src/nl/parseOrchestrator.ts`'s exact order:
+`POST /api/parse` never fails and never depends on a network call to answer: the rule parser is always the floor. `server/src/nl/parseOrchestrator.ts`'s exact order:
 
 ```mermaid
 flowchart TD
-    Start(["Query text"]) --> Rules0["Always run the offline\nrule parser first\n(its notes/unmatched are shown\nregardless of which tier answers)"]
-    Rules0 --> Demo{"DEMO_MODE=true?"}
-    Demo -- yes --> Cache1{"Cached answer\nfor this exact query?"}
-    Demo -- no --> LLMTry{"LLM_PROVIDER/KEY/MODEL\nall set?"}
-    LLMTry -- yes --> LLMCall["Call Gemini/Groq\n(5s timeout)"]
-    LLMCall -- "valid FilterSpec" --> Remember1["Save to data/nlCache.json\ntier = llm"]
-    LLMCall -- "timeout / error / invalid JSON\n/ fails FilterSpec schema" --> OllamaTry{"OLLAMA_MODEL set?"}
-    LLMTry -- no --> OllamaTry
-    OllamaTry -- yes --> OllamaCall["Call local Ollama\n(3s timeout)"]
-    OllamaCall -- "valid FilterSpec" --> Remember2["Save to data/nlCache.json\ntier = ollama"]
-    OllamaCall -- "fails / not running" --> Cache1
-    OllamaTry -- no --> Cache1
+    Start(["Query text"]) --> Cut["Keep the first 200 characters"]
+    Cut --> Typo["Fix typos offline
+(typoFix.ts, edit distance 1-2)"]
+    Typo --> Rules0["Run the offline rule parser
+(always)"]
+    Rules0 --> Done{"Filters found and
+every word understood?"}
+    Done -- yes --> UseRules0["tier = rules"]
+    Done -- no --> Cache1{"Cached answer
+for this exact query?"}
     Cache1 -- yes --> UseCache["tier = cache"]
-    Cache1 -- no --> UseRules["tier = rules\n(vocabulary.ts terms +\nnumeric-phrase regex)"]
+    Cache1 -- no --> Demo{"DEMO_MODE=true?"}
+    Demo -- yes --> Resting["tier = rules
++ 'AI helper is resting' notice"]
+    Demo -- no --> Guard{"LLM configured, and under
+10/min per IP and the daily cap?"}
+    Guard -- yes --> LLMCall["Call NVIDIA (8s) or
+Gemini/Groq (5s)"]
+    LLMCall -- "valid reply" --> Remember1["Save to data/nlCache.json
+tier = llm"]
+    LLMCall -- "timeout / error / invalid JSON
+/ fails a schema" --> OllamaTry{"OLLAMA_MODEL set?"}
+    Guard -- no --> OllamaTry
+    OllamaTry -- yes --> OllamaCall["Call local Ollama
+(3s timeout)"]
+    OllamaCall -- "valid reply" --> Remember2["Save to data/nlCache.json
+tier = ollama"]
+    OllamaCall -- "fails / not running" --> Resting
+    OllamaTry -- no --> Resting
 ```
 
-The LLM only ever sees the user's own text, the allowed field/operator names, and the vocabulary's plain-language definitions (`server/src/nl/llmPrompt.ts`) — **never any stock data.** Its output is parsed as JSON and run through the same zod `FilterSpecSchema` every other filter source uses; anything that doesn't validate is discarded and treated as "this tier didn't answer," never trusted as-is.
+A model reply is `{intent, filters, answer}`. `intent` is `filter`, `question`, `advice` or `offtopic`. A `filter` reply's filters go through the same zod `FilterSpecSchema` every other filter source uses, and anything that doesn't validate is discarded and treated as "this tier didn't answer", never trusted as-is. The other intents carry a plain-text answer of at most 3 sentences; advice never recommends buying or selling and always ends with a fixed "educational, not financial advice" line. The LLM only ever sees the user's own text, the allowed field/operator names, and the vocabulary's plain-language definitions (`server/src/nl/llmPrompt.ts`), **never any stock data or keys.**
+
+When the filters match zero stocks, the route (not the LLM) re-runs the screen with each filter dropped in turn and returns the best two as clickable suggestions ("Dropping 'low debt' gives 14 stocks"), plus at most one "did you mean" for a near-miss sector or term (`server/src/nl/zeroResultHelp.ts`).
 
 ## Eval summary
 

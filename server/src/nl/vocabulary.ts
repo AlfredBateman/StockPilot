@@ -78,7 +78,7 @@ const VAGUE_TERMS: VocabTerm[] = [
 // snapshot is ever re-generated with different sector labels — the same
 // tradeoff server/src/engine/metrics.ts already makes for its market-cap
 // crore thresholds.
-const SECTORS = [
+export const SECTORS = [
   "Basic Materials",
   "Communication Services",
   "Consumer Cyclical",
@@ -93,7 +93,7 @@ const SECTORS = [
 ] as const;
 
 /** Common alternate phrasings for a sector, beyond its own exact name. */
-const SECTOR_SYNONYMS: Record<string, (typeof SECTORS)[number]> = {
+export const SECTOR_SYNONYMS: Record<string, (typeof SECTORS)[number]> = {
   tech: "Technology",
   bank: "Financial Services",
   banking: "Financial Services",
@@ -124,6 +124,47 @@ const SECTOR_TERMS: VocabTerm[] = [
 ];
 
 export const VOCABULARY: VocabTerm[] = [...VAGUE_TERMS, ...SECTOR_TERMS];
+
+/**
+ * Every single word the vague terms above are built from, spelled out by hand
+ * because the patterns are regexes. typoFix.ts corrects misspelled words
+ * towards this list (plus sector names), so a word only belongs here if one of
+ * the patterns above actually matches it.
+ */
+export const VAGUE_TERM_WORDS = [
+  "cheap",
+  "expensive",
+  "profitable",
+  "low",
+  "high",
+  "debt",
+  "small",
+  "mid",
+  "large",
+  "cap",
+  "caps",
+  "smallcap",
+  "smallcaps",
+  "midcap",
+  "midcaps",
+  "largecap",
+  "largecaps",
+  "rose",
+  "gain",
+  "gained",
+  "climb",
+  "climbed",
+  "fell",
+  "drop",
+  "dropped",
+  "decline",
+  "declined",
+  "down",
+  "month",
+] as const;
+
+/** The vague terms only (not sectors), for code that wants a short name for a filter. */
+export const VAGUE_VOCABULARY: readonly VocabTerm[] = VAGUE_TERMS;
 
 // Terms deliberately left out — nothing in data/stocks.json (or derived from
 // it) can define them, so guessing a threshold would be inventing data:

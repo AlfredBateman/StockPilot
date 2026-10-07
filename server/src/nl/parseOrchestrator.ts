@@ -1,57 +1,129 @@
 import type { FilterSpec } from "../engine/filterSpec.js";
-import { callLlm } from "./llmClient.js";
+import { filterNote } from "./filterLabel.js";
+import { callLlm, isLlmConfigured } from "./llmClient.js";
+import { llmGuard, type LlmGuard } from "./llmGuard.js";
+import type { LlmReply, ParseIntent } from "./llmPrompt.js";
 import { callOllama } from "./ollamaClient.js";
 import { readCacheEntry, writeCacheEntry } from "./nlCache.js";
-import { parseQuery, type ParseResult } from "./ruleParser.js";
+import { parseQuery, type ParseResult, type ParseTier } from "./ruleParser.js";
+import { fixTypos } from "./typoFix.js";
+
+/** Longer text is cut to this before anything reads it. Real screening requests are a line, not an essay. */
+export const MAX_QUERY_LENGTH = 200;
+
+export const AI_RESTING_NOTICE = "AI helper is resting, showing keyword matching only.";
+export const TRUNCATED_NOTICE = `Only the first ${MAX_QUERY_LENGTH} characters were read.`;
+
+/** A one-click way out of a zero-result search, computed by the server (see zeroResultHelp.ts). */
+export type Suggestion = { label: string; filters: FilterSpec };
+
+export type QueryResult = ParseResult & {
+  intent: ParseIntent;
+  /** Plain-text reply for question/advice/offtopic; null for a filter request. */
+  answer: string | null;
+  /** The query after typo fixes, shown as "Showing results for …"; null when nothing was fixed. */
+  correctedQuery: string | null;
+  /** A one-line status for the user (AI resting, query cut short), or null. */
+  notice: string | null;
+  /** Filled in by the /api/parse route when the filters match zero stocks. */
+  suggestions: Suggestion[];
+};
+
+export type ParseOptions = {
+  /** Who is asking, for the per-IP LLM rate limit. */
+  ip?: string;
+  /** Tests pass their own guard; the server shares one. */
+  guard?: LlmGuard;
+};
 
 /**
  * Decides which tier answers a query.
  *
- *   DEMO_MODE=true : cache -> rules, and nothing above is even attempted, so
- *                    the process makes zero network calls.
- *   otherwise      : LLM (5s) -> Ollama (3s) -> cache -> rules.
+ *   1. Cut to 200 characters, fix typos, run the rule parser (always).
+ *   2. Rules found filters and understood every word -> done, no network.
+ *   3. Cache (identical query seen before) -> done.
+ *   4. Not DEMO_MODE: cloud LLM (if configured and the guard allows it),
+ *      then Ollama (if configured).
+ *   5. Nothing better answered -> the rules result, with a notice saying the
+ *      AI helper is resting.
  *
  * The rule parser is the floor: it is offline, instant, and always returns
- * something, so this function can never fail to produce a ParseResult.
+ * something, so this function can never fail to produce a result.
  */
-export async function parseWithTiers(query: string): Promise<ParseResult> {
-  // The rule parse is cheap and pure, and its notes/unmatched are the only
-  // explanation we have to show the user, so it runs regardless of tier.
-  const rules = parseQuery(query);
+export async function parseWithTiers(rawQuery: string, options: ParseOptions = {}): Promise<QueryResult> {
+  const query = rawQuery.slice(0, MAX_QUERY_LENGTH);
+  const fixed = fixTypos(query);
+  const rules = parseQuery(fixed.text);
 
-  if (!query.trim()) return rules;
+  const base: QueryResult = {
+    ...rules,
+    intent: "filter",
+    answer: null,
+    correctedQuery: fixed.corrections.length > 0 ? fixed.text : null,
+    notice: rawQuery.length > MAX_QUERY_LENGTH ? TRUNCATED_NOTICE : null,
+    suggestions: [],
+  };
 
-  const demoMode = process.env.DEMO_MODE === "true";
-
-  if (!demoMode) {
-    const llmFilters = await callLlm(query);
-    if (llmFilters) return await remember(query, llmFilters, rules, "llm");
-
-    const ollamaFilters = await callOllama(query);
-    if (ollamaFilters) return await remember(query, ollamaFilters, rules, "ollama");
-  }
+  if (!query.trim()) return base;
+  if (rules.filters.length > 0 && rules.unmatched.length === 0) return base;
 
   const cached = await readCacheEntry(query);
   if (cached) {
-    return { filters: cached.filters, notes: cached.notes, unmatched: cached.unmatched, tier: "cache" };
+    return {
+      ...base,
+      filters: cached.filters,
+      notes: cached.notes,
+      unmatched: cached.unmatched,
+      intent: cached.intent ?? "filter",
+      answer: cached.answer ?? null,
+      tier: "cache",
+    };
   }
 
-  return rules;
+  if (process.env.DEMO_MODE !== "true") {
+    const answered = await askModels(fixed.text, options);
+    if (answered) {
+      const result = fromReply(base, answered.reply, answered.tier);
+      await writeCacheEntry(query, {
+        filters: result.filters,
+        notes: result.notes,
+        unmatched: result.unmatched,
+        intent: result.intent,
+        answer: result.answer,
+      });
+      return result;
+    }
+  }
+
+  return { ...base, notice: [base.notice, AI_RESTING_NOTICE].filter(Boolean).join(" ") };
+}
+
+/** Cloud first (rate-limited and capped), then the local model. Null if neither gave a valid reply. */
+async function askModels(
+  text: string,
+  { ip = "unknown", guard = llmGuard }: ParseOptions
+): Promise<{ reply: LlmReply; tier: ParseTier } | null> {
+  // Only take a slot from the guard when a call will actually be made.
+  if (isLlmConfigured() && guard.tryAcquire(ip)) {
+    const reply = await callLlm(text);
+    if (reply) return { reply, tier: "llm" };
+  }
+
+  const local = await callOllama(text);
+  return local ? { reply: local, tier: "ollama" } : null;
 }
 
 /**
- * Saves a model's answer for next time and returns it. Model tiers are slow
- * and non-deterministic, so both the cloud and local tiers are worth caching —
- * and a cached answer is what makes DEMO_MODE able to reply to a real query
- * with no network at all.
+ * Builds the result from a model's reply. A filter reply replaces the rules'
+ * filters (the model read the whole sentence) and gets its own notes so they
+ * describe the filters actually applied; an empty filter reply keeps the
+ * rules' result. Any other intent is an answer only and applies no filters,
+ * so asking a question never clears the user's current screen.
  */
-async function remember(
-  query: string,
-  filters: FilterSpec,
-  rules: ParseResult,
-  tier: "llm" | "ollama"
-): Promise<ParseResult> {
-  const entry = { filters, notes: rules.notes, unmatched: rules.unmatched };
-  await writeCacheEntry(query, entry);
-  return { ...entry, tier };
+function fromReply(base: QueryResult, reply: LlmReply, tier: ParseTier): QueryResult {
+  if (reply.intent !== "filter") {
+    return { ...base, filters: [], notes: [], unmatched: [], intent: reply.intent, answer: reply.answer, tier };
+  }
+  if (reply.filters.length === 0) return { ...base, tier };
+  return { ...base, filters: reply.filters, notes: reply.filters.map(filterNote), unmatched: [], tier };
 }

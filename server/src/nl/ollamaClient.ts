@@ -1,5 +1,4 @@
-import type { FilterSpec } from "../engine/filterSpec.js";
-import { buildParsePrompt, parseModelOutput } from "./llmPrompt.js";
+import { buildParsePrompt, parseModelOutput, type LlmReply } from "./llmPrompt.js";
 
 /** A local model should answer fast or not at all; 3s keeps the request snappy. */
 export const OLLAMA_TIMEOUT_MS = 3000;
@@ -15,7 +14,7 @@ const OLLAMA_URL = "http://localhost:11434/api/generate";
  * this reads OLLAMA_MODEL and skips the tier (without making any request) when
  * it isn't set. Like every other tier, it returns null instead of throwing.
  */
-export async function callOllama(query: string): Promise<FilterSpec | null> {
+export async function callOllama(query: string): Promise<LlmReply | null> {
   const model = process.env.OLLAMA_MODEL?.trim();
   if (!model) return null;
 

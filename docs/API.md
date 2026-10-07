@@ -121,11 +121,11 @@ Returns the distinct, alphabetically sorted list of sectors actually present in 
 
 ## `POST /api/parse`
 
-Turns free text into a `FilterSpec`. **Deliberately never validates the request body and always returns `200`** — the entire point of this endpoint is graceful degradation on arbitrary/gibberish text, never a `400` for "didn't understand you." A missing or non-string `query` is treated as `""`.
+Turns free text into a `FilterSpec`, or (through the LLM tier) into a short educational answer. **Deliberately never validates the request body and always returns `200`**: the entire point of this endpoint is graceful degradation on arbitrary/gibberish text, never a `400` for "didn't understand you." A missing or non-string `query` is treated as `""`, and only the first 200 characters are read.
 
 **Request body**
 ```json
-{ "query": "cheap profitable midcaps that fell this month" }
+{ "query": "chep profitable midcaps that fell this month" }
 ```
 
 **Response `200`** (always)
@@ -145,13 +145,23 @@ Turns free text into a `FilterSpec`. **Deliberately never validates the request 
       "fell this month = 1-month change below 0%"
     ],
     "unmatched": [],
-    "tier": "rules"
+    "tier": "rules",
+    "intent": "filter",
+    "answer": null,
+    "correctedQuery": "cheap profitable midcaps that fell this month",
+    "notice": null,
+    "suggestions": []
   }
 }
 ```
-- `filters` — same `FilterSpec` shape `/api/screen` accepts; can be fed straight into it.
-- `notes` — one plain-language line per matched term (always from the offline rule parser's own vocabulary, even when a different tier answered — see below).
-- `unmatched` — leftover words the rule parser didn't recognize, after stripping stopwords.
-- `tier` — which source actually produced `filters`: `"rules"` (offline dictionary), `"llm"` (cloud model), `"ollama"` (local model), or `"cache"` (a previously saved model answer for this exact query, re-served without a new network call).
+- `filters`: same `FilterSpec` shape `/api/screen` accepts; can be fed straight into it. Empty for a question, advice or off-topic reply.
+- `notes`: one plain-language line per filter (the rule parser's vocabulary note, or for an LLM answer a line generated from the filter itself, so notes always describe the filters actually returned).
+- `unmatched`: leftover words nothing understood, after stripping stopwords.
+- `tier`: which source produced the result: `"rules"` (offline dictionary), `"llm"` (cloud model), `"ollama"` (local model), or `"cache"` (a saved model answer for this exact query, re-served without a network call).
+- `intent`: `"filter"` (a screening request), `"question"` (e.g. "what is P/E"), `"advice"` (e.g. "should I buy X"), or `"offtopic"`. Only the LLM tier can return anything other than `"filter"`.
+- `answer`: plain text (at most 3 sentences, tags stripped) for the three non-filter intents, else `null`. Advice always ends with "This is educational, not financial advice."; off-topic always ends with a line pointing back to screening. Both lines are added by the server, not the model.
+- `correctedQuery`: the query after offline typo fixes ("Showing results for ..."), or `null` when nothing was fixed.
+- `notice`: a one-line status, e.g. "AI helper is resting, showing keyword matching only." when the LLM was needed but is rate-limited, capped, not configured, in DEMO_MODE, or failing. `null` otherwise.
+- `suggestions`: when the filters match zero stocks, up to two `{label, filters}` chips such as "Dropping 'low debt' gives 14 stocks", plus at most one "Did you mean 'Energy'? 7 stocks". Computed by the server on the real data, never by the LLM; each carries the full `FilterSpec` to apply.
 
-The rule parser always runs first regardless of tier (its `notes`/`unmatched` are the only explanation available), and its `filters` are what's returned whenever no higher tier answers. See the README's [AI tier flow](../README.md#ai-tier-flow) for the exact fallback order and timeouts.
+Typo fixing and the rule parser always run first. The LLM is only called when words are left over or no filter was found, at most 10 times a minute per IP and `LLM_DAILY_CAP` (default 300) times a day in total. See the README's [AI tier flow](../README.md#ai-tier-flow) for the exact order and timeouts.

@@ -12,7 +12,7 @@ export type ParseResult = {
   tier: ParseTier;
 };
 
-const STOPWORDS = new Set([
+export const STOPWORDS = new Set([
   "a",
   "an",
   "the",
@@ -47,14 +47,14 @@ type NumericFieldSpec = {
   percent?: boolean;
 };
 
-const NUMERIC_FIELDS: NumericFieldSpec[] = [
+export const NUMERIC_FIELDS: NumericFieldSpec[] = [
   { field: "pe", label: "P/E", aliases: ["p/e", "pe", "price to earnings"] },
   { field: "debtToEquity", label: "Debt/Equity", aliases: ["debt to equity", "debt/equity", "d/e"] },
   { field: "profitMargin", label: "profit margin", aliases: ["profit margin", "margin"], percent: true },
   { field: "change1m", label: "1-month change", aliases: ["1 month change", "1-month change", "monthly change"] },
 ];
 
-const COMPARATORS: { words: string[]; op: "lt" | "gt" }[] = [
+export const COMPARATORS: { words: string[]; op: "lt" | "gt" }[] = [
   { words: ["under", "below", "less than"], op: "lt" },
   { words: ["over", "above", "more than", "greater than"], op: "gt" },
 ];

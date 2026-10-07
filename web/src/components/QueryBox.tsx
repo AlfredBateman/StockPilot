@@ -1,8 +1,8 @@
 import { useId, useLayoutEffect, useRef, useState } from "react";
-import { parseQuery, type FilterSpec, type ParseResult, type ParseTier } from "../api/client";
+import { parseQuery, type FilterSpec, type ParseIntent, type ParseResult, type ParseTier } from "../api/client";
 import { glossaryKeyForNote } from "./glossary";
 import { GlossaryLink } from "./GlossaryLink";
-import { IconArrowRight, IconChat, IconCheck, IconWarning } from "./Icons";
+import { IconArrowRight, IconChat, IconCheck, IconInfo, IconWarning } from "./Icons";
 import { slideDown } from "./motion";
 
 type QueryBoxProps = {
@@ -24,6 +24,32 @@ function TierBadge({ tier }: { tier: ParseTier }) {
       Parsed by: {TIER_LABELS[tier]}
     </span>
   );
+}
+
+const INTENT_LABELS: Record<ParseIntent, string> = {
+  filter: "Search",
+  question: "Question",
+  advice: "Advice",
+  offtopic: "Off-topic",
+};
+
+const RESULT_TITLES: Record<Exclude<ParseIntent, "filter">, string> = {
+  question: "Answer",
+  advice: "Before You Decide",
+  offtopic: "Not a Stock Search",
+};
+
+function IntentBadge({ intent }: { intent: ParseIntent }) {
+  return (
+    <span className="inline-flex h-6 w-fit items-center rounded-full border border-accent-200 bg-elevated px-2.5 text-label text-accent-800">
+      {INTENT_LABELS[intent]}
+    </span>
+  );
+}
+
+function resultTitle(result: ParseResult): string {
+  if (result.intent !== "filter") return RESULT_TITLES[result.intent];
+  return result.filters.length === 0 ? "No Filters Found" : "Filters Applied";
 }
 
 // A free-text alternative to FilterPanel: "cheap profitable midcaps that fell
@@ -50,7 +76,8 @@ export function QueryBox({ onApply }: QueryBoxProps) {
     setState({ kind: "loading" });
     try {
       const result = await parseQuery(value);
-      onApply(result.filters);
+      // Only a search changes the screen; a question or off-topic reply leaves the current filters alone.
+      if (result.intent === "filter") onApply(result.filters);
       setState({ kind: "ready", result });
     } catch (err) {
       setState({ kind: "error", message: err instanceof Error ? err.message : "n/a" });
@@ -122,13 +149,31 @@ export function QueryBox({ onApply }: QueryBoxProps) {
           className="flex flex-col gap-3 rounded-xl border border-accent-200 bg-accent-100/60 p-4 text-body sm:p-5"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-h3 text-accent-800">
-              {state.result.filters.length === 0 ? "No Filters Found" : "Filters Applied"}
-            </p>
-            <TierBadge tier={state.result.tier} />
+            <p className="text-h3 text-accent-800">{resultTitle(state.result)}</p>
+            <span className="flex flex-wrap gap-2">
+              <IntentBadge intent={state.result.intent} />
+              <TierBadge tier={state.result.tier} />
+            </span>
           </div>
 
-          {state.result.filters.length === 0 ? (
+          {state.result.correctedQuery && (
+            <p className="text-stone-700">
+              Showing results for{" "}
+              <span className="font-semibold text-stone-900">&ldquo;{state.result.correctedQuery}&rdquo;</span>
+            </p>
+          )}
+
+          {state.result.notice && (
+            <p className="flex items-start gap-2 text-warning">
+              <IconInfo size={16} className="mt-0.5 shrink-0" />
+              {state.result.notice}
+            </p>
+          )}
+
+          {/* The answer is plain text from the server and is rendered as text, never as HTML. */}
+          {state.result.intent !== "filter" ? (
+            <p className="max-w-2xl text-stone-800">{state.result.answer ?? "n/a"}</p>
+          ) : state.result.filters.length === 0 ? (
             <p className="text-stone-700">
               None of those words are terms StockPilot knows yet. Try words like &ldquo;cheap&rdquo;,
               &ldquo;profitable&rdquo;, &ldquo;small cap&rdquo;, or a sector name.
@@ -150,6 +195,27 @@ export function QueryBox({ onApply }: QueryBoxProps) {
                 );
               })}
             </ul>
+          )}
+
+          {state.result.suggestions.length > 0 && (
+            <div className="flex flex-col gap-2 border-t border-accent-200 pt-3">
+              <p className="text-label text-stone-600">
+                {state.result.filters.length === 0 ? "Did you mean:" : "No stocks match all of these. Try instead:"}
+              </p>
+              <ul className="flex flex-wrap gap-2">
+                {state.result.suggestions.map((suggestion) => (
+                  <li key={suggestion.label}>
+                    <button
+                      type="button"
+                      onClick={() => onApply(suggestion.filters)}
+                      className="inline-flex h-9 touch-manipulation items-center rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-colors duration-150 hover:border-accent-500 hover:text-accent-800"
+                    >
+                      {suggestion.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           {state.result.unmatched.length > 0 && (

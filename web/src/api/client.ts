@@ -170,15 +170,29 @@ export async function getStock(ticker: string): Promise<Stock> {
   return body.data;
 }
 
-// --- Natural-language query (mirrors server/src/nl/ruleParser.ts) ---
+// --- Natural-language query (mirrors server/src/nl/parseOrchestrator.ts) ---
 
 export type ParseTier = "rules" | "llm" | "ollama" | "cache";
+
+/** filter = a screening request; the others come with a plain-text answer and no filters. */
+export type ParseIntent = "filter" | "question" | "advice" | "offtopic";
+
+/** A one-click fix for a search that matched no stocks, worked out by the server on the real data. */
+export type Suggestion = { label: string; filters: FilterSpec };
 
 export type ParseResult = {
   filters: FilterSpec;
   notes: string[];
   unmatched: string[];
   tier: ParseTier;
+  intent: ParseIntent;
+  /** Plain text, shown as text, never as HTML. Null for a filter request. */
+  answer: string | null;
+  /** The query after typo fixes ("Showing results for …"), or null when nothing was fixed. */
+  correctedQuery: string | null;
+  /** A one-line status such as "AI helper is resting…", or null. */
+  notice: string | null;
+  suggestions: Suggestion[];
 };
 
 /** POST /api/parse always answers 200 (see server/src/routes/parse.ts), so there's no error path to throw here. */

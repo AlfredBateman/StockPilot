@@ -26,6 +26,9 @@ export function createApp(options: AppOptions = {}) {
   // new dependency). No Content-Security-Policy on purpose: a wrong one would
   // silently break the charts' inline styles.
   app.disable("x-powered-by");
+  // Render puts one proxy in front of the app; trusting exactly that hop makes
+  // req.ip the visitor's address (for the LLM rate limit) instead of the proxy's.
+  app.set("trust proxy", 1);
   app.use((_req, res, next) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "DENY");

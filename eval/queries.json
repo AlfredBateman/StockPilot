@@ -340,5 +340,280 @@
     "category": "unanswerable",
     "expectedFilters": [],
     "status": "unreviewed"
+  },
+  {
+    "id": "t01",
+    "query": "chep stocks",
+    "category": "typo",
+    "expectedFilters": [{ "field": "pe", "op": "lt", "value": 20 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "t02",
+    "query": "profitible midcaps",
+    "category": "typo",
+    "expectedFilters": [
+      { "field": "profitMargin", "op": "gt", "value": 0 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Mid" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "t03",
+    "query": "tecnology stocks with low debt",
+    "category": "typo",
+    "expectedFilters": [
+      { "field": "debtToEquity", "op": "lt", "value": 0.5 },
+      { "field": "sector", "op": "eq", "value": "Technology" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "t04",
+    "query": "expnsive healthcare",
+    "category": "typo",
+    "expectedFilters": [
+      { "field": "pe", "op": "gt", "value": 40 },
+      { "field": "sector", "op": "eq", "value": "Healthcare" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "t05",
+    "query": "smal cap finacial stocks",
+    "category": "typo",
+    "expectedFilters": [
+      { "field": "marketCapBucket", "op": "eq", "value": "Small" },
+      { "field": "sector", "op": "eq", "value": "Financial Services" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "m01",
+    "query": "umm show me some cheap tech stuff pls",
+    "category": "messy",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 20 },
+      { "field": "sector", "op": "eq", "value": "Technology" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "m02",
+    "query": "LARGE CAPS!!! that are profitable???",
+    "category": "messy",
+    "expectedFilters": [
+      { "field": "profitMargin", "op": "gt", "value": 0 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Large" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "m03",
+    "query": "looking for banks, low debt ideally",
+    "category": "messy",
+    "expectedFilters": [
+      { "field": "debtToEquity", "op": "lt", "value": 0.5 },
+      { "field": "sector", "op": "eq", "value": "Financial Services" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "m04",
+    "query": "which energy companies went down this month",
+    "category": "messy",
+    "expectedFilters": [
+      { "field": "change1m", "op": "lt", "value": 0 },
+      { "field": "sector", "op": "eq", "value": "Energy" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "m05",
+    "query": "pharma cos w/ margins over 20%",
+    "category": "messy",
+    "expectedFilters": [
+      { "field": "profitMargin", "op": "gt", "value": 0.2 },
+      { "field": "sector", "op": "eq", "value": "Healthcare" }
+    ],
+    "status": "unreviewed"
+  },
+  {
+    "id": "q01",
+    "query": "what is P/E?",
+    "category": "question",
+    "expectedFilters": [],
+    "expectedIntent": "question",
+    "status": "unreviewed"
+  },
+  {
+    "id": "q02",
+    "query": "how do stocks work",
+    "category": "question",
+    "expectedFilters": [],
+    "expectedIntent": "question",
+    "status": "unreviewed"
+  },
+  {
+    "id": "q03",
+    "query": "what does debt to equity mean",
+    "category": "question",
+    "expectedFilters": [],
+    "expectedIntent": "question",
+    "status": "unreviewed"
+  },
+  {
+    "id": "q04",
+    "query": "why does market cap matter",
+    "category": "question",
+    "expectedFilters": [],
+    "expectedIntent": "question",
+    "status": "unreviewed"
+  },
+  {
+    "id": "q05",
+    "query": "what is a sector",
+    "category": "question",
+    "expectedFilters": [],
+    "expectedIntent": "question",
+    "status": "unreviewed"
+  },
+  {
+    "id": "a01",
+    "query": "should I buy Reliance?",
+    "category": "advice",
+    "expectedFilters": [],
+    "expectedIntent": "advice",
+    "status": "unreviewed"
+  },
+  {
+    "id": "a02",
+    "query": "is it a good time to sell my TCS shares",
+    "category": "advice",
+    "expectedFilters": [],
+    "expectedIntent": "advice",
+    "status": "unreviewed"
+  },
+  {
+    "id": "a03",
+    "query": "should I invest in small caps right now",
+    "category": "advice",
+    "expectedFilters": [],
+    "expectedIntent": "advice",
+    "status": "unreviewed"
+  },
+  {
+    "id": "a04",
+    "query": "which stock will double next year",
+    "category": "advice",
+    "expectedFilters": [],
+    "expectedIntent": "advice",
+    "status": "unreviewed"
+  },
+  {
+    "id": "a05",
+    "query": "is infosys a buy",
+    "category": "advice",
+    "expectedFilters": [],
+    "expectedIntent": "advice",
+    "status": "unreviewed"
+  },
+  {
+    "id": "o01",
+    "query": "what's the weather in Chandigarh",
+    "category": "offtopic",
+    "expectedFilters": [],
+    "expectedIntent": "offtopic",
+    "status": "unreviewed"
+  },
+  {
+    "id": "o02",
+    "query": "write me a poem about cats",
+    "category": "offtopic",
+    "expectedFilters": [],
+    "expectedIntent": "offtopic",
+    "status": "unreviewed"
+  },
+  {
+    "id": "o03",
+    "query": "who won the cricket match yesterday",
+    "category": "offtopic",
+    "expectedFilters": [],
+    "expectedIntent": "offtopic",
+    "status": "unreviewed"
+  },
+  {
+    "id": "o04",
+    "query": "recommend a good movie",
+    "category": "offtopic",
+    "expectedFilters": [],
+    "expectedIntent": "offtopic",
+    "status": "unreviewed"
+  },
+  {
+    "id": "o05",
+    "query": "how do I cook biryani",
+    "category": "offtopic",
+    "expectedFilters": [],
+    "expectedIntent": "offtopic",
+    "status": "unreviewed"
+  },
+  {
+    "id": "z01",
+    "query": "cheap realty",
+    "category": "zeroResult",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 20 },
+      { "field": "sector", "op": "eq", "value": "Real Estate" }
+    ],
+    "expectSuggestions": true,
+    "status": "unreviewed"
+  },
+  {
+    "id": "z02",
+    "query": "smal cap energy",
+    "category": "zeroResult",
+    "expectedFilters": [
+      { "field": "marketCapBucket", "op": "eq", "value": "Small" },
+      { "field": "sector", "op": "eq", "value": "Energy" }
+    ],
+    "expectSuggestions": true,
+    "status": "unreviewed"
+  },
+  {
+    "id": "z03",
+    "query": "cheap tech large caps that rose this month",
+    "category": "zeroResult",
+    "expectedFilters": [
+      { "field": "pe", "op": "lt", "value": 20 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Large" },
+      { "field": "change1m", "op": "gt", "value": 0 },
+      { "field": "sector", "op": "eq", "value": "Technology" }
+    ],
+    "expectSuggestions": true,
+    "status": "unreviewed"
+  },
+  {
+    "id": "z04",
+    "query": "high debt healthcare small caps",
+    "category": "zeroResult",
+    "expectedFilters": [
+      { "field": "debtToEquity", "op": "gt", "value": 1 },
+      { "field": "marketCapBucket", "op": "eq", "value": "Small" },
+      { "field": "sector", "op": "eq", "value": "Healthcare" }
+    ],
+    "expectSuggestions": true,
+    "status": "unreviewed"
+  },
+  {
+    "id": "z05",
+    "query": "large cap profit margin above 9000",
+    "category": "zeroResult",
+    "expectedFilters": [
+      { "field": "marketCapBucket", "op": "eq", "value": "Large" },
+      { "field": "profitMargin", "op": "gt", "value": 90 }
+    ],
+    "expectSuggestions": true,
+    "status": "unreviewed"
   }
 ]
