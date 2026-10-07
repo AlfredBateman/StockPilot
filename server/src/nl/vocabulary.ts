@@ -131,37 +131,10 @@ export const VOCABULARY: VocabTerm[] = [...VAGUE_TERMS, ...SECTOR_TERMS];
  * towards this list (plus sector names), so a word only belongs here if one of
  * the patterns above actually matches it.
  */
-export const VAGUE_TERM_WORDS = [
-  "cheap",
-  "expensive",
-  "profitable",
-  "low",
-  "high",
-  "debt",
-  "small",
-  "mid",
-  "large",
-  "cap",
-  "caps",
-  "smallcap",
-  "smallcaps",
-  "midcap",
-  "midcaps",
-  "largecap",
-  "largecaps",
-  "rose",
-  "gain",
-  "gained",
-  "climb",
-  "climbed",
-  "fell",
-  "drop",
-  "dropped",
-  "decline",
-  "declined",
-  "down",
-  "month",
-] as const;
+export const VAGUE_TERM_WORDS =
+  "cheap expensive profitable low high debt small mid large cap caps smallcap smallcaps midcap midcaps largecap largecaps rose gain gained climb climbed fell drop dropped decline declined down month".split(
+    " "
+  );
 
 /** The vague terms only (not sectors), for code that wants a short name for a filter. */
 export const VAGUE_VOCABULARY: readonly VocabTerm[] = VAGUE_TERMS;
