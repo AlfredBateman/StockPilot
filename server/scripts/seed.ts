@@ -8,6 +8,7 @@
 // Run with: npm run seed (from the repo root or server/), or npm run seed -- --force.
 import "dotenv/config";
 import path from "node:path";
+import { errorSummary } from "./errorSummary.js";
 import { readSnapshotFromFile } from "../src/data/loadStocks.js";
 import { closeMongoClient, countStocks, getDb, upsertStocks, writeMeta } from "../src/data/mongoSource.js";
 
@@ -37,9 +38,9 @@ async function main() {
 }
 
 main()
-  .catch(() => {
-    // Generic on purpose: the driver's message can include the cluster hostname and these logs are public.
-    console.error("MongoDB connection failed, check MONGODB_URI and Atlas network access");
+  .catch((err) => {
+    // Name and code only, never the message (see errorSummary.ts).
+    console.error(`MongoDB connection failed (${errorSummary(err)}), check MONGODB_URI and Atlas network access`);
     process.exitCode = 1;
   })
   .finally(() => closeMongoClient());
