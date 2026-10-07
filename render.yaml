@@ -1,0 +1,27 @@
+# Render blueprint: ONE web service that serves both the API and the built
+# frontend (server/src/app.ts serves web/dist). Env var VALUES are never stored
+# here; "sync: false" means Render asks for the value in the dashboard.
+services:
+  - type: web
+    name: stockpilot
+    runtime: node
+    plan: free
+    # --include=dev because the build needs typescript and vite, which are devDependencies.
+    buildCommand: npm install --include=dev && npm install --include=dev --prefix web && npm install --include=dev --prefix server && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DEMO_MODE
+        value: "false"
+      - key: MONGODB_URI
+        sync: false
+      - key: LLM_PROVIDER
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false

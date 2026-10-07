@@ -7,6 +7,50 @@
 // packages with separate builds, so these can't be imported directly; they
 // are kept here, by hand, in step with the server's zod contract.
 
+// --- Cold-start notice ---
+// Free hosting puts the server to sleep after inactivity, so the first call
+// after a quiet spell can take about a minute. If a call is still waiting after
+// SLOW_MS and the server has not answered anything yet, the page is told to
+// show a "waking up" notice. Every API call goes through apiFetch.
+
+const SLOW_MS = 3000;
+let serverAwake = false;
+let waking = false;
+const wakingListeners = new Set<() => void>();
+
+function setWaking(next: boolean) {
+  if (waking === next) return;
+  waking = next;
+  wakingListeners.forEach((listener) => listener());
+}
+
+/** For useSyncExternalStore: true while the first API call is taking too long. */
+export function subscribeWaking(listener: () => void): () => void {
+  wakingListeners.add(listener);
+  return () => {
+    wakingListeners.delete(listener);
+  };
+}
+
+export function getWaking(): boolean {
+  return waking;
+}
+
+async function apiFetch(input: string, init?: RequestInit): Promise<Response> {
+  if (serverAwake) return fetch(input, init);
+  const timer = setTimeout(() => {
+    if (!serverAwake) setWaking(true);
+  }, SLOW_MS);
+  try {
+    const res = await fetch(input, init);
+    serverAwake = true;
+    return res;
+  } finally {
+    clearTimeout(timer);
+    setWaking(false);
+  }
+}
+
 export type HealthData = {
   status: string;
   demoMode: boolean;
@@ -21,7 +65,7 @@ export type HealthResponse = {
 };
 
 export async function getHealth(): Promise<HealthResponse> {
-  const res = await fetch("/api/health");
+  const res = await apiFetch("/api/health");
   if (!res.ok) {
     throw new Error(`Health check failed: ${res.status}`);
   }
@@ -105,7 +149,7 @@ async function readError(res: Response, fallback: string): Promise<Error> {
 }
 
 export async function screenStocks(request: ScreenRequest): Promise<ScreenResult> {
-  const res = await fetch("/api/screen", {
+  const res = await apiFetch("/api/screen", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
@@ -118,7 +162,7 @@ export async function screenStocks(request: ScreenRequest): Promise<ScreenResult
 }
 
 export async function getStock(ticker: string): Promise<Stock> {
-  const res = await fetch(`/api/stocks/${encodeURIComponent(ticker)}`);
+  const res = await apiFetch(`/api/stocks/${encodeURIComponent(ticker)}`);
   if (!res.ok) {
     throw await readError(res, `Failed to load ${ticker}: ${res.status}`);
   }
@@ -139,7 +183,7 @@ export type ParseResult = {
 
 /** POST /api/parse always answers 200 (see server/src/routes/parse.ts), so there's no error path to throw here. */
 export async function parseQuery(query: string): Promise<ParseResult> {
-  const res = await fetch("/api/parse", {
+  const res = await apiFetch("/api/parse", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query }),
@@ -149,7 +193,7 @@ export async function parseQuery(query: string): Promise<ParseResult> {
 }
 
 export async function getSectors(): Promise<string[]> {
-  const res = await fetch("/api/sectors");
+  const res = await apiFetch("/api/sectors");
   if (!res.ok) {
     throw await readError(res, `Failed to load sectors: ${res.status}`);
   }

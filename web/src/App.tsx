@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getHealth } from "./api/client";
 import { formatAsOfDate } from "./components/format";
 import { IconInfo, IconOffline, LogoMark } from "./components/Icons";
+import { WakeNotice } from "./components/WakeNotice";
 import { Screener } from "./pages/Screener";
 import { Watchlist } from "./pages/Watchlist";
 
@@ -94,6 +95,8 @@ export function App() {
           <p className="mx-auto max-w-7xl px-4 pb-2 text-label text-stone-500 md:px-6 lg:hidden">{asOfLabel}</p>
         )}
       </header>
+
+      <WakeNotice />
 
       {/* The disclaimer is a proper note on every page, not a caption (docs/DESIGN.md section 19). */}
       <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6 md:pt-6">

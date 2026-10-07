@@ -35,6 +35,7 @@ async function main() {
     return;
   }
 
+  const startedAt = Date.now();
   const total = TICKERS.length;
   console.log(`Fetching ${total} tickers from Yahoo Finance...`);
   const { stocks, failed } = await fetchStocks(
@@ -61,7 +62,8 @@ async function main() {
     console.error("No previous asOf and too many failures: meta not written, so the app keeps using data/stocks.json.");
   }
 
-  console.log(`\nUpserted ${stocks.length} of ${total} tickers. Failed: ${failed.length}.`);
+  const elapsedSeconds = ((Date.now() - startedAt) / 1000).toFixed(1);
+  console.log(`\nUpserted ${stocks.length} of ${total} tickers. Failed: ${failed.length}. Elapsed: ${elapsedSeconds}s.`);
   for (const f of failed) console.log(`  ${f.ticker}: ${f.error} (kept previous data)`);
   console.log(`Stock documents now in MongoDB: ${count}`);
   console.log(`meta.asOf: ${asOf ?? "not written"}`);
