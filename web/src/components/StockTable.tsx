@@ -14,7 +14,7 @@ import type { GlossaryKey } from "./glossary";
 import { MetricHelp } from "./MetricHelp";
 import { animateRowsIn } from "./motion";
 
-const COMPARE_LIMIT = 3;
+export const COMPARE_LIMIT = 3;
 
 type StockTableProps = {
   items: Stock[];

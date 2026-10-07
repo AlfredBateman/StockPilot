@@ -5,10 +5,9 @@ import { CompareView } from "../components/CompareView";
 import { sortStocksClient } from "../components/clientSort";
 import { EmptyPanel, ErrorPanel, TableSkeleton } from "../components/StatePanels";
 import { StockDetail } from "../components/StockDetail";
-import { StockTable } from "../components/StockTable";
+import { COMPARE_LIMIT, StockTable } from "../components/StockTable";
 import { useWatchlist } from "../hooks/useWatchlist";
 
-const COMPARE_LIMIT = 3;
 /** The watchlist is a short, hand-picked list, so one page is always enough: this is really just "unpaginated". */
 const PAGE_SIZE = 100;
 

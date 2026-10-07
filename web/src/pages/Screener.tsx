@@ -10,11 +10,10 @@ import { SearchBar } from "../components/SearchBar";
 import { SectorChart } from "../components/SectorChart";
 import { EmptyPanel, ErrorPanel, TableSkeleton } from "../components/StatePanels";
 import { StockDetail } from "../components/StockDetail";
-import { StockTable } from "../components/StockTable";
+import { COMPARE_LIMIT, StockTable } from "../components/StockTable";
 import { useWatchlist } from "../hooks/useWatchlist";
 
 const PAGE_SIZE = 25;
-const COMPARE_LIMIT = 3;
 /** The whole universe is 100 stocks, so a pageSize this large always returns every match unpaginated. */
 const ALL_MATCHING_PAGE_SIZE = 100;
 /** Filter/search edits are debounced before hitting the network, so a controlled
