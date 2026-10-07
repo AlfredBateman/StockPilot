@@ -17,10 +17,10 @@ const TIER_LABELS: Record<ParseTier, string> = {
   cache: "Cached",
 };
 
-function TierBadge({ tier }: { tier: ParseTier }) {
+function Badge({ text }: { text: string }) {
   return (
     <span className="inline-flex h-6 w-fit items-center rounded-full border border-accent-200 bg-elevated px-2.5 text-label text-accent-800">
-      Parsed by: {TIER_LABELS[tier]}
+      {text}
     </span>
   );
 }
@@ -37,14 +37,6 @@ const RESULT_TITLES: Record<Exclude<ParseIntent, "filter">, string> = {
   advice: "Before You Decide",
   offtopic: "Not a Stock Search",
 };
-
-function IntentBadge({ intent }: { intent: ParseIntent }) {
-  return (
-    <span className="inline-flex h-6 w-fit items-center rounded-full border border-accent-200 bg-elevated px-2.5 text-label text-accent-800">
-      {INTENT_LABELS[intent]}
-    </span>
-  );
-}
 
 function resultTitle(result: ParseResult): string {
   if (result.intent !== "filter") return RESULT_TITLES[result.intent];
@@ -150,8 +142,8 @@ export function QueryBox({ onApply }: QueryBoxProps) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-h3 text-accent-800">{resultTitle(state.result)}</p>
             <span className="flex flex-wrap gap-2">
-              <IntentBadge intent={state.result.intent} />
-              <TierBadge tier={state.result.tier} />
+              <Badge text={INTENT_LABELS[state.result.intent]} />
+              <Badge text={`Parsed by: ${TIER_LABELS[state.result.tier]}`} />
             </span>
           </div>
 
