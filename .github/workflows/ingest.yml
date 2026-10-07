@@ -9,7 +9,7 @@ name: Daily ingest
 # limited to this file, lets the workflow be tested from another branch.
 on:
   schedule:
-    - cron: "30 12 * * *"
+    - cron: "30 12 * * 1-5"
   workflow_dispatch:
   push:
     paths:

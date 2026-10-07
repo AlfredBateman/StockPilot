@@ -4,7 +4,6 @@ import { CompareBar } from "../components/CompareBar";
 import { CompareView } from "../components/CompareView";
 import { FilterChips } from "../components/FilterChips";
 import { FilterPanel } from "../components/FilterPanel";
-import { formatAsOfDate } from "../components/format";
 import { PresetBar } from "../components/PresetBar";
 import { QueryBox } from "../components/QueryBox";
 import { SearchBar } from "../components/SearchBar";
@@ -126,10 +125,6 @@ export function Screener() {
     <main id="main-content" className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 md:gap-8 md:px-6 md:py-8">
       <header className="flex flex-col gap-1">
         <h1 className="text-balance text-h1 text-stone-900">Stock Screener</h1>
-        {/* min-h reserves the line so the page doesn't shift when the date arrives. */}
-        <p className="min-h-4 text-caption text-stone-500">
-          {state.kind === "ready" ? `Data as of ${formatAsOfDate(state.asOf)}` : ""}
-        </p>
       </header>
 
       {/* The hero: the only double-bezel card on the page (docs/DESIGN.md section 12), so the plain-English

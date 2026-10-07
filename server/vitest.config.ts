@@ -5,6 +5,9 @@ import { defineConfig } from "vitest/config";
 // driver instead (see src/data/mongoSource.test.ts).
 export default defineConfig({
   test: {
+    // dist/ holds compiled copies of the tests (from `npm run build`); running
+    // them too fails because tsc does not copy their JSON fixtures.
+    exclude: ["dist/**", "node_modules/**"],
     env: { MONGODB_URI: "" },
   },
 });

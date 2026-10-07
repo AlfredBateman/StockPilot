@@ -72,8 +72,9 @@ async function main() {
 }
 
 main()
-  .catch((err) => {
-    console.error("Ingest failed:", err instanceof Error ? err.message : err);
+  .catch(() => {
+    // Generic on purpose: the driver's message can include the cluster hostname and these logs are public.
+    console.error("MongoDB connection failed, check MONGODB_URI and Atlas network access");
     process.exitCode = 1;
   })
   .finally(() => closeMongoClient());
