@@ -25,5 +25,3 @@ export const ScreenRequestSchema = z.strictObject({
   page: z.number().int().min(1).default(1),
   pageSize: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
 });
-
-export type ScreenRequest = z.infer<typeof ScreenRequestSchema>;

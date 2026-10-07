@@ -1,12 +1,9 @@
 import type { Stock } from "../data/stockSchema.js";
-import { stockFieldValue, type SortField } from "./fields.js";
+import { stockFieldValue } from "./fields.js";
+import type { SortSpecSchema } from "./screenRequest.js";
+import type { z } from "zod";
 
-export type SortDirection = "asc" | "desc";
-
-export type SortSpec = {
-  field: SortField;
-  direction: SortDirection;
-};
+export type SortSpec = z.infer<typeof SortSpecSchema>;
 
 /**
  * Sorts a copy of the list. Copying is not optional: loadStocks() caches one
