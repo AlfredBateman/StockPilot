@@ -69,7 +69,7 @@ cp .env.example server/.env
 | Variable | Purpose | If blank |
 | --- | --- | --- |
 | `DEMO_MODE` | `true` skips the LLM tier entirely and makes zero network calls — only the cache and the offline rule parser answer queries. | Defaults to off (network tiers are attempted). |
-| `LLM_PROVIDER` | `nvidia`, `gemini` or `groq`. | Cloud LLM tier is skipped. |
+| `LLM_PROVIDER` | `nvidia` or `gemini`. | Cloud LLM tier is skipped. |
 | `LLM_API_KEY` | API key for that provider. | Cloud LLM tier is skipped. |
 | `LLM_MODEL` | Model name, read as-is and never guessed. | Cloud LLM tier is skipped. |
 | `LLM_DAILY_CAP` | Most cloud LLM calls per UTC day, across all users. | Defaults to `300`. |
@@ -119,7 +119,7 @@ graph LR
     end
     Snapshot[("data/stocks.json<br/>loaded once, cached in memory")]
     Cache[("data/nlCache.json<br/>successful model answers")]
-    LLM(["NVIDIA / Gemini / Groq API"])
+    LLM(["NVIDIA / Gemini API"])
 
     UI -- "fetch (web/src/api/client.ts is\nthe only file that calls fetch)" --> Proxy
     Proxy --> Routes
@@ -153,7 +153,7 @@ for this exact query?"}
     Demo -- no --> Guard{"LLM configured, and under
 10/min per IP and the daily cap?"}
     Guard -- yes --> LLMCall["Call NVIDIA (8s) or
-Gemini/Groq (5s)"]
+Gemini (5s)"]
     LLMCall -- "valid reply" --> Remember1["Save to data/nlCache.json
 tier = llm"]
     LLMCall -- "timeout / error / invalid JSON

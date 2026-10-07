@@ -1,6 +1,6 @@
 import { buildParsePrompt, parseModelOutput, type LlmReply } from "./llmPrompt.js";
 
-/** Gemini and Groq get 5 seconds; past that the rule parser is a better answer than a slow one. */
+/** Gemini gets 5 seconds; past that the rule parser is a better answer than a slow one. */
 export const LLM_TIMEOUT_MS = 5000;
 
 /** NVIDIA's hosted Nemotron is a reasoning model and slower to first token, so it gets 8 seconds. */
@@ -11,8 +11,6 @@ export const NVIDIA_TIMEOUT_MS = 8000;
 //
 //   Gemini: POST /v1beta/models/{model}:generateContent, x-goog-api-key header,
 //           {contents:[{parts:[{text}]}]} -> candidates[0].content.parts[0].text
-//   Groq:   POST /openai/v1/chat/completions, Authorization: Bearer,
-//           {model, messages:[...]} -> choices[0].message.content
 //   NVIDIA: POST https://integrate.api.nvidia.com/v1/chat/completions (OpenAI-
 //           compatible), Authorization: Bearer, {model, messages:[...]} ->
 //           choices[0].message.content. The model page on build.nvidia.com
@@ -35,7 +33,7 @@ type ProviderCall = {
   timeoutMs: number;
 };
 
-/** OpenAI-style envelope (Groq, NVIDIA): only the final message content, never reasoning_content. */
+/** OpenAI-style envelope (NVIDIA): only the final message content, never reasoning_content. */
 function readChatContent(json: unknown): string | null {
   const content = (json as { choices?: { message?: { content?: unknown } }[] }).choices?.[0]?.message?.content;
   return typeof content === "string" ? content : null;
@@ -54,21 +52,6 @@ function geminiCall(apiKey: string, model: string, prompt: string): ProviderCall
       const text = candidate?.content?.parts?.[0]?.text;
       return typeof text === "string" ? text : null;
     },
-    timeoutMs: LLM_TIMEOUT_MS,
-  };
-}
-
-function groqCall(apiKey: string, model: string, prompt: string): ProviderCall {
-  return {
-    url: "https://api.groq.com/openai/v1/chat/completions",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: {
-      model,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0,
-      response_format: { type: "json_object" },
-    },
-    readText: readChatContent,
     timeoutMs: LLM_TIMEOUT_MS,
   };
 }
@@ -93,7 +76,6 @@ function nvidiaCall(apiKey: string, model: string, prompt: string): ProviderCall
 const PROVIDERS = new Map<string, (apiKey: string, model: string, prompt: string) => ProviderCall>([
   ["nvidia", nvidiaCall],
   ["gemini", geminiCall],
-  ["groq", groqCall],
 ]);
 
 /** True when provider, key and model are all set and the provider is one we support. No network. */
