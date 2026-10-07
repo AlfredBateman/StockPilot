@@ -40,8 +40,9 @@ export function FilterChips({ filters, onRemove }: FilterChipsProps) {
       return;
     }
     removing.current = true;
-    // ponytail: removal waits 120ms for the exit animation; a filter change from elsewhere in that window
-    // could shift the index. Pass the filter's field instead of its index if that ever shows up in practice.
+    // ponytail: removal is by index and waits 120ms for the exit animation; a filter change from elsewhere in
+    // that window could shift the index. Not by field: QueryBox.onApply can create two filters on one field.
+    // If it ever shows up, capture filters[index] at click time and remove that exact filter when the animation ends.
     animateChipOut(chip, () => {
       removing.current = false;
       onRemove(index);
