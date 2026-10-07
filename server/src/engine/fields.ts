@@ -28,26 +28,7 @@ export type StockField = FilterField | SortField;
  * straight off the snapshot. Missing values stay null — never 0, never NaN.
  */
 export function stockFieldValue(stock: Stock, field: StockField): string | number | null {
-  switch (field) {
-    case "ticker":
-      return stock.ticker;
-    case "name":
-      return stock.name;
-    case "sector":
-      return stock.sector;
-    case "price":
-      return stock.price;
-    case "marketCap":
-      return stock.marketCap;
-    case "marketCapBucket":
-      return marketCapBucket(stock.marketCap);
-    case "pe":
-      return stock.pe;
-    case "debtToEquity":
-      return stock.debtToEquity;
-    case "profitMargin":
-      return stock.profitMargin;
-    case "change1m":
-      return change1m(stock.weeklyCloses);
-  }
+  if (field === "marketCapBucket") return marketCapBucket(stock.marketCap);
+  if (field === "change1m") return change1m(stock.weeklyCloses);
+  return stock[field];
 }
