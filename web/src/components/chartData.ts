@@ -4,7 +4,7 @@
 // computed-from-null number.
 import type { Stock, WeeklyClose } from "../api/client";
 
-export type SectorCount = { sector: string; count: number };
+type SectorCount = { sector: string; count: number };
 
 /** How many of the given stocks fall in each sector. A null sector is grouped under "n/a", never dropped. */
 export function countBySector(stocks: Pick<Stock, "sector">[]): SectorCount[] {
@@ -18,7 +18,7 @@ export function countBySector(stocks: Pick<Stock, "sector">[]): SectorCount[] {
     .sort((a, b) => b.count - a.count);
 }
 
-export type NormalizedPoint = { date: string; value: number | null };
+type NormalizedPoint = { date: string; value: number | null };
 
 /**
  * Rebases a weekly-close series so the first available close = 100, so
@@ -40,7 +40,7 @@ export function normalizeToBase100(weeklyCloses: WeeklyClose[]): NormalizedPoint
 }
 
 /** One row per date, with a normalized value per ticker, for Recharts' multi-series LineChart. */
-export type CompareRow = { date: string } & Record<string, number | null | string>;
+type CompareRow = { date: string } & Record<string, number | null | string>;
 
 export function buildCompareSeries(stocks: Pick<Stock, "ticker" | "weeklyCloses">[]): CompareRow[] {
   const perStock = stocks.map((s) => ({

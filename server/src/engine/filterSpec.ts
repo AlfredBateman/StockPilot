@@ -17,15 +17,15 @@ export const FILTER_OPS = ["eq", "in", "lt", "gt", "between"] as const;
 
 export const MARKET_CAP_BUCKETS = ["Large", "Mid", "Small"] as const;
 
-export const FilterFieldSchema = z.enum(FILTER_FIELDS);
-export const MarketCapBucketSchema = z.enum(MARKET_CAP_BUCKETS);
+const FilterFieldSchema = z.enum(FILTER_FIELDS);
+const MarketCapBucketSchema = z.enum(MARKET_CAP_BUCKETS);
 
 export type FilterField = z.infer<typeof FilterFieldSchema>;
-export type FilterOp = (typeof FILTER_OPS)[number];
+type FilterOp = (typeof FILTER_OPS)[number];
 export type MarketCapBucket = z.infer<typeof MarketCapBucketSchema>;
 
 /** Which fields hold text and which hold numbers. Drives the checks below. */
-export const FIELD_KINDS: Record<FilterField, "text" | "number"> = {
+const FIELD_KINDS: Record<FilterField, "text" | "number"> = {
   sector: "text",
   marketCapBucket: "text",
   pe: "number",

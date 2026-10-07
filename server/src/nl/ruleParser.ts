@@ -12,7 +12,7 @@ export type ParseResult = {
   tier: ParseTier;
 };
 
-export const STOPWORDS = new Set(
+const STOPWORDS = new Set(
   "a an the and or with of is are that this in for me show find list give some please stocks stock companies company".split(" ")
 );
 

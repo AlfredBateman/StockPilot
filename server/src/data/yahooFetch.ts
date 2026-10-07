@@ -54,7 +54,7 @@ export async function fetchStock(ticker: string): Promise<Stock> {
 
 export type FailedTicker = { ticker: string; error: string };
 
-export type FetchStocksOptions = {
+type FetchStocksOptions = {
   /** Wait before the single retry. Tests pass 0. */
   retryDelayMs?: number;
   /** Fetches one ticker. Defaults to fetchStock; tests swap in a fake so they never touch the network. */

@@ -51,7 +51,7 @@ async function apiFetch(input: string, init?: RequestInit): Promise<Response> {
   }
 }
 
-export type HealthData = {
+type HealthData = {
   status: string;
   demoMode: boolean;
   /** Where the server's stock data came from; null if it could not load any. */
@@ -60,7 +60,7 @@ export type HealthData = {
   asOf: string | null;
 };
 
-export type HealthResponse = {
+type HealthResponse = {
   data: HealthData;
 };
 
@@ -107,10 +107,10 @@ export const SORT_FIELDS = [
   "profitMargin",
 ] as const;
 export type SortField = (typeof SORT_FIELDS)[number];
-export type SortDirection = "asc" | "desc";
+type SortDirection = "asc" | "desc";
 export type SortSpec = { field: SortField; direction: SortDirection };
 
-export type ScreenRequest = {
+type ScreenRequest = {
   filters?: FilterSpec;
   search?: string;
   sort?: SortSpec;
@@ -132,7 +132,7 @@ export type Stock = {
   weeklyCloses: WeeklyClose[];
 };
 
-export type ScreenResult = {
+type ScreenResult = {
   items: Stock[];
   total: number;
   asOf: string;
@@ -178,7 +178,7 @@ export type ParseTier = "rules" | "llm" | "cache";
 export type ParseIntent = "filter" | "question" | "advice" | "offtopic";
 
 /** A one-click fix for a search that matched no stocks, worked out by the server on the real data. */
-export type Suggestion = { label: string; filters: FilterSpec };
+type Suggestion = { label: string; filters: FilterSpec };
 
 export type ParseResult = {
   filters: FilterSpec;

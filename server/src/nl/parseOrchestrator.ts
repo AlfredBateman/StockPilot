@@ -8,7 +8,7 @@ import { parseQuery, type ParseResult } from "./ruleParser.js";
 import { fixTypos } from "./typoFix.js";
 
 /** Longer text is cut to this before anything reads it. Real screening requests are a line, not an essay. */
-export const MAX_QUERY_LENGTH = 200;
+const MAX_QUERY_LENGTH = 200;
 
 export const AI_RESTING_NOTICE = "AI helper is resting, showing keyword matching only.";
 export const TRUNCATED_NOTICE = `Only the first ${MAX_QUERY_LENGTH} characters were read.`;
@@ -16,7 +16,7 @@ export const TRUNCATED_NOTICE = `Only the first ${MAX_QUERY_LENGTH} characters w
 /** A one-click way out of a zero-result search, computed by the server (see zeroResultHelp.ts). */
 export type Suggestion = { label: string; filters: FilterSpec };
 
-export type QueryResult = ParseResult & {
+type QueryResult = ParseResult & {
   intent: ParseIntent;
   /** Plain-text reply for question/advice/offtopic; null for a filter request. */
   answer: string | null;
@@ -28,7 +28,7 @@ export type QueryResult = ParseResult & {
   suggestions: Suggestion[];
 };
 
-export type ParseOptions = {
+type ParseOptions = {
   /** Who is asking, for the per-IP LLM rate limit. */
   ip?: string;
   /** Tests pass their own guard; the server shares one. */

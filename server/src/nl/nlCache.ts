@@ -5,7 +5,7 @@ import { INTENTS, type ParseIntent } from "./llmPrompt.js";
 
 const CACHE_PATH = path.resolve(import.meta.dirname, "../../../data/nlCache.json");
 
-export type CacheEntry = {
+type CacheEntry = {
   filters: FilterSpec;
   notes: string[];
   unmatched: string[];

@@ -6,7 +6,7 @@ import { SnapshotSchema, type Snapshot, type Stock } from "./stockSchema.js";
 const DEFAULT_DATA_PATH = path.resolve(import.meta.dirname, "../../../data/stocks.json");
 
 /** How long a loaded snapshot is reused before the source is read again. */
-export const STOCKS_TTL_MS = 10 * 60 * 1000;
+const STOCKS_TTL_MS = 10 * 60 * 1000;
 
 /**
  * Where a snapshot comes from. Two implementations: the JSON file (below) and
@@ -66,7 +66,7 @@ export function createStockLoader(
   };
 }
 
-export type DataSourceKind = "mongo" | "file";
+type DataSourceKind = "mongo" | "file";
 
 /** Remembers which source produced each snapshot, for getDataStatus(). */
 const servedFrom = new WeakMap<Snapshot, DataSourceKind>();

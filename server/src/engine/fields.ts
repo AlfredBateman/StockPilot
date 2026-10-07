@@ -19,7 +19,7 @@ export const SORT_FIELDS = [
 export type SortField = (typeof SORT_FIELDS)[number];
 
 /** Every field the engine can read off a stock, filterable or sortable. */
-export type StockField = FilterField | SortField;
+type StockField = FilterField | SortField;
 
 /**
  * The one place that turns a field name into a comparable value, so filtering

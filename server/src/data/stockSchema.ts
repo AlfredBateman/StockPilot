@@ -5,7 +5,7 @@ import { z } from "zod";
 // it on load so a corrupt or hand-edited file is caught immediately instead
 // of causing confusing bugs later.
 
-export const WeeklyCloseSchema = z.object({
+const WeeklyCloseSchema = z.object({
   /** ISO calendar date (YYYY-MM-DD) for this week's bar, in NSE's IST calendar. */
   date: z.string(),
   /** Closing price that week, in the exchange's currency (INR). null if Yahoo had no data for that point. */

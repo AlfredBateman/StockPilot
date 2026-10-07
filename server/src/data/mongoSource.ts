@@ -16,18 +16,18 @@ import { SnapshotSchema, type Snapshot, type Stock } from "./stockSchema.js";
 import { TICKERS } from "./tickers.js";
 import type { FailedTicker } from "./yahooFetch.js";
 
-export const DB_NAME = "stockpilot";
-export const STOCKS_COLLECTION = "stocks";
-export const META_COLLECTION = "meta";
-export const META_ID = "snapshot";
+const DB_NAME = "stockpilot";
+const STOCKS_COLLECTION = "stocks";
+const META_COLLECTION = "meta";
+const META_ID = "snapshot";
 
 /** If more than this share of tickers fail in one ingest run, the run counts as failed. */
-export const MAX_FAILURE_RATE = 0.1;
+const MAX_FAILURE_RATE = 0.1;
 
 /** A stock as stored in Mongo: the Stock shape, keyed by ticker, plus when it was fetched. */
-export type StockDoc = Stock & { _id: string; fetchedAt: string };
+type StockDoc = Stock & { _id: string; fetchedAt: string };
 
-export type MetaDoc = {
+type MetaDoc = {
   _id: string;
   /** ISO timestamp of the data in the collection (see ingest.ts for when it advances). */
   asOf: string;

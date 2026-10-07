@@ -12,7 +12,7 @@ import { stocksRouter } from "./routes/stocks.js";
 // after tsc (server/dist), so one path works in dev and in production.
 const DEFAULT_WEB_DIST = path.resolve(import.meta.dirname, "../../web/dist");
 
-export type AppOptions = {
+type AppOptions = {
   /** Folder holding the built frontend; defaults to web/dist. Tests pass a temp folder. */
   webDist?: string;
 };

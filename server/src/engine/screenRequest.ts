@@ -7,9 +7,9 @@ import { FilterSpecSchema } from "./filterSpec.js";
 
 export const DEFAULT_PAGE_SIZE = 25;
 export const MAX_PAGE_SIZE = 100;
-export const MAX_SEARCH_LENGTH = 100;
+const MAX_SEARCH_LENGTH = 100;
 
-export const SortFieldSchema = z.enum(SORT_FIELDS);
+const SortFieldSchema = z.enum(SORT_FIELDS);
 
 export const SortSpecSchema = z.strictObject({
   field: SortFieldSchema,

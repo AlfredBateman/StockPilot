@@ -6,7 +6,7 @@ import { SECTORS, SECTOR_SYNONYMS, VAGUE_TERM_WORDS } from "./vocabulary.js";
 // filters found". Offline, instant and deterministic, like the rule parser.
 
 /** Every word the rule parser can do something with, lowercased. */
-export const KNOWN_WORDS: ReadonlySet<string> = new Set(
+const KNOWN_WORDS: ReadonlySet<string> = new Set(
   [
     ...VAGUE_TERM_WORDS,
     ...SECTORS.flatMap((sector) => sector.toLowerCase().split(" ")),
@@ -71,7 +71,7 @@ export function nearestKnownWord(
   return best !== null && bestDistance > 0 && bestDistance <= maxDistance && !tie ? best : null;
 }
 
-export type TypoFix = {
+type TypoFix = {
   /** The query with every accepted correction applied (or the query unchanged). */
   text: string;
   corrections: { from: string; to: string }[];

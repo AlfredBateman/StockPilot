@@ -15,7 +15,7 @@
 // Ltd). All 100 symbols resolved with a matching company name at the time of
 // writing, but please still sanity-check the list.
 
-export type TickerEntry = {
+type TickerEntry = {
   /** Yahoo Finance / NSE symbol, e.g. "RELIANCE.NS". */
   symbol: string;
   /** Company name, for human review only. */

@@ -1,7 +1,7 @@
 import { buildParsePrompt, parseModelOutput, type LlmReply } from "./llmPrompt.js";
 
 /** Gemini gets 5 seconds; past that the rule parser is a better answer than a slow one. */
-export const LLM_TIMEOUT_MS = 5000;
+const LLM_TIMEOUT_MS = 5000;
 
 /** NVIDIA's hosted Nemotron is a reasoning model and slower to first token, so it gets 8 seconds. */
 export const NVIDIA_TIMEOUT_MS = 8000;

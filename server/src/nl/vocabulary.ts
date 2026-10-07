@@ -5,7 +5,7 @@ import type { Filter } from "../engine/filterSpec.js";
 // argue with. The note is shown back to the user in the UI so "cheap" never
 // silently means something they didn't expect.
 
-export type VocabTerm = {
+type VocabTerm = {
   /** Matched against the lowercased query. No global flag — see ruleParser.ts. */
   pattern: RegExp;
   filter: Filter;
