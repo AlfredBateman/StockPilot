@@ -77,7 +77,10 @@ export function FilterPanel({ filters, onChange, sectors }: FilterPanelProps) {
   return (
     <div className="grid gap-x-6 gap-y-6 sm:grid-cols-2 xl:grid-cols-[auto_1fr_1fr_1fr]">
       <fieldset className="flex flex-col sm:col-span-full">
-        <legend className="mb-2.5 text-label text-stone-600">Sector</legend>
+        <legend className="mb-2.5 flex items-center text-label text-stone-600">
+          Sector
+          <MetricHelp metric="sector" />
+        </legend>
         <div className="flex flex-wrap gap-2">
           {sectors.map((sector) => (
             <ChoiceChip

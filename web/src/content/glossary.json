@@ -1,32 +1,100 @@
 {
   "pe": {
     "term": "P/E",
-    "definition": "Price-to-Earnings ratio: a stock's price divided by its earnings per share over the last 12 months.",
-    "whatItMeans": "Shows how many rupees investors are paying for each rupee of profit the company makes. Lower generally means cheaper relative to earnings, but a very low P/E can also mean the market expects trouble ahead.",
-    "source": "TODO"
+    "definition": "P/E (price-to-earnings) is a share’s price divided by the profit the company earned per share over the last year.",
+    "whyItMatters": "It tells you how many rupees investors pay today for each ₹1 of yearly profit, so you can compare companies of very different sizes. A low P/E can mean a bargain, or a company the market expects to struggle; a high P/E usually means investors expect fast growth.",
+    "example": "In the 22 Sep 2026 snapshot, Tata Consultancy Services (TCS) trades at ₹2,121.40 with a P/E of 15.4, so investors pay about ₹15.40 for every ₹1 of its yearly profit. Adani Enterprises has a P/E of 51.9, more than three times as much.",
+    "howStockPilotUsesIt": "StockPilot treats a P/E below 20 as cheap and a P/E above 40 as expensive. Typing “cheap” in the query box sets P/E below 20, and “expensive” sets P/E above 40. These cut-offs are simple rules of thumb chosen for this app, not official rules. A stock with no P/E (shown as n/a) never matches a P/E filter.",
+    "goodToKnow": [],
+    "source": {
+      "label": "Wikipedia: Price-earnings ratio",
+      "url": "https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio"
+    }
   },
   "marketCap": {
     "term": "Market Cap",
-    "definition": "Market capitalization: the total value of all of a company's outstanding shares (share price x number of shares).",
-    "whatItMeans": "A quick measure of company size. StockPilot groups companies into Large/Mid/Small buckets based on this number.",
-    "source": "TODO"
+    "definition": "Market cap is the total value of a company on the stock market: the share price times the number of shares.",
+    "whyItMatters": "It is the quickest way to see how big a company is. Bigger companies tend to be steadier, while smaller ones can grow faster but usually swing more.",
+    "example": "In the 22 Sep 2026 snapshot, Reliance Industries has a market cap of ₹16,90,206 crore, which puts it in the Large group. Cipla, at ₹1,11,097 crore, is in the Mid group.",
+    "howStockPilotUsesIt": "StockPilot sorts companies into three groups: Large is ₹2,00,000 crore or more, Mid is ₹1,00,000 crore up to ₹2,00,000 crore, and Small is below ₹1,00,000 crore. These cut-offs are our own, chosen to split the 100 stocks in this app into a useful spread. Official categories (SEBI and AMFI) are decided by rank instead, so a stock marked Small here can still be a big company in the official list.",
+    "goodToKnow": [
+      "Market cap is shown in crore. 1 crore is 1,00,00,000 (ten million) rupees."
+    ],
+    "source": {
+      "label": "Wikipedia: Market capitalization",
+      "url": "https://en.wikipedia.org/wiki/Market_capitalization"
+    }
   },
   "debtToEquity": {
     "term": "Debt/Equity",
-    "definition": "Debt-to-Equity ratio: a company's total debt divided by its shareholders' equity. Shown as a multiple, so 1.2× means debt is 1.2 times equity.",
-    "whatItMeans": "Shows how much a company relies on borrowed money versus its own capital. A lower ratio usually means less financial risk. Banks and other financials show n/a because debt works differently for them, so the ratio isn't comparable.",
-    "source": "TODO"
+    "definition": "Debt/Equity compares how much a company owes with how much its owners have put in.",
+    "whyItMatters": "A company that owes a lot compared with its owners’ money has big interest bills and less room for a bad year. A low number usually means a safer balance sheet.",
+    "example": "In the 22 Sep 2026 snapshot, Adani Enterprises shows 1.2×, so it owes about ₹1.20 for every ₹1 of its owners’ money. Infosys shows 0.1×, so it owes only about ₹0.10 for every ₹1.",
+    "howStockPilotUsesIt": "StockPilot treats Debt/Equity below 0.5× as low debt and above 1× as high debt. The “Low Debt, Steady Profit” preset uses below 0.5× together with a profit margin above 10%. A stock with no Debt/Equity (shown as n/a) never matches a Debt/Equity filter.",
+    "goodToKnow": [
+      "How to read the ×: 1.2× means the company owes ₹1.20 for every ₹1 of its owners’ money. 0.5× means it owes ₹0.50 for every ₹1. 1.0× means what it owes equals its owners’ money.",
+      "Why banks show n/a: debt works differently for banks and other financial companies. A bank borrows (for example from depositors) and lends the money out as its everyday business, so the ratio cannot be compared with other companies. In the 22 Sep 2026 snapshot, all 10 stocks with n/a are in Financial Services, such as HDFC Bank and State Bank of India."
+    ],
+    "source": {
+      "label": "Wikipedia: Debt-to-equity ratio",
+      "url": "https://en.wikipedia.org/wiki/Debt-to-equity_ratio"
+    }
   },
   "profitMargin": {
     "term": "Profit Margin",
-    "definition": "Net profit divided by revenue, shown as a percentage.",
-    "whatItMeans": "Shows how much of every rupee of sales a company actually keeps as profit. Higher generally means a more efficient or higher-priced business.",
-    "source": "TODO"
+    "definition": "Profit margin is the share of a company’s sales that it keeps as profit after all costs, shown as a percentage.",
+    "whyItMatters": "Two companies can sell the same amount and keep very different amounts. A higher margin usually means the company prices well or runs efficiently.",
+    "example": "In the 22 Sep 2026 snapshot, ITC has a profit margin of 25.9%, so out of every ₹100 it sells, about ₹25.90 ends up as profit. Reliance Industries has 6.6%, so it keeps about ₹6.60 of every ₹100.",
+    "howStockPilotUsesIt": "StockPilot treats a profit margin above 0% as profitable. The “High Margin Business” preset uses above 20%, and “Low Debt, Steady Profit” uses above 10%. The Min Profit Margin box takes a plain percent, so type 10 for 10%.",
+    "goodToKnow": [],
+    "source": {
+      "label": "Wikipedia: Profit margin",
+      "url": "https://en.wikipedia.org/wiki/Profit_margin"
+    }
   },
   "change1m": {
     "term": "1-Month Change",
-    "definition": "The percentage change in closing price over the last 4 weeks of available data.",
-    "whatItMeans": "A snapshot of recent price momentum. Positive means the stock has risen over that period, negative means it has fallen.",
-    "source": "TODO"
+    "definition": "1-Month Change is how much the share price moved, in percent, over the last four weeks.",
+    "whyItMatters": "It shows the recent direction, so you can see whether a stock has been climbing or sliding. One month is short, so treat it as a snapshot of recent mood, not a forecast.",
+    "example": "TCS closed at ₹2,342.00 on 24 Aug 2026 and at ₹2,121.40 on 22 Sep 2026, a change of -9.4%. Coal India went from ₹401.00 to ₹424.55 over the same weeks, a change of +5.9%.",
+    "howStockPilotUsesIt": "StockPilot takes the latest closing price, subtracts the closing price from four weeks of data earlier, and divides by that earlier price. “Rose this month” means above 0%, “fell this month” means below 0%, and the “Recent Gainers” preset uses above 5%. A stock without enough history shows n/a and never matches.",
+    "goodToKnow": [],
+    "source": {
+      "label": "Wikipedia: Relative change",
+      "url": "https://en.wikipedia.org/wiki/Relative_change"
+    }
+  },
+  "sector": {
+    "term": "Sector",
+    "definition": "A sector is the broad part of the economy a company earns its money in, such as Technology or Energy.",
+    "whyItMatters": "Companies in the same sector face similar ups and downs, so comparing within a sector is fairer. Owning stocks from several sectors also means one struggling industry cannot hurt everything at once.",
+    "example": "TCS and Infosys are both in Technology, so comparing their P/E (15.4 and 13.2) is a fair test. ITC is in Consumer Defensive, so comparing its P/E with TCS tells you much less.",
+    "howStockPilotUsesIt": "StockPilot uses the sector label that comes with the data (11 sectors in total). Tick one or more sector chips to keep only those sectors. Words like “tech”, “bank” or “pharma” in the query box are matched to a sector too.",
+    "goodToKnow": [],
+    "source": {
+      "label": "Wikipedia: Industry classification",
+      "url": "https://en.wikipedia.org/wiki/Industry_classification"
+    }
+  },
+  "price": {
+    "term": "Price",
+    "definition": "Price is what one share cost at the latest market close in the saved data, in rupees (₹).",
+    "whyItMatters": "It is the amount you would pay for one share. A high price does not mean a big or expensive company, because that depends on how many shares exist and how much profit the company makes.",
+    "example": "In the 22 Sep 2026 snapshot, Infosys is ₹1,028.00 per share and TCS is ₹2,121.40. That does not make TCS twice as expensive; compare them with P/E instead (13.2 and 15.4).",
+    "howStockPilotUsesIt": "Price is the closing price from the saved end-of-day data, not a live quote. StockPilot has no price filter because price alone says little, but you can sort the table by it.",
+    "goodToKnow": [],
+    "source": {
+      "label": "Wikipedia: Share price",
+      "url": "https://en.wikipedia.org/wiki/Share_price"
+    }
+  },
+  "asOf": {
+    "term": "Data as of",
+    "definition": "Data as of is the date the saved snapshot of stock numbers was taken.",
+    "whyItMatters": "StockPilot shows end-of-day numbers, not a live feed, so a price can be days old. Check the date before you rely on a number.",
+    "example": "If the header says “Data as of 22 Sep 2026”, every price, P/E and margin is from that day’s market close. Adani Enterprises’ ₹2,993.50 is its close on that day, and anything that happened afterwards is not shown.",
+    "howStockPilotUsesIt": "The date comes from the saved data and is shown in the page header. StockPilot never shows live or real-time prices. If the date is unknown, the header shows n/a.",
+    "goodToKnow": [],
+    "source": null
   }
 }

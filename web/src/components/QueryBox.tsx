@@ -1,5 +1,7 @@
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import { parseQuery, type FilterSpec, type ParseResult, type ParseTier } from "../api/client";
+import { glossaryKeyForNote } from "./glossary";
+import { GlossaryLink } from "./GlossaryLink";
 import { IconArrowRight, IconChat, IconCheck, IconWarning } from "./Icons";
 import { slideDown } from "./motion";
 
@@ -133,14 +135,20 @@ export function QueryBox({ onApply }: QueryBoxProps) {
             </p>
           ) : (
             <ul className="grid gap-2 sm:grid-cols-2">
-              {state.result.notes.map((note, index) => (
-                <li key={index} className="flex items-start gap-2.5 text-stone-800">
-                  <span className="mt-px flex size-5 shrink-0 items-center justify-center rounded-full bg-accent-600 text-white">
-                    <IconCheck size={12} />
-                  </span>
-                  {note}
-                </li>
-              ))}
+              {state.result.notes.map((note, index) => {
+                const termKey = glossaryKeyForNote(note);
+                return (
+                  <li key={index} className="flex items-start gap-2.5 text-stone-800">
+                    <span className="mt-px flex size-5 shrink-0 items-center justify-center rounded-full bg-accent-600 text-white">
+                      <IconCheck size={12} />
+                    </span>
+                    <span className="flex flex-col items-start gap-0.5">
+                      {note}
+                      {termKey && <GlossaryLink metric={termKey} />}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           )}
 

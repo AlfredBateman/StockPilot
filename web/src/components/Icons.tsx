@@ -163,6 +163,24 @@ export function IconTray(props: IconProps) {
   );
 }
 
+/** The Guide: an open book. */
+export function IconBook(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 6.5C10.5 5.3 8.2 4.8 4.5 5v12c3.7-.2 6 .3 7.5 1.5M12 6.5c1.5-1.2 3.8-1.7 7.5-1.5v12c-3.7-.2-6 .3-7.5 1.5M12 6.5v12" />
+    </Svg>
+  );
+}
+
+/** A link that leaves StockPilot: an arrow out of a box. */
+export function IconExternal(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 01-1 1H6a1 1 0 01-1-1V7a1 1 0 011-1h4" />
+    </Svg>
+  );
+}
+
 /** The StockPilot mark: a rising line on a deep teal tile with a soft top highlight. */
 export function LogoMark({ size = 32 }: { size?: number }) {
   return (

@@ -1,6 +1,8 @@
 import { useLayoutEffect, useRef } from "react";
 import type { FilterSpec } from "../api/client";
 import { describeFilter, describeFilterParts } from "./filterSpecUtils";
+import { GLOSSARY_KEY_FOR_FIELD } from "./glossary";
+import { GlossaryLink } from "./GlossaryLink";
 import { IconClose } from "./Icons";
 import { animateChipIn, animateChipOut } from "./motion";
 
@@ -55,7 +57,7 @@ export function FilterChips({ filters, onRemove }: FilterChipsProps) {
         {filters.map((filter, index) => {
           const { label, value } = describeFilterParts(filter);
           return (
-            <li key={`${filter.field}-${index}`} data-field={filter.field} className="max-w-full">
+            <li key={`${filter.field}-${index}`} data-field={filter.field} className="flex max-w-full flex-col items-start gap-0.5">
               <span className="inline-flex h-9 max-w-full items-center gap-2 rounded-full border border-stone-300 bg-elevated pl-3.5 pr-1 shadow-e1">
                 <span className="shrink-0 text-label text-stone-500">{label}</span>
                 <span title={value} className="min-w-0 truncate text-body font-semibold tabular-nums text-stone-900">
@@ -69,6 +71,9 @@ export function FilterChips({ filters, onRemove }: FilterChipsProps) {
                 >
                   <IconClose size={14} />
                 </button>
+              </span>
+              <span className="pl-3.5">
+                <GlossaryLink metric={GLOSSARY_KEY_FOR_FIELD[filter.field]} />
               </span>
             </li>
           );

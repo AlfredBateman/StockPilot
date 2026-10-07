@@ -10,7 +10,8 @@ import {
   formatRatio,
 } from "./format";
 import { IconChevron, IconSort, IconStar } from "./Icons";
-import { MetricHelp, type GlossaryKey } from "./MetricHelp";
+import type { GlossaryKey } from "./glossary";
+import { MetricHelp } from "./MetricHelp";
 import { animateRowsIn } from "./motion";
 
 const COMPARE_LIMIT = 3;
@@ -48,10 +49,25 @@ type Column = {
 };
 
 const COLUMNS: Column[] = [
-  { field: "ticker", label: "Ticker", align: "left", width: "w-40", render: (s) => displayTicker(s.ticker) },
+  { field: "ticker", label: "Ticker", align: "left", width: "w-36", render: (s) => displayTicker(s.ticker) },
   { field: "name", label: "Name", align: "left", width: "", truncate: true, render: (s) => s.name ?? "n/a" },
-  { field: "sector", label: "Sector", align: "left", width: "w-40", truncate: true, render: (s) => s.sector ?? "n/a" },
-  { field: "price", label: "Price", align: "right", width: "w-28", render: (s) => formatPrice(s.price) },
+  {
+    field: "sector",
+    label: "Sector",
+    align: "left",
+    width: "w-36",
+    truncate: true,
+    render: (s) => s.sector ?? "n/a",
+    metricKey: "sector",
+  },
+  {
+    field: "price",
+    label: "Price",
+    align: "right",
+    width: "w-28",
+    render: (s) => formatPrice(s.price),
+    metricKey: "price",
+  },
   {
     field: "marketCap",
     label: "Market Cap",
@@ -60,12 +76,12 @@ const COLUMNS: Column[] = [
     render: (s) => formatMarketCapCrore(s.marketCap),
     metricKey: "marketCap",
   },
-  { field: "pe", label: "P/E", align: "right", width: "w-20", render: (s) => formatRatio(s.pe), metricKey: "pe" },
+  { field: "pe", label: "P/E", align: "right", width: "w-28", render: (s) => formatRatio(s.pe), metricKey: "pe" },
   {
     field: "debtToEquity",
     label: "Debt/Equity",
     align: "right",
-    width: "w-32",
+    width: "w-40",
     render: (s) => formatDebtToEquity(s.debtToEquity),
     title: debtToEquityNote,
     metricKey: "debtToEquity",
@@ -80,11 +96,8 @@ const COLUMNS: Column[] = [
   },
 ];
 
-/** The four columns with a glossary entry, shown as a 2x2 grid on mobile cards. */
-const METRIC_COLUMNS = COLUMNS.filter((column) => column.metricKey);
-
-/** Flips a MetricHelp popover to open leftwards, so it stays on-screen for right-aligned/right-hand labels. */
-const POPOVER_OPENS_LEFT = "[&_[role=tooltip]]:left-auto [&_[role=tooltip]]:right-0";
+/** The four numeric columns shown as a 2x2 grid on mobile cards (price and sector have their own spots there). */
+const METRIC_COLUMNS = COLUMNS.filter((column) => column.metricKey && column.field !== "price" && column.field !== "sector");
 
 function StarToggle({ ticker, watched, onToggle }: { ticker: string; watched: boolean; onToggle: () => void }) {
   return (
@@ -206,7 +219,7 @@ export function StockTable({
           than crushing columns; the page itself never scrolls sideways. */}
       <div className="hidden rounded-2xl border border-stone-200 bg-card shadow-e1 sm:block">
         <div className="overflow-x-auto rounded-t-2xl xl:overflow-visible">
-          <table className="w-full min-w-[71rem] table-fixed text-body xl:min-w-0">
+          <table className="w-full min-w-[73rem] table-fixed text-body xl:min-w-0">
             <colgroup>
               <col className="w-[4.75rem]" />
               {COLUMNS.map((column) => (
@@ -235,7 +248,7 @@ export function StockTable({
                     >
                       <span
                         className={`inline-flex items-center ${
-                          column.align === "right" ? `justify-end ${POPOVER_OPENS_LEFT}` : ""
+                          column.align === "right" ? "justify-end" : ""
                         }`}
                       >
                         <button
@@ -367,7 +380,10 @@ export function StockTable({
 
               <div className="mt-3 flex items-end justify-between gap-3">
                 <div className="flex flex-col">
-                  <span className="text-label text-stone-500">Price</span>
+                  <span className="flex items-center text-label text-stone-500">
+                    Price
+                    <MetricHelp metric="price" />
+                  </span>
                   <span
                     className={`text-2xl font-semibold tracking-tight tabular-nums ${price === "n/a" ? "text-stone-500" : "text-stone-900"}`}
                   >
@@ -383,11 +399,7 @@ export function StockTable({
                 {METRIC_COLUMNS.map((column) => {
                   const value = column.render(stock);
                   return (
-                    // Right-hand grid cells open their "?" popover leftwards so it stays inside a 375px screen.
-                    <div
-                      key={column.field}
-                      className="flex flex-col gap-0.5 [&_[role=tooltip]]:w-56 even:[&_[role=tooltip]]:left-auto even:[&_[role=tooltip]]:right-0"
-                    >
+                    <div key={column.field} className="flex flex-col gap-0.5">
                       <dt className="flex items-center text-label text-stone-500">
                         {column.label}
                         {column.metricKey && <MetricHelp metric={column.metricKey} />}
