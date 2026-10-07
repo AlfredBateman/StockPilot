@@ -21,21 +21,16 @@ screenRouter.post("/", async (req, res) => {
 
   const { filters, search, sort, page, pageSize } = parsed.data;
 
-  try {
-    const snapshot = await loadStocks();
+  const snapshot = await loadStocks();
 
-    // Order matters: narrow the list first, then order it, then cut the page.
-    // `total` therefore counts everything that matched, not just this page.
-    const matched = searchStocks(applyFilters(snapshot.stocks, filters), search);
-    const { items, total } = paginate(sortStocks(matched, sort), page, pageSize);
+  // Order matters: narrow the list first, then order it, then cut the page.
+  // `total` therefore counts everything that matched, not just this page.
+  const matched = searchStocks(applyFilters(snapshot.stocks, filters), search);
+  const { items, total } = paginate(sortStocks(matched, sort), page, pageSize);
 
-    // asOf lets the client show "data as of <date>" without a separate
-    // request; it's the one field from the snapshot that isn't per-stock.
-    res.json({ data: { items, total, asOf: snapshot.asOf } });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to load stock data";
-    res.status(500).json({ error: message });
-  }
+  // asOf lets the client show "data as of <date>" without a separate
+  // request; it's the one field from the snapshot that isn't per-stock.
+  res.json({ data: { items, total, asOf: snapshot.asOf } });
 });
 
 /** Turns zod's issue list into one readable sentence for the client. */

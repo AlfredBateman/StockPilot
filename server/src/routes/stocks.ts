@@ -5,16 +5,11 @@ import { findStock, loadStocks } from "../data/loadStocks.js";
 export const stocksRouter = Router();
 
 stocksRouter.get("/:ticker", async (req, res) => {
-  try {
-    const snapshot = await loadStocks();
-    const stock = findStock(snapshot, req.params.ticker);
-    if (!stock) {
-      res.status(404).json({ error: `No stock found for ticker "${req.params.ticker}"` });
-      return;
-    }
-    res.json({ data: stock });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to load stock data";
-    res.status(500).json({ error: message });
+  const snapshot = await loadStocks();
+  const stock = findStock(snapshot, req.params.ticker);
+  if (!stock) {
+    res.status(404).json({ error: `No stock found for ticker "${req.params.ticker}"` });
+    return;
   }
+  res.json({ data: stock });
 });

@@ -7,20 +7,15 @@ import { loadStocks } from "../data/loadStocks.js";
 export const sectorsRouter = Router();
 
 sectorsRouter.get("/", async (_req, res) => {
-  try {
-    const snapshot = await loadStocks();
+  const snapshot = await loadStocks();
 
-    const sectors = [
-      ...new Set(
-        snapshot.stocks
-          .map((stock) => stock.sector)
-          .filter((sector): sector is string => sector !== null)
-      ),
-    ].sort((a, b) => a.localeCompare(b));
+  const sectors = [
+    ...new Set(
+      snapshot.stocks
+        .map((stock) => stock.sector)
+        .filter((sector): sector is string => sector !== null)
+    ),
+  ].sort((a, b) => a.localeCompare(b));
 
-    res.json({ data: sectors });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to load stock data";
-    res.status(500).json({ error: message });
-  }
+  res.json({ data: sectors });
 });

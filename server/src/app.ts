@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import express from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import cors from "cors";
 import { healthRouter } from "./routes/health.js";
 import { parseRouter } from "./routes/parse.js";
@@ -63,6 +63,13 @@ export function createApp(options: AppOptions = {}) {
       res.sendFile(indexHtml);
     });
   }
+
+  // Express 5 sends a throwing or rejecting route here (usually "the snapshot
+  // could not be loaded"); answer in the usual {error} shape and keep a 4xx
+  // such as malformed JSON as a 4xx.
+  app.use((err: Error & { status?: number }, _req: Request, res: Response, _next: NextFunction) => {
+    res.status(err.status ?? 500).json({ error: err.message || "Failed to load stock data" });
+  });
 
   return app;
 }
