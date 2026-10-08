@@ -3,6 +3,7 @@ import {
   displayTicker,
   debtToEquityNote,
   formatAsOfDate,
+  formatAxisMonth,
   formatDebtToEquity,
   formatMarketCapCrore,
   formatPercent,
@@ -113,5 +114,15 @@ describe("formatSignedPercent", () => {
 
   it("renders null as n/a", () => {
     expect(formatSignedPercent(null)).toBe("n/a");
+  });
+});
+
+describe("formatAxisMonth", () => {
+  it("shows a short month and the year", () => {
+    expect(formatAxisMonth("2026-01-12")).toBe("Jan 2026");
+  });
+
+  it("shows n/a for an unparseable date", () => {
+    expect(formatAxisMonth("not-a-date")).toBe("n/a");
   });
 });

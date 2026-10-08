@@ -52,7 +52,9 @@ export function Drawer({ title, onClose, children }: DrawerProps) {
             <IconClose size={18} />
           </button>
         </div>
-        <div aria-live="polite" className="flex flex-1 flex-col gap-6 overflow-y-auto overscroll-contain p-5 sm:p-6">
+        {/* shrink-0 on every child: in a flex column a card with overflow-hidden would otherwise shrink to fit
+            the panel's height (a chart collapsing to a sliver) instead of letting this area scroll. */}
+        <div aria-live="polite" className="flex flex-1 flex-col gap-6 overflow-y-auto overscroll-contain p-5 sm:p-6 [&>*]:shrink-0">
           {children}
         </div>
       </div>

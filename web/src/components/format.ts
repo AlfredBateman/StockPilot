@@ -52,6 +52,13 @@ export function formatAsOfDate(iso: string): string {
   return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
+/** A month and year for a chart's x-axis label, e.g. "Jan 2026". Unparseable dates show "n/a". */
+export function formatAxisMonth(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return NA;
+  return date.toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+}
+
 /** Every ticker in the snapshot is NSE-listed ("RELIANCE.NS"), so the suffix is noise on screen. Display only: the data and API calls keep the full ticker. */
 export function displayTicker(ticker: string): string {
   return ticker.endsWith(".NS") ? ticker.slice(0, -3) : ticker;

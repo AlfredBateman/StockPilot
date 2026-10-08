@@ -11,9 +11,9 @@ import {
   YAxis,
 } from "recharts";
 import { getStock, type Stock } from "../api/client";
-import { buildCompareSeries, CHART_TICK, CHART_TOOLTIP_STYLE } from "./chartData";
+import { buildCompareSeries, CHART_TICK, CHART_TOOLTIP_STYLE, indexedAxis, spreadTicks } from "./chartData";
 import { Drawer } from "./Drawer";
-import { displayTicker, formatAsOfDate } from "./format";
+import { displayTicker, formatAsOfDate, formatAxisMonth } from "./format";
 import { IconClose } from "./Icons";
 import { BlockSkeleton, ErrorPanel } from "./StatePanels";
 import { STOCK_METRICS } from "./stockMetrics";
@@ -32,6 +32,11 @@ type CompareState = { kind: "loading" } | { kind: "ready"; stocks: Stock[] } | {
  * They color lines and swatches only; all text stays in stone colors.
  */
 const LINE_COLORS = ["var(--color-chart-1)", "var(--color-chart-2)", "var(--color-chart-3)"];
+
+/** Fixed plot height, so the chart never depends on how tall its parents happen to be. */
+const CHART_HEIGHT = 300;
+/** How many month labels sit under the x-axis; few enough to stay readable at 390px. */
+const X_TICK_COUNT = 4;
 
 /** A short line-key in the series color: identity comes from this mark, not from colored text. */
 function SeriesKey({ color }: { color: string }) {
@@ -73,6 +78,11 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
     // tickers is a new array reference every render; tickerKey is the stable form of the same dependency.
   }, [tickerKey]);
 
+  // The chart's data, y-axis (always including 100) and x-axis labels, worked out once per load.
+  const series = state.kind === "ready" ? buildCompareSeries(state.stocks) : [];
+  const yAxis = indexedAxis(series.flatMap((row) => tickers.map((t) => row[t])).filter((v): v is number => typeof v === "number"));
+  const xTicks = spreadTicks(series.map((row) => row.date), X_TICK_COUNT);
+
   return (
     <Drawer title={`Compare (${tickers.length})`} onClose={onClose}>
       {state.kind === "loading" && <BlockSkeleton label="Loading comparison…" />}
@@ -87,7 +97,7 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
 
       {state.kind === "ready" && (
         <>
-          <section className="overflow-hidden rounded-2xl border border-stone-200 bg-card shadow-e1">
+          <section className="rounded-2xl border border-stone-200 bg-card shadow-e1">
             <div className="flex flex-col gap-1 px-4 pb-2 pt-4">
               <h3 className="text-balance text-h3 text-stone-900">Performance, Indexed to 100</h3>
               <p className="text-caption text-stone-600">
@@ -102,19 +112,29 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
                 .join(", ")}.`}
               className="px-1 pb-3"
             >
-              <ResponsiveContainer width="100%" height={260}>
-                <LineChart data={buildCompareSeries(state.stocks)} margin={{ top: 8, right: 24, bottom: 0, left: 0 }}>
+              <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
+                <LineChart data={series} margin={{ top: 12, right: 36, bottom: 4, left: 4 }}>
                   <CartesianGrid stroke="var(--color-stone-200)" vertical={false} />
                   <XAxis
                     dataKey="date"
                     tick={CHART_TICK}
                     tickLine={false}
                     axisLine={{ stroke: "var(--color-stone-300)" }}
-                    interval="preserveStartEnd"
-                    minTickGap={32}
-                    tickFormatter={formatAsOfDate}
+                    ticks={xTicks}
+                    interval={0}
+                    tickMargin={6}
+                    tickFormatter={formatAxisMonth}
                   />
-                  <YAxis tick={CHART_TICK} tickLine={false} axisLine={false} width={40} />
+                  <YAxis
+                    tick={CHART_TICK}
+                    tickLine={false}
+                    axisLine={false}
+                    width={40}
+                    domain={yAxis.domain}
+                    ticks={yAxis.ticks}
+                    interval={0}
+                    allowDataOverflow
+                  />
                   {/* The baseline every line starts from: above it = up since the start, below = down. */}
                   <ReferenceLine y={100} stroke="var(--color-stone-400)" strokeWidth={1.5} />
                   <Tooltip

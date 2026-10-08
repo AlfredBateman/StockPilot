@@ -74,3 +74,30 @@ export const CHART_TOOLTIP_STYLE = {
 };
 
 export const CHART_TICK = { fontSize: 11, fill: "var(--color-stone-500)" };
+
+/**
+ * Y-axis domain and ticks for the "indexed to 100" chart. Rounded outward to a multiple of 10, 20 or 50 so 100
+ * is always one of the ticks (the grey baseline then sits exactly on a labelled line), whatever the data does.
+ */
+export function indexedAxis(values: (number | null)[]): { domain: [number, number]; ticks: number[] } {
+  const nums = values.filter((v): v is number => v !== null && Number.isFinite(v));
+  const min = Math.min(100, ...nums);
+  const max = Math.max(100, ...nums);
+  const span = max - min;
+  const step = span <= 60 ? 10 : span <= 120 ? 20 : 50;
+  let lo = Math.floor(min / step) * step;
+  let hi = Math.ceil(max / step) * step;
+  if (lo === hi) {
+    lo -= step;
+    hi += step;
+  }
+  const ticks: number[] = [];
+  for (let t = lo; t <= hi; t += step) ticks.push(t);
+  return { domain: [lo, hi], ticks };
+}
+
+/** Up to `count` values spread evenly over `items`, always including the first and last, for a few readable x-axis labels. */
+export function spreadTicks<T>(items: T[], count: number): T[] {
+  if (items.length <= count) return items;
+  return Array.from({ length: count }, (_, i) => items[Math.round((i * (items.length - 1)) / (count - 1))]);
+}

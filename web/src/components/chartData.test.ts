@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCompareSeries, countBySector, normalizeToBase100 } from "./chartData";
+import { buildCompareSeries, countBySector, indexedAxis, normalizeToBase100, spreadTicks } from "./chartData";
 
 describe("countBySector", () => {
   it("counts stocks per sector, most common first", () => {
@@ -124,5 +124,52 @@ describe("buildCompareSeries", () => {
 
   it("returns an empty list for no stocks", () => {
     expect(buildCompareSeries([])).toEqual([]);
+  });
+});
+
+describe("indexedAxis", () => {
+  it("always has 100 as a tick, with the domain rounded outward", () => {
+    const { domain, ticks } = indexedAxis([72.4, 100, 135.2]);
+    expect(domain).toEqual([60, 140]);
+    expect(ticks).toEqual([60, 80, 100, 120, 140]);
+  });
+
+  it("uses a finer step for a narrow spread", () => {
+    const { domain, ticks } = indexedAxis([94.1, 108.7]);
+    expect(domain).toEqual([90, 110]);
+    expect(ticks).toEqual([90, 100, 110]);
+  });
+
+  it("keeps 100 inside the domain when every value is above or below it", () => {
+    expect(indexedAxis([120, 150]).ticks).toContain(100);
+    expect(indexedAxis([40, 80]).ticks).toContain(100);
+    expect(indexedAxis([120, 150]).domain[0]).toBeLessThanOrEqual(100);
+    expect(indexedAxis([40, 80]).domain[1]).toBeGreaterThanOrEqual(100);
+  });
+
+  it("falls back to a usable axis around 100 when there is no data", () => {
+    const { domain, ticks } = indexedAxis([null, null]);
+    expect(domain).toEqual([90, 110]);
+    expect(ticks).toEqual([90, 100, 110]);
+  });
+
+  it("uses a step of 50 for a very wide spread and still includes 100", () => {
+    const { ticks } = indexedAxis([20, 190]);
+    expect(ticks).toContain(100);
+    expect(ticks.length).toBeLessThanOrEqual(7);
+  });
+});
+
+describe("spreadTicks", () => {
+  it("returns everything when there are few items", () => {
+    expect(spreadTicks(["a", "b"], 4)).toEqual(["a", "b"]);
+  });
+
+  it("spreads evenly and keeps the first and last", () => {
+    const items = Array.from({ length: 55 }, (_, i) => i);
+    const picked = spreadTicks(items, 4);
+    expect(picked).toHaveLength(4);
+    expect(picked[0]).toBe(0);
+    expect(picked[3]).toBe(54);
   });
 });
