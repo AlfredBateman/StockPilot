@@ -12,7 +12,7 @@ The app runs on free hosting that sleeps after inactivity, so the first load can
 
 | | |
 | --- | --- |
-| ![Screener results table with the "Data as of 7 Oct 2026, end of day, not live" header](docs/screenshots/01-screener.png) | ![Search "low debt tech stocks" turned into two filters, shown as notes and removable chips](docs/screenshots/02-search-filters.png) |
+| ![Screener results table with the "Data as of 8 Oct 2026, end of day, not live" header](docs/screenshots/01-screener.png) | ![Search "low debt tech stocks" turned into two filters, shown as notes and removable chips](docs/screenshots/02-search-filters.png) |
 | **Screener.** Sortable table of all 100 stocks, with the end-of-day date in the header. | **Plain-English filters.** A search becomes visible notes and removable filter chips. |
 | ![The question "what is P/E" answered by the AI helper](docs/screenshots/03-ai-answer.png) | ![The typo "techonolgy stocks" corrected, with a "Showing results for" line](docs/screenshots/04-typo-and-help.png) |
 | **AI answer.** Questions get a short plain-text answer (this one was served from the answer cache). | **Typo tolerance.** The corrected query is shown above the filters it produced. |
