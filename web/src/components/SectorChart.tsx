@@ -8,8 +8,10 @@ type SectorChartProps = {
 
 /** Height per sector row; the chart grows with the number of sectors instead of squeezing them. */
 const ROW_HEIGHT = 30;
-/** Bar thickness; the data-end radius is half of it, so each bar ends in a full round cap. */
+/** Bar thickness. */
 const BAR_SIZE = 18;
+/** Corner radius of every bar and of the hover band behind it. Recharts caps it at half a bar's length, so a bar of 1 is a small pill, not a broken shape. */
+const CORNER_RADIUS = 6;
 
 // A count-per-sector overview of the current (filtered + searched, not just
 // the visible page) result set. Updates whenever Screener's filters change.
@@ -53,14 +55,14 @@ export function SectorChart({ items }: SectorChartProps) {
               />
               <Tooltip
                 formatter={(value) => [typeof value === "number" ? `${value}` : "n/a", "Stocks"]}
-                cursor={{ fill: "var(--color-stone-100)", radius: 8 }}
+                cursor={{ fill: "var(--color-stone-100)", radius: CORNER_RADIUS }}
                 {...CHART_TOOLTIP_STYLE}
               />
               <Bar
                 dataKey="count"
                 fill="var(--color-chart-1)"
                 barSize={BAR_SIZE}
-                radius={[0, BAR_SIZE / 2, BAR_SIZE / 2, 0]}
+                radius={CORNER_RADIUS}
                 isAnimationActive={false}
               >
                 <LabelList
