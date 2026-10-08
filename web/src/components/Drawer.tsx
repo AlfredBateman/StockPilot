@@ -4,6 +4,8 @@ import { IconClose } from "./Icons";
 type DrawerProps = {
   title: string;
   onClose: () => void;
+  /** Up to 960px wide instead of 576px, for content that needs side-by-side columns. Never wider than the screen. */
+  wide?: boolean;
   children: React.ReactNode;
 };
 
@@ -12,7 +14,7 @@ type DrawerProps = {
 // shadow-e3, docs/DESIGN.md sections 1 and 9). It slides/fades in with plain
 // CSS (@starting-style via Tailwind's `starting:` variant), no JavaScript
 // animation, and appears instantly under reduced motion.
-export function Drawer({ title, onClose, children }: DrawerProps) {
+export function Drawer({ title, onClose, wide = false, children }: DrawerProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -38,7 +40,9 @@ export function Drawer({ title, onClose, children }: DrawerProps) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative z-10 flex h-full w-full flex-col overscroll-contain bg-elevated shadow-e3 transition-[translate,opacity] duration-200 ease-out starting:translate-x-8 starting:opacity-0 motion-reduce:transition-none sm:max-w-xl sm:rounded-l-2xl sm:border-l sm:border-stone-200"
+        className={`relative z-10 flex h-full w-full flex-col overscroll-contain bg-elevated shadow-e3 transition-[translate,opacity] duration-200 ease-out starting:translate-x-8 starting:opacity-0 motion-reduce:transition-none sm:rounded-l-2xl sm:border-l sm:border-stone-200 ${
+          wide ? "sm:max-w-[960px]" : "sm:max-w-xl"
+        }`}
       >
         <div className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-stone-200 px-5 sm:px-6">
           <h2 className="truncate text-h2 text-stone-900">{title}</h2>

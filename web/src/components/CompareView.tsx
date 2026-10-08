@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -56,6 +56,143 @@ function RemoveButton({ ticker, onRemove }: { ticker: string; onRemove: (ticker:
   );
 }
 
+/** Metric column width, and the narrowest a stock column may get before the table scrolls sideways instead. */
+const METRIC_COL_PX = 112;
+const STOCK_COL_MIN_PX = 176;
+
+/** True while the scroll area still has content hidden off its right edge, so the table can show a "more" cue. */
+function useScrollCue() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [more, setMore] = useState(false);
+  const update = useCallback(() => {
+    const el = ref.current;
+    if (el) setMore(el.scrollWidth - el.clientWidth - el.scrollLeft > 1);
+  }, []);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
+    return () => observer.disconnect();
+  }, [update]);
+  return { ref, more, update };
+}
+
+/**
+ * The side-by-side table (640px and up; below that, stacked cards). On a wide panel every stock fits in an equal
+ * column, with names wrapping instead of truncating. When the panel is too narrow for that, it scrolls sideways
+ * with the metric column pinned and a visible cue, so nothing is ever silently cut off.
+ */
+function CompareTable({ stocks, onRemove }: { stocks: Stock[]; onRemove: (ticker: string) => void }) {
+  const { ref, more, update } = useScrollCue();
+  // Sticky cells are opaque (they sit over the scrolling ones), so each takes its row's own background.
+  const stickyTh = "sticky left-0 z-10 px-4 py-3 text-left text-label text-stone-600 shadow-[inset_-1px_0_0_var(--color-stone-200)]";
+
+  return (
+    <div className="hidden flex-col gap-2 sm:flex">
+      <div className="relative rounded-2xl border border-stone-200 bg-card shadow-e1">
+        <div
+          ref={ref}
+          onScroll={update}
+          role="region"
+          aria-label="Side-by-side comparison table"
+          tabIndex={0}
+          className="overflow-x-auto rounded-2xl"
+        >
+          <table className="w-full table-fixed text-body" style={{ minWidth: METRIC_COL_PX + stocks.length * STOCK_COL_MIN_PX }}>
+            <colgroup>
+              <col style={{ width: METRIC_COL_PX }} />
+              {stocks.map((stock) => (
+                <col key={stock.ticker} />
+              ))}
+            </colgroup>
+            <thead>
+              <tr className="bg-stone-100">
+                <th scope="col" className="sticky left-0 z-10 h-11 border-b border-stone-200 bg-stone-100 px-4 text-left text-label text-stone-600">
+                  Metric
+                </th>
+                {stocks.map((stock, i) => (
+                  <th key={stock.ticker} scope="col" className="h-11 border-b border-stone-200 py-1 pl-3 pr-1.5 text-right">
+                    <span className="inline-flex items-center gap-2">
+                      <SeriesKey color={LINE_COLORS[i]} />
+                      <span translate="no" className="font-mono text-ticker font-semibold text-stone-900">
+                        {displayTicker(stock.ticker)}
+                      </span>
+                      <RemoveButton ticker={stock.ticker} onRemove={onRemove} />
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-stone-200">
+                <th scope="row" className={`${stickyTh} bg-card`}>
+                  Name
+                </th>
+                {stocks.map((stock) => (
+                  <td
+                    key={stock.ticker}
+                    className={`break-words px-3 py-3 text-right ${stock.name === null ? "text-stone-500" : "text-stone-700"}`}
+                    title={stock.name ?? "n/a"}
+                  >
+                    {stock.name ?? "n/a"}
+                  </td>
+                ))}
+              </tr>
+              <tr className="border-b border-stone-200 bg-stone-50">
+                <th scope="row" className={`${stickyTh} bg-stone-50`}>
+                  Sector
+                </th>
+                {stocks.map((stock) => (
+                  <td
+                    key={stock.ticker}
+                    className={`break-words px-3 py-3 text-right ${stock.sector === null ? "text-stone-500" : "text-stone-700"}`}
+                  >
+                    {stock.sector ?? "n/a"}
+                  </td>
+                ))}
+              </tr>
+              {STOCK_METRICS.map((metric, index) => (
+                <tr
+                  key={metric.label}
+                  className={`border-b border-stone-200 last:border-b-0 ${index % 2 === 1 ? "bg-stone-50" : ""}`}
+                >
+                  <th scope="row" className={`${stickyTh} ${index % 2 === 1 ? "bg-stone-50" : "bg-card"}`}>
+                    {metric.label}
+                  </th>
+                  {stocks.map((stock) => {
+                    const value = metric.value(stock);
+                    return (
+                      <td
+                        key={stock.ticker}
+                        title={metric.title?.(stock)}
+                        className={`whitespace-nowrap px-3 py-3 text-right tabular-nums ${
+                          value === "n/a" ? "text-stone-500" : "font-semibold text-stone-900"
+                        }`}
+                      >
+                        {value}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {more && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 w-12 rounded-r-2xl bg-gradient-to-l from-stone-900/20 to-transparent"
+          />
+        )}
+      </div>
+      {more && <p className="text-caption text-stone-600">Scroll sideways to see every stock. The metric column stays in place.</p>}
+    </div>
+  );
+}
+
 export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
   const [state, setState] = useState<CompareState>({ kind: "loading" });
   const tickerKey = tickers.join(",");
@@ -84,7 +221,7 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
   const xTicks = spreadTicks(series.map((row) => row.date), X_TICK_COUNT);
 
   return (
-    <Drawer title={`Compare (${tickers.length})`} onClose={onClose}>
+    <Drawer title={`Compare (${tickers.length})`} onClose={onClose} wide>
       {state.kind === "loading" && <BlockSkeleton label="Loading comparison…" />}
 
       {state.kind === "error" && (
@@ -171,82 +308,7 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
           <section className="flex flex-col gap-2.5">
             <h3 className="text-balance text-h3 text-stone-900">Side by Side</h3>
 
-            {/* Desktop: metrics side by side, one column per stock. */}
-            <div className="hidden overflow-hidden rounded-2xl border border-stone-200 bg-card shadow-e1 sm:block">
-              <table className="w-full text-body">
-                <thead>
-                  <tr className="bg-stone-100">
-                    <th scope="col" className="h-11 border-b border-stone-200 px-4 text-left text-label text-stone-600">
-                      Metric
-                    </th>
-                    {state.stocks.map((stock, i) => (
-                      <th key={stock.ticker} scope="col" className="h-11 border-b border-stone-200 py-1 pl-3 pr-1.5 text-right">
-                        <span className="inline-flex items-center gap-2">
-                          <SeriesKey color={LINE_COLORS[i]} />
-                          <span translate="no" className="font-mono text-ticker font-semibold text-stone-900">
-                            {displayTicker(stock.ticker)}
-                          </span>
-                          <RemoveButton ticker={stock.ticker} onRemove={onRemove} />
-                        </span>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-stone-200">
-                    <th scope="row" className="px-4 py-3 text-left text-label text-stone-600">
-                      Name
-                    </th>
-                    {state.stocks.map((stock) => (
-                      <td
-                        key={stock.ticker}
-                        className={`max-w-[10rem] truncate px-3 py-3 text-right ${stock.name === null ? "text-stone-500" : "text-stone-700"}`}
-                        title={stock.name ?? "n/a"}
-                      >
-                        {stock.name ?? "n/a"}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-b border-stone-200 bg-stone-50">
-                    <th scope="row" className="px-4 py-3 text-left text-label text-stone-600">
-                      Sector
-                    </th>
-                    {state.stocks.map((stock) => (
-                      <td
-                        key={stock.ticker}
-                        className={`px-3 py-3 text-right ${stock.sector === null ? "text-stone-500" : "text-stone-700"}`}
-                      >
-                        {stock.sector ?? "n/a"}
-                      </td>
-                    ))}
-                  </tr>
-                  {STOCK_METRICS.map((metric, index) => (
-                    <tr
-                      key={metric.label}
-                      className={`border-b border-stone-200 last:border-b-0 ${index % 2 === 1 ? "bg-stone-50" : ""}`}
-                    >
-                      <th scope="row" className="px-4 py-3 text-left text-label text-stone-600">
-                        {metric.label}
-                      </th>
-                      {state.stocks.map((stock) => {
-                        const value = metric.value(stock);
-                        return (
-                          <td
-                            key={stock.ticker}
-                            title={metric.title?.(stock)}
-                            className={`whitespace-nowrap px-3 py-3 text-right tabular-nums ${
-                              value === "n/a" ? "text-stone-500" : "font-semibold text-stone-900"
-                            }`}
-                          >
-                            {value}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <CompareTable stocks={state.stocks} onRemove={onRemove} />
 
             {/* Below 640px: one stacked card per stock instead of a 3-wide table (same pattern as StockTable). */}
             <ul className="flex flex-col gap-3 sm:hidden">
@@ -261,7 +323,9 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
                     </span>
                     <RemoveButton ticker={stock.ticker} onRemove={onRemove} />
                   </div>
-                  <p className="truncate text-body text-stone-600">{stock.name ?? "n/a"}</p>
+                  <p className="break-words text-body text-stone-600" title={stock.name ?? "n/a"}>
+                    {stock.name ?? "n/a"}
+                  </p>
                   <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-3 border-t border-stone-200 pt-3">
                     <div className="flex flex-col gap-0.5">
                       <dt className="text-label text-stone-500">Sector</dt>
