@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Filter, FilterSpec } from "../api/client";
-import { buildRangeFilter, describeFilter, describeFilterParts, getFilter, withFilter } from "./filterSpecUtils";
+import { buildRangeFilter, describeFilter, describeFilterParts, getFilter, togglePreset, withFilter } from "./filterSpecUtils";
 
 describe("getFilter", () => {
   const filters: FilterSpec = [
@@ -144,5 +144,36 @@ describe("describeFilterParts", () => {
       const { label, value } = describeFilterParts(filter);
       expect(describeFilter(filter)).toBe(`${label} ${value}`);
     }
+  });
+});
+
+describe("togglePreset", () => {
+  const mine: FilterSpec = [{ field: "sector", op: "in", value: ["Energy"] }];
+  const presetA: FilterSpec = [{ field: "pe", op: "lt", value: 15 }];
+  const presetB: FilterSpec = [{ field: "debtToEquity", op: "lt", value: 0.5 }];
+
+  it("replaces the current filters with the preset, it does not stack on them", () => {
+    const next = togglePreset(null, mine, "A", presetA);
+    expect(next.filters).toEqual(presetA);
+    expect(next.active).toEqual({ name: "A", previous: mine });
+  });
+
+  it("clicking the active preset again restores the previous filters", () => {
+    const on = togglePreset(null, mine, "A", presetA);
+    const off = togglePreset(on.active, on.filters, "A", presetA);
+    expect(off.filters).toEqual(mine);
+    expect(off.active).toBeNull();
+  });
+
+  it("restores an empty list when nothing was filtered before", () => {
+    const on = togglePreset(null, [], "A", presetA);
+    expect(togglePreset(on.active, on.filters, "A", presetA).filters).toEqual([]);
+  });
+
+  it("switching presets keeps the original previous filters, not the first preset", () => {
+    const a = togglePreset(null, mine, "A", presetA);
+    const b = togglePreset(a.active, a.filters, "B", presetB);
+    expect(b.filters).toEqual(presetB);
+    expect(togglePreset(b.active, b.filters, "B", presetB).filters).toEqual(mine);
   });
 });

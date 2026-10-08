@@ -9,6 +9,7 @@ import { animateChipIn, animateChipOut } from "./motion";
 type FilterChipsProps = {
   filters: FilterSpec;
   onRemove: (index: number) => void;
+  onClearAll: () => void;
 };
 
 // Renders the current FilterSpec as removable chips. Each chip removes
@@ -16,7 +17,7 @@ type FilterChipsProps = {
 // holds as state, so there is never a second copy of "what's filtered" to
 // keep in sync. Animation (c): chips scale/fade in when added and out when
 // removed (components/motion.ts); nothing else here is stateful.
-export function FilterChips({ filters, onRemove }: FilterChipsProps) {
+export function FilterChips({ filters, onRemove, onClearAll }: FilterChipsProps) {
   const listRef = useRef<HTMLUListElement>(null);
   // Fields that already had a chip last render, so only newly added chips animate in
   // (a chip whose index shifts after a removal is not "new").
@@ -53,7 +54,16 @@ export function FilterChips({ filters, onRemove }: FilterChipsProps) {
 
   return (
     <div className="flex flex-col gap-2.5 border-t border-stone-200 pt-5">
-      <p className="text-label text-stone-600">Active filters ({filters.length})</p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-label text-stone-600">Active filters ({filters.length})</p>
+        <button
+          type="button"
+          onClick={onClearAll}
+          className="touch-manipulation rounded-lg px-2 py-1 text-label font-semibold text-accent-700 underline-offset-2 transition-colors duration-150 hover:bg-accent-100 hover:underline"
+        >
+          Clear all filters
+        </button>
+      </div>
       <ul ref={listRef} className="flex flex-wrap gap-2">
         {filters.map((filter, index) => {
           const { label, value } = describeFilterParts(filter);

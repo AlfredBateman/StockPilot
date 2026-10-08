@@ -4,6 +4,7 @@ import { CompareBar } from "../components/CompareBar";
 import { CompareView } from "../components/CompareView";
 import { FilterChips } from "../components/FilterChips";
 import { FilterPanel } from "../components/FilterPanel";
+import { togglePreset, type ActivePreset } from "../components/filterSpecUtils";
 import { PresetBar } from "../components/PresetBar";
 import { QueryBox } from "../components/QueryBox";
 import { SearchBar } from "../components/SearchBar";
@@ -33,6 +34,9 @@ export function Screener() {
   const [sectors, setSectors] = useState<string[]>([]);
   const [state, setState] = useState<ScreenState>({ kind: "loading" });
   const [retryToken, setRetryToken] = useState(0);
+  const [activePreset, setActivePreset] = useState<ActivePreset>(null);
+  // QueryBox keeps its own text and answer card; changing its key throws both away ("Clear all filters").
+  const [queryBoxKey, setQueryBoxKey] = useState(0);
 
   // All stocks matching the current filters/search (not just the visible
   // page), for SectorChart. Kept separate from the table's own paginated
@@ -104,9 +108,23 @@ export function Screener() {
   }
 
   // Any change to what's being asked for invalidates the current page number.
+  // A filter edit that doesn't come from a preset card also ends the preset, so a card is "Active" only while
+  // its exact filters are still applied.
   function updateFilters(next: FilterSpec) {
     setFilters(next);
+    setActivePreset(null);
     setPage(1);
+  }
+  function applyPreset(name: string, presetFilters: FilterSpec) {
+    const next = togglePreset(activePreset, filters, name, presetFilters);
+    setFilters(next.filters);
+    setActivePreset(next.active);
+    setPage(1);
+  }
+  function clearAll() {
+    updateFilters([]);
+    setSearch("");
+    setQueryBoxKey((k) => k + 1);
   }
   function updateSearch(next: string) {
     setSearch(next);
@@ -130,10 +148,10 @@ export function Screener() {
           query reads as the entry point. The outer shell is a teal-tinted tray; the inner core is the card. */}
       <section className="rounded-[1.75rem] bg-gradient-to-b from-accent-100 to-stone-100 p-1.5 shadow-e2 ring-1 ring-accent-200/70">
         <div className="flex flex-col gap-7 rounded-[1.375rem] bg-card p-5 shadow-[inset_0_1px_0_rgb(255_255_255/0.9)] sm:p-8">
-          <QueryBox onApply={updateFilters} />
+          <QueryBox key={queryBoxKey} onApply={updateFilters} />
           <div className="flex flex-col gap-3.5 border-t border-stone-200 pt-6">
             <h2 className="text-balance text-h3 text-stone-800">Or Start From a Preset</h2>
-            <PresetBar onApply={updateFilters} />
+            <PresetBar activeName={activePreset?.name ?? null} onToggle={applyPreset} />
           </div>
         </div>
       </section>
@@ -150,7 +168,11 @@ export function Screener() {
           </h2>
           <SearchBar value={search} onChange={updateSearch} />
           <FilterPanel filters={filters} onChange={updateFilters} sectors={sectors} />
-          <FilterChips filters={filters} onRemove={(index) => updateFilters(filters.filter((_, i) => i !== index))} />
+          <FilterChips
+            filters={filters}
+            onRemove={(index) => updateFilters(filters.filter((_, i) => i !== index))}
+            onClearAll={clearAll}
+          />
         </section>
 
         {showChart && <SectorChart items={allMatching} />}
@@ -185,7 +207,7 @@ export function Screener() {
                   ? "Try a different search, or remove a filter."
                   : "Try removing a filter or widening one of the ranges."
               }
-              action={filters.length > 0 ? { label: "Clear all filters", onClick: () => updateFilters([]) } : undefined}
+              action={filters.length > 0 ? { label: "Clear all filters", onClick: clearAll } : undefined}
             />
           )}
 

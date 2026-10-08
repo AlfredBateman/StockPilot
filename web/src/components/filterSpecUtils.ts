@@ -64,3 +64,20 @@ export function describeFilter(filter: Filter): string {
   const { label, value } = describeFilterParts(filter);
   return filter.op === "lt" || filter.op === "gt" ? `${label} ${value}` : `${label}: ${value}`;
 }
+
+/** The preset currently applied, plus the filters the user had before it, so clicking it again can put them back. */
+export type ActivePreset = { name: string; previous: FilterSpec } | null;
+
+/**
+ * Clicking a preset card. A preset replaces the whole filter set; clicking the active one again restores what was
+ * there before it. Switching straight from one preset to another keeps the original "before", not the first preset.
+ */
+export function togglePreset(
+  active: ActivePreset,
+  filters: FilterSpec,
+  name: string,
+  presetFilters: FilterSpec
+): { filters: FilterSpec; active: ActivePreset } {
+  if (active?.name === name) return { filters: active.previous, active: null };
+  return { filters: presetFilters, active: { name, previous: active?.previous ?? filters } };
+}
