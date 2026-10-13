@@ -21,6 +21,7 @@ The app runs on free hosting that sleeps after inactivity, so the first load can
 | ![The Guide drawer with the three-step how-to and the list of terms](docs/screenshots/07-guide.png) | ![Stock detail drawer for Adani Enterprises with a weekly price chart](docs/screenshots/08-stock-detail.png) |
 | **Guide.** A three-step how-to plus every term explained. | **Stock detail.** Weekly closing price chart and key numbers. |
 
+<!-- markdownlint-disable-next-line MD033 -->
 <img src="docs/screenshots/09-mobile.png" alt="StockPilot on a 390 pixel wide phone showing a search result" width="280">
 
 **Mobile.** The layout adapts to phone width; the table becomes stacked cards.
@@ -43,7 +44,7 @@ The app runs on free hosting that sleeps after inactivity, so the first load can
 
 ## Architecture
 
-```
+```text
 GitHub Actions (weekdays, 12:30 UTC)
         |  fetch from Yahoo Finance, upsert
         v
@@ -118,6 +119,11 @@ Commands, run from the repo root:
 - Market-cap buckets are my own thresholds calibrated to this 100-stock set, not the official SEBI rule.
 - The URL does not store your filters, so a shared link opens the default view.
 - Not financial advice.
+
+## Contributors
+
+- [@AlfredBateman](https://github.com/AlfredBateman): Team Lead and Backend Engineer
+- [@sidxharthx](https://github.com/sidxharthx): QA and Database Engineer
 
 ## Disclaimer
 
