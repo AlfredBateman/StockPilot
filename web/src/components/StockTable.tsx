@@ -432,14 +432,20 @@ export function StockTable({
                         // row only grows while it is open.
                         return (
                           <td key={column.field} className="min-w-0 px-3 py-3.5 text-left text-stone-600">
-                            <details>
-                              <summary className="flex cursor-pointer list-none items-center gap-2 [&::-webkit-details-marker]:hidden">
-                                <span className="min-w-0 truncate" title={value}>
+                            <details className="group">
+                              {/* The name takes the leftover width and truncates, so "Why?" sits at the same x on every row. */}
+                              <summary className="group/why flex cursor-pointer list-none items-center gap-1 [&::-webkit-details-marker]:hidden">
+                                <span className="min-w-0 flex-1 truncate" title={value}>
                                   {value}
                                 </span>
-                                <span className="inline-flex h-5 shrink-0 items-center rounded-full bg-accent-100 px-2 text-label text-accent-800 ring-1 ring-accent-200">
+                                <span className="inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-lg border border-accent-200 pl-1 pr-0.5 text-xs font-medium text-accent-700 transition-colors duration-(--motion-fast) group-hover/why:bg-accent-100">
                                   <span aria-hidden="true">Why?</span>
                                   <span className="sr-only">Why this stock matched</span>
+                                  <IconChevron
+                                    direction="right"
+                                    size={12}
+                                    className="transition-transform duration-(--motion-fast) group-open:rotate-90"
+                                  />
                                 </span>
                               </summary>
                               <ReasonList reasons={stock.reasons} />
