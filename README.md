@@ -16,7 +16,7 @@ The app runs on free hosting that sleeps after inactivity, so the first load can
 | **Screener.** Sortable table of all 100 stocks, with the end-of-day date in the header. | **Plain-English filters.** A search becomes visible notes and removable filter chips. |
 | ![The question "what is P/E" answered by the AI helper](docs/screenshots/03-ai-answer.png) | ![The typo "techonolgy stocks" corrected, with a "Showing results for" line](docs/screenshots/04-typo-and-help.png) |
 | **AI answer.** Questions get a short plain-text answer (this one was served from the answer cache). | **Typo tolerance.** The corrected query is shown above the filters it produced. |
-| ![A search with no matches, offering a "Dropping 'P/E below 5' gives 3 stocks" suggestion](docs/screenshots/05-no-results.png) | ![The "?" popover on Debt/Equity explaining the 1.2x notation](docs/screenshots/06-glossary-popover.png) |
+| ![A search with no matches, offering a "Dropping 'P/E below 5' gives 4 stocks" suggestion](docs/screenshots/05-no-results.png) | ![The "?" popover on Debt/Equity explaining the 1.2x notation](docs/screenshots/06-glossary-popover.png) |
 | **Zero-result help.** When nothing matches, one-click suggestions show which filter to drop. | **Glossary popover.** The "?" next to every metric explains it with a worked example. |
 | ![The Guide drawer with the three-step how-to and the list of terms](docs/screenshots/07-guide.png) | ![Stock detail drawer for Adani Enterprises with a weekly price chart](docs/screenshots/08-stock-detail.png) |
 | **Guide.** A three-step how-to plus every term explained. | **Stock detail.** Weekly closing price chart and key numbers. |
