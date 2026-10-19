@@ -18,6 +18,9 @@ import { HISTORY_CAPTION } from "./stockMetrics";
 
 export const COMPARE_LIMIT = 3;
 
+/** True once any table has shown data, so the row entrance plays on the first load only (not when returning to a tab). */
+let introPlayed = false;
+
 type StockTableProps = {
   items: Stock[];
   total: number;
@@ -231,16 +234,30 @@ export function StockTable({
   const rangeStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const rangeEnd = Math.min(page * pageSize, total);
 
-  // Animation (a): rows animate in on each data load. Keyed on the tickers shown (in order),
-  // not on the `items` array itself, so ticking a compare box or a star, which re-renders with
-  // the same rows, never replays it. Desktop rows and mobile cards stagger separately.
+  // Animation (a): the rows of the layout on screen animate in the first time the app shows data and when
+  // Previous/Next turns the page, never on a filter, sort, search or tab return. Keyed on the tickers shown
+  // (in order), so ticking a compare box or a star, which re-renders the same rows, never replays it.
+  // The decision is stored per rowKey, so React StrictMode's second effect run in dev plays it too.
   const tableBodyRef = useRef<HTMLTableSectionElement>(null);
   const cardListRef = useRef<HTMLUListElement>(null);
+  const pageTurn = useRef(false);
+  const decided = useRef<{ key: string; play: boolean } | null>(null);
   const rowKey = items.map((stock) => stock.ticker).join(",");
   useLayoutEffect(() => {
-    animateRowsIn(Array.from(tableBodyRef.current?.children ?? []) as HTMLElement[]);
-    animateRowsIn(Array.from(cardListRef.current?.children ?? []) as HTMLElement[]);
+    if (decided.current?.key !== rowKey) {
+      decided.current = { key: rowKey, play: pageTurn.current || !introPlayed };
+      pageTurn.current = false;
+      introPlayed = true;
+    }
+    if (!decided.current.play) return;
+    const visible = [tableBodyRef.current, cardListRef.current].find((el) => el && el.getClientRects().length > 0);
+    return animateRowsIn(Array.from(visible?.children ?? []) as HTMLElement[]);
   }, [rowKey]);
+
+  function turnPage(next: number) {
+    pageTurn.current = true;
+    onPageChange(next);
+  }
 
   function renderPagination(className: string) {
     const buttonClass =
@@ -253,7 +270,7 @@ export function StockTable({
         </span>
         {totalPages > 1 && (
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => onPageChange(page - 1)} disabled={page <= 1} className={buttonClass}>
+            <button type="button" onClick={() => turnPage(page - 1)} disabled={page <= 1} className={buttonClass}>
               <IconChevron direction="left" size={16} />
               Previous
             </button>
@@ -262,7 +279,7 @@ export function StockTable({
             </span>
             <button
               type="button"
-              onClick={() => onPageChange(page + 1)}
+              onClick={() => turnPage(page + 1)}
               disabled={page >= totalPages}
               className={buttonClass}
             >

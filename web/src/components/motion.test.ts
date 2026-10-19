@@ -72,8 +72,9 @@ describe("under prefers-reduced-motion", () => {
   it("(a) leaves table rows untouched, so they are fully visible", () => {
     setReducedMotion(true);
     const row = fakeElement();
-    animateRowsIn([row]);
+    const revert = animateRowsIn([row]);
     expect(row.style.opacity).toBeUndefined();
+    expect(() => revert()).not.toThrow();
   });
 
   it("(b) writes the final price immediately", () => {

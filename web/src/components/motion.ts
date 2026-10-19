@@ -31,21 +31,24 @@ export function prefersReducedMotion(): boolean {
 }
 
 /**
- * (a) Table rows / mobile stock cards animate in on a data load: fade in and
- * rise 4px, 180ms each, 20ms apart. Opacity is set to 0 synchronously first,
- * so the rows never flash at full opacity for a frame before the animation's
- * first tick. Reduced motion: nothing is touched, rows are simply visible.
+ * (a) Table rows / mobile stock cards: the first 12 fade in and rise 4px, 180ms
+ * each, 15ms apart (the rest simply appear). anime.js writes the start values
+ * as soon as it is called, so there is no flash and no hand-set opacity.
+ * Returns a function that reverts the rows to plain CSS (effect cleanup).
+ * Reduced motion: nothing is touched, rows are simply visible.
  */
-export function animateRowsIn(rows: HTMLElement[]): void {
-  if (rows.length === 0 || prefersReducedMotion()) return;
-  for (const row of rows) row.style.opacity = "0";
-  animate(rows, {
+export function animateRowsIn(rows: HTMLElement[]): () => void {
+  if (rows.length === 0 || prefersReducedMotion()) return () => {};
+  const animation = animate(rows.slice(0, MOTION.staggerMax), {
     opacity: [0, 1],
     translateY: [4, 0],
-    duration: 180,
-    delay: stagger(20),
-    ease: "outQuad",
+    duration: MOTION.base,
+    delay: stagger(MOTION.stagger),
+    ease: MOTION.easeOut,
   });
+  return () => {
+    animation.revert();
+  };
 }
 
 /**
