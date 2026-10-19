@@ -17,6 +17,7 @@ import {
 } from "./glossary";
 
 type SnapshotStock = {
+  name: string;
   ticker: string;
   sector: string | null;
   price: number | null;
