@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getHealth } from "./api/client";
-import { formatAsOfDate } from "./components/format";
+import { formatAsOfDate, isDataStale } from "./components/format";
 import type { GlossaryKey } from "./components/glossary";
 import { Guide } from "./components/Guide";
 import { GuideHint } from "./components/GuideHint";
@@ -24,6 +24,7 @@ export function App() {
   const [demoMode, setDemoMode] = useState(false);
   // undefined until the health check answers; null if the server has no data date.
   const [dataAsOf, setDataAsOf] = useState<string | null | undefined>(undefined);
+  const [stale, setStale] = useState(false);
   // null = Guide closed; { key: null } = open at the top; { key } = open at that term.
   const [guide, setGuide] = useState<{ key: GlossaryKey | null } | null>(null);
   const { visible: hintVisible, dismiss: dismissHint } = useGuideHint();
@@ -38,6 +39,7 @@ export function App() {
       .then((response) => {
         setDemoMode(response.data.demoMode);
         setDataAsOf(response.data.asOf);
+        setStale(isDataStale(response.data.dataSource, response.data.asOf));
       })
       .catch(() => {});
   }, []);
@@ -144,6 +146,19 @@ export function App() {
         </header>
 
         <WakeNotice />
+
+        {/* Calm, not an error: the app still works, the numbers are just older (rules: isDataStale in format.ts). */}
+        {stale && dataAsOf && (
+          <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6 md:pt-6">
+            <p
+              role="status"
+              className="flex items-start gap-3 rounded-xl border border-warning/25 bg-warning-soft px-4 py-3 text-body text-warning"
+            >
+              <IconInfo size={18} className="mt-0.5 shrink-0" />
+              Showing older data from {formatAsOfDate(dataAsOf)}. Prices may be out of date.
+            </p>
+          </div>
+        )}
 
         {/* The disclaimer is a proper note on every page, not a caption (docs/DESIGN.md section 19). */}
         <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6 md:pt-6">

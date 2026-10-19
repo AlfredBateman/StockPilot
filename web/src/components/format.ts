@@ -52,6 +52,27 @@ export function formatAsOfDate(iso: string): string {
   return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
+/**
+ * True when the "older data" notice should show: the server fell back to the
+ * committed snapshot file, or the data is more than 3 weekdays (UTC) behind
+ * `now`. Holidays count as weekdays, so a long market holiday can trip it;
+ * that errs towards telling the user. No date means no notice.
+ */
+export function isDataStale(dataSource: "mongo" | "file" | null, asOf: string | null, now = new Date()): boolean {
+  const day = new Date(asOf ?? "");
+  if (Number.isNaN(day.getTime())) return false;
+  if (dataSource === "file") return true;
+
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  day.setUTCHours(0, 0, 0, 0);
+  let weekdays = 0;
+  while (day.getTime() < today) {
+    day.setUTCDate(day.getUTCDate() + 1);
+    if (day.getUTCDay() !== 0 && day.getUTCDay() !== 6) weekdays++;
+  }
+  return weekdays > 3;
+}
+
 /** A month and year for a chart's x-axis label, e.g. "Jan 2026". Unparseable dates show "n/a". */
 export function formatAxisMonth(iso: string): string {
   const date = new Date(iso);

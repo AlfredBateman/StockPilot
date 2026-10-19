@@ -10,6 +10,7 @@ import {
   formatPrice,
   formatRatio,
   formatSignedPercent,
+  isDataStale,
 } from "./format";
 
 describe("formatPrice", () => {
@@ -88,6 +89,29 @@ describe("formatAsOfDate", () => {
 
   it("renders an invalid date as n/a", () => {
     expect(formatAsOfDate("not-a-date")).toBe("n/a");
+  });
+});
+
+describe("isDataStale", () => {
+  // Friday 16 Oct 2026, the evening ingest.
+  const friday = "2026-10-16T12:30:00.000Z";
+
+  it("is fresh up to 3 weekdays later, weekends not counted", () => {
+    expect(isDataStale("mongo", friday, new Date("2026-10-19T09:00:00Z"))).toBe(false); // Mon: 1
+    expect(isDataStale("mongo", friday, new Date("2026-10-21T23:00:00Z"))).toBe(false); // Wed: 3
+  });
+
+  it("is stale from the 4th weekday on", () => {
+    expect(isDataStale("mongo", friday, new Date("2026-10-22T00:30:00Z"))).toBe(true); // Thu: 4
+  });
+
+  it("is always stale when served from the snapshot file", () => {
+    expect(isDataStale("file", friday, new Date("2026-10-16T13:00:00Z"))).toBe(true);
+  });
+
+  it("shows nothing without a usable date", () => {
+    expect(isDataStale("file", null)).toBe(false);
+    expect(isDataStale("mongo", "not-a-date")).toBe(false);
   });
 });
 
