@@ -483,6 +483,7 @@
     "query": "should I buy Reliance?",
     "category": "advice",
     "expectedFilters": [],
+    "expectedSearch": "reliance",
     "expectedIntent": "advice",
     "status": "unreviewed"
   },
@@ -491,6 +492,7 @@
     "query": "is it a good time to sell my TCS shares",
     "category": "advice",
     "expectedFilters": [],
+    "expectedSearch": "tcs",
     "expectedIntent": "advice",
     "status": "unreviewed"
   },
@@ -515,6 +517,7 @@
     "query": "is infosys a buy",
     "category": "advice",
     "expectedFilters": [],
+    "expectedSearch": "infosys",
     "expectedIntent": "advice",
     "status": "unreviewed"
   },
@@ -582,13 +585,11 @@
   },
   {
     "id": "z03",
-    "query": "cheap tech large caps that rose this month",
+    "query": "near 52-week low and near 52-week high",
     "category": "zeroResult",
     "expectedFilters": [
-      { "field": "pe", "op": "lt", "value": 20 },
-      { "field": "marketCapBucket", "op": "eq", "value": "Large" },
-      { "field": "change1m", "op": "gt", "value": 0 },
-      { "field": "sector", "op": "eq", "value": "Technology" }
+      { "field": "aboveLow52w", "op": "lt", "value": 5 },
+      { "field": "belowHigh52w", "op": "lt", "value": 5 }
     ],
     "expectSuggestions": true,
     "status": "unreviewed"

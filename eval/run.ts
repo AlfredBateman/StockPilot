@@ -17,14 +17,16 @@ import { zeroResultHelp } from "../server/src/nl/zeroResultHelp.js";
 // times every LLM call. Never touches app code, only calls exported functions.
 //
 // process.loadEnvFile (Node stdlib, no dotenv dependency needed here) reads
-// ./.env relative to cwd, same default dotenv/config uses in server/src/index.ts.
-// This script runs via `npm run eval --prefix server`, so cwd is server/ and
-// the same server/.env applies. Missing file = same as no env vars set.
-// Nothing from it is ever printed.
-try {
-  process.loadEnvFile();
-} catch {
-  // No .env file — LLM_* vars simply stay unset, which is the offline path.
+// ./.env relative to cwd, same default dotenv/config uses in server/src/index.ts,
+// then the repo-root .env; variables already set (shell, server/.env) win.
+// This script runs via `npm run eval --prefix server`, so cwd is server/.
+// Missing files = same as no env vars set. Nothing from them is ever printed.
+for (const envFile of [".env", "../.env"]) {
+  try {
+    process.loadEnvFile(envFile);
+  } catch {
+    // No such file — LLM_* vars simply stay unset, which is the offline path.
+  }
 }
 
 const CATEGORIES = [
@@ -145,91 +147,124 @@ function aggregate(runs: TierRun[]) {
   };
 }
 
-function buildReport(rows: Row[], llmConfigured: boolean): string {
+/** The heading of the AI part of results.md. It is always the last section, so a later run can carry it over. */
+const AI_HEADING = "## AI results (LLM alone, no fallback)";
+
+/** The AI section of the existing results.md, or null when there is none yet. */
+function previousAiSection(): string | null {
+  try {
+    const old = readFileSync(RESULTS_PATH, "utf-8");
+    const at = old.indexOf(AI_HEADING);
+    return at === -1 ? null : old.slice(at).trimEnd();
+  } catch {
+    return null;
+  }
+}
+
+/** The previous AI section, unchanged except for a line saying it was not re-run. */
+function keptAiSection(previous: string, queryCount: number): string[] {
+  const lines = previous.split("\n");
+  // Drop an older "not re-run" note first, so repeated offline runs do not stack them.
+  const runAt = lines.findIndex((line) => line.startsWith("Run: "));
+  if (runAt !== -1) lines[runAt] = lines[runAt].replace(/ \*\*Not re-run:\*\*.*$/, "");
+  const note = `**Not re-run:** these numbers are kept from that run, not from the ${queryCount} queries above. Run \`npm run eval\` with LLM_PROVIDER, LLM_API_KEY and LLM_MODEL set to refresh them.`;
+  if (runAt !== -1) lines[runAt] += ` ${note}`;
+  else lines.splice(1, 0, "", note);
+  return lines;
+}
+
+function aiSection(rows: Row[]): string[] {
+  const lines: string[] = [AI_HEADING, ""];
+  const times = rows.map((row) => row.llmMs!);
+  const failed = rows.filter((row) => row.llmFailed).length;
+  const today = new Date().toISOString().slice(0, 10);
+  lines.push(
+    `Run: ${today}, ${rows.length} queries, provider ${process.env.LLM_PROVIDER?.trim()}, model ${process.env.LLM_MODEL?.trim()}. The cloud LLM is called alone, with no guard, cache or rules fallback. A failed call (timeout, HTTP error, or a reply discarded by validation) scores as no filters and intent "filter".`,
+    ""
+  );
+
+  const l = aggregate(rows.map((row) => row.llm!));
+  lines.push("| Precision | Recall | Full-query match | Intent correct | Zero-result help |");
+  lines.push("| --- | --- | --- | --- | --- |");
+  lines.push(
+    `| ${l.precision.toFixed(2)} | ${l.recall.toFixed(2)} | ${pct(l.fullMatchRate)} (${l.fullMatches}/${rows.length}) | ${pct(l.intentRate)} (${l.intentHits}/${rows.length}) | ${l.suggestionHits}/${l.suggestionTotal} |`
+  );
+  lines.push("");
+
+  lines.push("| Category | LLM P | LLM R | LLM full | LLM intent |");
+  lines.push("| --- | --- | --- | --- | --- |");
+  for (const cat of CATEGORIES) {
+    const catRows = rows.filter((row) => row.q.category === cat);
+    if (catRows.length === 0) continue;
+    const cl = aggregate(catRows.map((row) => row.llm!));
+    lines.push(`| ${cat} | ${cl.precision.toFixed(2)} | ${cl.recall.toFixed(2)} | ${pct(cl.fullMatchRate)} | ${pct(cl.intentRate)} |`);
+  }
+  lines.push("");
+
+  lines.push("Latency (wall-clock per call, from the machine that ran it):", "");
+  lines.push("| Median | Worst case | Failed or discarded calls |");
+  lines.push("| --- | --- | --- |");
+  lines.push(`| ${seconds(median(times))} | ${seconds(Math.max(...times))} | ${failed}/${times.length} |`);
+  lines.push("");
+
+  lines.push("Answers (question, advice, offtopic):", "");
+  for (const row of rows.filter((x) => x.q.expectedIntent && x.q.expectedIntent !== "filter")) {
+    lines.push(`- **${row.q.id}** \`${row.q.query}\` -> intent ${row.llm!.intent}: ${row.llmAnswer ?? "n/a"}`);
+  }
+  lines.push("");
+
+  lines.push("Cases the LLM did not fully get right:", "");
+  const missed = rows.filter((row) => !row.llm!.score.fullMatch || !row.llm!.intentOk || row.llm!.suggestionsOk === false);
+  for (const row of missed) {
+    const status = row.llmFailed ? " (call failed or reply discarded)" : "";
+    lines.push(`- **${row.q.id}** \`${row.q.query}\` (${row.q.category})`);
+    lines.push(`  - expected: intent ${row.q.expectedIntent ?? "filter"}, filters ${JSON.stringify(row.q.expectedFilters)}`);
+    lines.push(`  - LLM got: intent ${row.llm!.intent}, filters ${JSON.stringify(row.llm!.filters)}${status}`);
+  }
+  if (missed.length === 0) lines.push("None.");
+  lines.push("");
+  return lines;
+}
+
+function buildReport(rows: Row[], aiLines: string[] | null): string {
   const lines: string[] = [];
   const counts = CATEGORIES.map((cat) => `${rows.filter((r) => r.q.category === cat).length} ${cat}`).join(", ");
 
   lines.push("# NL Query Eval Results", "");
   lines.push(`${rows.length} queries (${counts}), all "unreviewed".`, "");
   lines.push(
-    '"Rules" means the offline pipeline the app runs first: typo fix, then the rule parser. It always answers intent "filter", so it can never get a question, advice or off-topic query right on intent.',
+    '"Rules" means the offline pipeline the app runs first: typo fix, rule parser, then company names. It always answers intent "filter", so it can never get a question, advice or off-topic query right on intent.',
     ""
   );
   lines.push(
-    "The LLM column is the cloud LLM called alone, with no guard, cache or rules fallback. A failed call (timeout, HTTP error, or a reply discarded by validation) scores as no filters and intent \"filter\".",
+    'Advice queries that name a company (a01, a02, a05) expect that name search too, because the app does search the name.',
     ""
   );
 
-  lines.push("## Overall", "");
-  lines.push("| Tier | Precision | Recall | Full-query match | Intent correct | Zero-result help |");
-  lines.push("| --- | --- | --- | --- | --- | --- |");
+  lines.push("## Overall (rules)", "");
+  lines.push("| Precision | Recall | Full-query match | Intent correct | Zero-result help |");
+  lines.push("| --- | --- | --- | --- | --- |");
   const r = aggregate(rows.map((row) => row.rules));
   lines.push(
-    `| Rules | ${r.precision.toFixed(2)} | ${r.recall.toFixed(2)} | ${pct(r.fullMatchRate)} (${r.fullMatches}/${rows.length}) | ${pct(r.intentRate)} (${r.intentHits}/${rows.length}) | ${r.suggestionHits}/${r.suggestionTotal} |`
+    `| ${r.precision.toFixed(2)} | ${r.recall.toFixed(2)} | ${pct(r.fullMatchRate)} (${r.fullMatches}/${rows.length}) | ${pct(r.intentRate)} (${r.intentHits}/${rows.length}) | ${r.suggestionHits}/${r.suggestionTotal} |`
   );
-  if (llmConfigured) {
-    const l = aggregate(rows.map((row) => row.llm!));
-    lines.push(
-      `| LLM (alone, no fallback) | ${l.precision.toFixed(2)} | ${l.recall.toFixed(2)} | ${pct(l.fullMatchRate)} (${l.fullMatches}/${rows.length}) | ${pct(l.intentRate)} (${l.intentHits}/${rows.length}) | ${l.suggestionHits}/${l.suggestionTotal} |`
-    );
-  } else {
-    lines.push("| LLM (alone, no fallback) | skipped: no LLM_PROVIDER/LLM_API_KEY/LLM_MODEL configured | | | | |");
-  }
   lines.push("");
 
-  lines.push("## By category", "");
-  lines.push(
-    llmConfigured
-      ? "| Category | Rules P | Rules R | Rules full | Rules intent | LLM P | LLM R | LLM full | LLM intent |"
-      : "| Category | Rules P | Rules R | Rules full | Rules intent |"
-  );
-  lines.push(llmConfigured ? "| --- | --- | --- | --- | --- | --- | --- | --- | --- |" : "| --- | --- | --- | --- | --- |");
+  lines.push("## By category (rules)", "");
+  lines.push("| Category | Rules P | Rules R | Rules full | Rules intent |");
+  lines.push("| --- | --- | --- | --- | --- |");
   for (const cat of CATEGORIES) {
     const catRows = rows.filter((row) => row.q.category === cat);
     if (catRows.length === 0) continue;
     const cr = aggregate(catRows.map((row) => row.rules));
-    const rulesCells = `${cr.precision.toFixed(2)} | ${cr.recall.toFixed(2)} | ${pct(cr.fullMatchRate)} | ${pct(cr.intentRate)}`;
-    if (llmConfigured) {
-      const cl = aggregate(catRows.map((row) => row.llm!));
-      lines.push(
-        `| ${cat} | ${rulesCells} | ${cl.precision.toFixed(2)} | ${cl.recall.toFixed(2)} | ${pct(cl.fullMatchRate)} | ${pct(cl.intentRate)} |`
-      );
-    } else {
-      lines.push(`| ${cat} | ${rulesCells} |`);
-    }
+    lines.push(`| ${cat} | ${cr.precision.toFixed(2)} | ${cr.recall.toFixed(2)} | ${pct(cr.fullMatchRate)} | ${pct(cr.intentRate)} |`);
   }
   lines.push("");
 
-  if (llmConfigured) {
-    const times = rows.map((row) => row.llmMs!).filter((ms) => ms !== null);
-    const failed = rows.filter((row) => row.llmFailed).length;
-    lines.push("## LLM latency", "");
-    lines.push(
-      `Provider: ${process.env.LLM_PROVIDER?.trim()}, model: ${process.env.LLM_MODEL?.trim()}. Wall-clock time per call, measured in this run from this machine, ${times.length} calls.`,
-      ""
-    );
-    lines.push("| Median | Worst case | Failed or discarded calls |");
-    lines.push("| --- | --- | --- |");
-    lines.push(`| ${seconds(median(times))} | ${seconds(Math.max(...times))} | ${failed}/${times.length} |`);
-    lines.push("");
-
-    lines.push("## LLM answers (question, advice, offtopic)", "");
-    for (const row of rows.filter((x) => x.q.expectedIntent && x.q.expectedIntent !== "filter")) {
-      lines.push(`- **${row.q.id}** \`${row.q.query}\` -> intent ${row.llm!.intent}: ${row.llmAnswer ?? "n/a"}`);
-    }
-    lines.push("");
-  }
-
-  lines.push("## Failing cases", "");
-  const failing = rows.filter(
-    (row) =>
-      !row.rules.score.fullMatch ||
-      !row.rules.intentOk ||
-      row.rules.suggestionsOk === false ||
-      (llmConfigured && (!row.llm!.score.fullMatch || !row.llm!.intentOk || row.llm!.suggestionsOk === false))
-  );
+  lines.push("## Failing cases (rules)", "");
+  const failing = rows.filter((row) => !row.rules.score.fullMatch || !row.rules.intentOk || row.rules.suggestionsOk === false);
   if (failing.length === 0) {
-    lines.push("None: every query got a full-query match from every scored tier.");
+    lines.push("None: every query got a full-query match from the rules.");
   } else {
     for (const row of failing) {
       const intent = row.q.expectedIntent ?? "filter";
@@ -237,19 +272,14 @@ function buildReport(rows: Row[], llmConfigured: boolean): string {
       const expectedSearch = row.q.expectedSearch ? `, search "${row.q.expectedSearch}"` : "";
       lines.push(`  - expected: intent ${intent}, filters ${JSON.stringify(row.q.expectedFilters)}${expectedSearch}`);
       if (row.correctedQuery) lines.push(`  - typo fix: \`${row.correctedQuery}\``);
-      if (!row.rules.score.fullMatch || !row.rules.intentOk || row.rules.suggestionsOk === false) {
-        const help = row.rules.suggestionsOk === false ? ", no zero-result suggestion" : "";
-        const search = row.rules.search ? `, search "${row.rules.search}"` : "";
-        lines.push(`  - rules got: intent ${row.rules.intent}, filters ${JSON.stringify(row.rules.filters)}${search}${help}`);
-      }
-      if (llmConfigured && (!row.llm!.score.fullMatch || !row.llm!.intentOk || row.llm!.suggestionsOk === false)) {
-        const status = row.llmFailed ? " (call failed or reply discarded)" : "";
-        lines.push(`  - LLM got: intent ${row.llm!.intent}, filters ${JSON.stringify(row.llm!.filters)}${status}`);
-      }
+      const help = row.rules.suggestionsOk === false ? ", no zero-result suggestion" : "";
+      const search = row.rules.search ? `, search "${row.rules.search}"` : "";
+      lines.push(`  - rules got: intent ${row.rules.intent}, filters ${JSON.stringify(row.rules.filters)}${search}${help}`);
     }
   }
   lines.push("");
 
+  if (aiLines) lines.push(...aiLines);
   return lines.join("\n");
 }
 
@@ -296,7 +326,10 @@ async function main() {
     rows.push({ q, correctedQuery: fixed.corrections.length > 0 ? fixed.text : null, rules, llm, llmMs, llmFailed, llmAnswer });
   }
 
-  writeFileSync(RESULTS_PATH, buildReport(rows, llmConfigured), "utf-8");
+  // Without a key the AI section is carried over from the old results.md, not deleted.
+  const previousAi = llmConfigured ? null : previousAiSection();
+  const aiLines = llmConfigured ? aiSection(rows) : previousAi ? keptAiSection(previousAi, rows.length) : null;
+  writeFileSync(RESULTS_PATH, buildReport(rows, aiLines), "utf-8");
 
   const r = aggregate(rows.map((row) => row.rules));
   console.log(
@@ -310,7 +343,7 @@ async function main() {
     );
     console.log(`LLM latency: median ${seconds(median(times))}, worst ${seconds(Math.max(...times))}`);
   } else {
-    console.log("LLM:   skipped (no LLM_PROVIDER/LLM_API_KEY/LLM_MODEL configured)");
+    console.log("LLM:   not re-run (no LLM_PROVIDER/LLM_API_KEY/LLM_MODEL configured); previous AI results kept in results.md");
   }
   console.log(`Wrote ${RESULTS_PATH}`);
 }
