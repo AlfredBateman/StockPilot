@@ -1,7 +1,7 @@
 {
   "name": "stockpilot",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.2.0",
   "description": "Beginner stock screener for the NIFTY 100 universe. Educational project, not financial advice.",
   "author": "AlfredBateman",
   "license": "MIT",
