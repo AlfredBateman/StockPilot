@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { makeStock } from "../engine/testStocks.js";
 import { findCompanies } from "./companyNames.js";
+import { parseOffline } from "./parseOrchestrator.js";
 import { parseQuery } from "./ruleParser.js";
 
 const stocks = [
@@ -54,6 +55,20 @@ describe("findCompanies — names and tickers", () => {
     expect(find("india limited").search).toBeNull();
     // "shares" is two letters from "Shree" but must never become it.
     expect(find("cheap shares")).toMatchObject({ search: null, unmatched: ["shares"] });
+  });
+
+  it("does not search a name on state or united alone, but does inside a fuller name", () => {
+    const withStateBank = [...stocks, makeStock({ ticker: "SBIN.NS", name: "State Bank of India", sector: "Financial Services" })];
+    const findIn = (query: string) => findCompanies(withStateBank, query, parseQuery(query).unmatched);
+    expect(findIn("state")).toMatchObject({ search: null, unmatched: ["state"] });
+    expect(findIn("united stocks").search).toBeNull();
+    expect(findIn("state bank of india").search).toBe("state");
+  });
+
+  it("never turns a sector word, or india/indian, into a name search", () => {
+    for (const query of ["bank stocks", "banking stocks", "finance companies", "pharma", "best bank stocks", "india", "indian companies", "large cap stocks in India"]) {
+      expect(parseOffline(query, stocks).rules.search, query).toBeNull();
+    }
   });
 
   it("leaves words that are not names alone, for the LLM to read", () => {
