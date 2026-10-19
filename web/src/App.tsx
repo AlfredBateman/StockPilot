@@ -6,6 +6,7 @@ import { Guide } from "./components/Guide";
 import { GuideHint } from "./components/GuideHint";
 import { IconBook, IconInfo, IconOffline, LogoMark } from "./components/Icons";
 import { MetricHelp } from "./components/MetricHelp";
+import { SiteFooter } from "./components/SiteFooter";
 import { WakeNotice } from "./components/WakeNotice";
 import { GuideContext } from "./hooks/guideContext";
 import { useGuideHint } from "./hooks/useGuideHint";
@@ -180,6 +181,8 @@ export function App() {
         </div>
 
         {view === "screener" ? <Screener /> : <Watchlist />}
+
+        <SiteFooter asOf={dataAsOf} onOpenGuide={() => openGuide()} />
 
         {guide && <Guide onClose={closeGuide} focusKey={guide.key} />}
       </div>

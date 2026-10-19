@@ -358,6 +358,13 @@ rounded inner-panel strip at the top of the content, under the header, with an
 info icon in a teal well, a bold first sentence, and one plain sentence about
 the data. `role="note"`.
 
+A thin footer (`SiteFooter`) closes every page: a `stone-200` hairline, then
+one muted `text-label` `stone-600` line (`stone-500` is only 4.59:1 on the darkest end of the page gradient) with the data source and date ("Data:
+Yahoo Finance (unofficial), end-of-day, last updated <date>", "n/a" when
+missing), "Educational, not financial advice", and an underlined `accent-700`
+"Read the Guide" text button. It sits after `<main>`, so the sticky CompareBar
+never covers it.
+
 ## 20. Charts
 
 - **Sector chart:** horizontal bars in `chart-1`, 18px thick, fully rounded
