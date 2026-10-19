@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { ZodError } from "zod";
 import { loadStocks } from "../data/loadStocks.js";
 import { applyFilters } from "../engine/applyFilters.js";
+import { priceHistory } from "../engine/metrics.js";
 import { paginate } from "../engine/paginate.js";
 import { ScreenRequestSchema } from "../engine/screenRequest.js";
 import { searchStocks } from "../engine/searchStocks.js";
@@ -30,7 +31,9 @@ screenRouter.post("/", async (req, res) => {
 
   // asOf lets the client show "data as of <date>" without a separate
   // request; it's the one field from the snapshot that isn't per-stock.
-  res.json({ data: { items, total, asOf: snapshot.asOf } });
+  // Price-history metrics are worked out from the stored weekly closes on the way out, never stored.
+  const withHistory = items.map((stock) => ({ ...stock, ...priceHistory(stock.weeklyCloses) }));
+  res.json({ data: { items: withHistory, total, asOf: snapshot.asOf } });
 });
 
 /** Turns zod's issue list into one readable sentence for the client. */

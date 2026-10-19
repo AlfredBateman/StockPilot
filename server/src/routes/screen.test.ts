@@ -61,6 +61,28 @@ describe("POST /api/screen", () => {
     expect(second.json.data.total).toBe(first.json.data.total);
   });
 
+  it("adds the price-history metrics to every row, and sorts and filters on them", async () => {
+    const { json } = await screen({
+      filters: [{ field: "change6m", op: "gt", value: -1000 }],
+      sort: { field: "belowHigh52w", direction: "asc" },
+      pageSize: 100,
+    });
+    const items = json.data.items as Record<string, number | null>[];
+    expect(items.length).toBeGreaterThan(0);
+    for (const key of ["high52w", "low52w", "belowHigh52w", "aboveLow52w", "change3m", "change6m", "change1y"]) {
+      expect(items[0], key).toHaveProperty(key);
+    }
+    const below = items.map((item) => item.belowHigh52w).filter((v): v is number => v !== null);
+    expect(below).toEqual([...below].sort((a, b) => a - b));
+  });
+
+  it("serves the price-history metrics on GET /api/stocks/:ticker too", async () => {
+    const json = (await (await fetch(`${baseUrl}/api/stocks/TCS.NS`)).json()) as { data: Record<string, unknown> };
+    expect(json.data.ticker).toBe("TCS.NS");
+    expect(json.data).toHaveProperty("change1y");
+    expect(json.data).toHaveProperty("belowHigh52w");
+  });
+
   it("returns an empty page past the end without erroring", async () => {
     const { status, json } = await screen({ page: 9999 });
     expect(status).toBe(200);

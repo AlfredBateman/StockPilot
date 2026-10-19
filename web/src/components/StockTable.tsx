@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { SortField, SortSpec, Stock } from "../api/client";
 import {
   debtToEquityNote,
@@ -8,11 +8,13 @@ import {
   formatPercent,
   formatPrice,
   formatRatio,
+  formatSignedPercent,
 } from "./format";
 import { IconChevron, IconSort, IconStar } from "./Icons";
 import type { GlossaryKey } from "./glossary";
 import { MetricHelp } from "./MetricHelp";
 import { animateRowsIn } from "./motion";
+import { HISTORY_CAPTION } from "./stockMetrics";
 
 export const COMPARE_LIMIT = 3;
 
@@ -96,8 +98,54 @@ const COLUMNS: Column[] = [
   },
 ];
 
+/** The same identity columns (ticker, name, sector, price), then the price-history metrics instead of the fundamentals. */
+const HISTORY_COLUMNS: Column[] = [
+  ...COLUMNS.slice(0, 4),
+  {
+    field: "belowHigh52w",
+    label: "Below 52W High",
+    align: "right",
+    width: "w-44",
+    render: (s) => formatRatio(s.belowHigh52w, "%"),
+    metricKey: "range52w",
+  },
+  {
+    field: "change3m",
+    label: "3M Change",
+    align: "right",
+    width: "w-36",
+    render: (s) => formatSignedPercent(s.change3m),
+    metricKey: "longChange",
+  },
+  {
+    field: "change6m",
+    label: "6M Change",
+    align: "right",
+    width: "w-36",
+    render: (s) => formatSignedPercent(s.change6m),
+    metricKey: "longChange",
+  },
+  {
+    field: "change1y",
+    label: "1Y Change",
+    align: "right",
+    width: "w-36",
+    render: (s) => formatSignedPercent(s.change1y),
+    metricKey: "longChange",
+  },
+];
+
+type TableView = "fundamentals" | "history";
+
+const VIEWS: { key: TableView; label: string; columns: Column[] }[] = [
+  { key: "fundamentals", label: "Fundamentals", columns: COLUMNS },
+  { key: "history", label: "Price History", columns: HISTORY_COLUMNS },
+];
+
 /** The four numeric columns shown as a 2x2 grid on mobile cards (price and sector have their own spots there). */
-const METRIC_COLUMNS = COLUMNS.filter((column) => column.metricKey && column.field !== "price" && column.field !== "sector");
+function metricColumns(columns: Column[]): Column[] {
+  return columns.filter((column) => column.metricKey && column.field !== "price" && column.field !== "sector");
+}
 
 function StarToggle({ ticker, watched, onToggle }: { ticker: string; watched: boolean; onToggle: () => void }) {
   return (
@@ -155,6 +203,8 @@ export function StockTable({
   onToggleWatch,
 }: StockTableProps) {
   const compareLimitReached = selectedTickers.length >= COMPARE_LIMIT;
+  const [view, setView] = useState<TableView>("fundamentals");
+  const columns = VIEWS.find((v) => v.key === view)!.columns;
   function handleSort(field: SortField) {
     if (sort?.field === field) {
       onSortChange({ field, direction: sort.direction === "asc" ? "desc" : "asc" });
@@ -213,6 +263,26 @@ export function StockTable({
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div role="group" aria-label="Columns to show" className="flex gap-2">
+          {VIEWS.map((v) => (
+            <button
+              key={v.key}
+              type="button"
+              aria-pressed={view === v.key}
+              onClick={() => setView(v.key)}
+              className={`inline-flex h-9 touch-manipulation items-center rounded-full border px-3.5 text-body shadow-e1 transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
+                view === v.key
+                  ? "border-accent-600 bg-accent-600 font-medium text-white hover:bg-accent-700"
+                  : "border-stone-300 bg-elevated text-stone-700 hover:border-stone-400 hover:text-stone-900"
+              }`}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+        {view === "history" && <p className="text-caption text-stone-600">{HISTORY_CAPTION}</p>}
+      </div>
       {/* Desktop / tablet: a table inside a card. table-fixed + explicit column widths so long
           names/sectors truncate (with a title tooltip) instead of wrapping into uneven row heights.
           Below xl the table keeps a minimum width and scrolls sideways inside its card rather
@@ -222,7 +292,7 @@ export function StockTable({
           <table className="w-full min-w-[73rem] table-fixed text-body xl:min-w-0">
             <colgroup>
               <col className="w-[4.75rem]" />
-              {COLUMNS.map((column) => (
+              {columns.map((column) => (
                 <col key={column.field} className={column.width} />
               ))}
             </colgroup>
@@ -234,9 +304,9 @@ export function StockTable({
                 >
                   Compare
                 </th>
-                {COLUMNS.map((column, index) => {
+                {columns.map((column, index) => {
                   const isSorted = sort?.field === column.field;
-                  const isLast = index === COLUMNS.length - 1;
+                  const isLast = index === columns.length - 1;
                   return (
                     <th
                       key={column.field}
@@ -293,7 +363,7 @@ export function StockTable({
                         />
                       </label>
                     </td>
-                    {COLUMNS.map((column) => {
+                    {columns.map((column) => {
                       const value = column.render(stock);
                       if (column.field === "ticker") {
                         return (
@@ -396,7 +466,7 @@ export function StockTable({
               </div>
 
               <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-3 border-t border-stone-200 pt-3">
-                {METRIC_COLUMNS.map((column) => {
+                {metricColumns(columns).map((column) => {
                   const value = column.render(stock);
                   return (
                     <div key={column.field} className="flex flex-col gap-0.5">

@@ -16,7 +16,10 @@ import { Drawer } from "./Drawer";
 import { displayTicker, formatAsOfDate, formatAxisMonth } from "./format";
 import { IconClose } from "./Icons";
 import { BlockSkeleton, ErrorPanel } from "./StatePanels";
-import { STOCK_METRICS } from "./stockMetrics";
+import { HISTORY_CAPTION, HISTORY_METRICS, STOCK_METRICS } from "./stockMetrics";
+
+/** Headline metrics, then the price-history ones (captioned above the table). */
+const COMPARE_METRICS = [...STOCK_METRICS, ...HISTORY_METRICS];
 
 type CompareViewProps = {
   tickers: string[];
@@ -154,7 +157,7 @@ function CompareTable({ stocks, onRemove }: { stocks: Stock[]; onRemove: (ticker
                   </td>
                 ))}
               </tr>
-              {STOCK_METRICS.map((metric, index) => (
+              {COMPARE_METRICS.map((metric, index) => (
                 <tr
                   key={metric.label}
                   className={`border-b border-stone-200 last:border-b-0 ${index % 2 === 1 ? "bg-stone-50" : ""}`}
@@ -306,7 +309,10 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
           </section>
 
           <section className="flex flex-col gap-2.5">
-            <h3 className="text-balance text-h3 text-stone-900">Side by Side</h3>
+            <div className="flex flex-col gap-0.5">
+              <h3 className="text-balance text-h3 text-stone-900">Side by Side</h3>
+              <p className="text-caption text-stone-600">52W and 3M/6M/1Y rows: {HISTORY_CAPTION}</p>
+            </div>
 
             <CompareTable stocks={state.stocks} onRemove={onRemove} />
 
@@ -333,7 +339,7 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
                         {stock.sector ?? "n/a"}
                       </dd>
                     </div>
-                    {STOCK_METRICS.map((metric) => {
+                    {COMPARE_METRICS.map((metric) => {
                       const value = metric.value(stock);
                       return (
                         <div key={metric.label} className="flex flex-col gap-0.5">

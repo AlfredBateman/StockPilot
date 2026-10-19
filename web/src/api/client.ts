@@ -81,6 +81,11 @@ export const FILTER_FIELDS = [
   "debtToEquity",
   "profitMargin",
   "change1m",
+  "belowHigh52w",
+  "aboveLow52w",
+  "change3m",
+  "change6m",
+  "change1y",
 ] as const;
 export type FilterField = (typeof FILTER_FIELDS)[number];
 
@@ -105,6 +110,11 @@ export const SORT_FIELDS = [
   "pe",
   "debtToEquity",
   "profitMargin",
+  "belowHigh52w",
+  "aboveLow52w",
+  "change3m",
+  "change6m",
+  "change1y",
 ] as const;
 export type SortField = (typeof SORT_FIELDS)[number];
 type SortDirection = "asc" | "desc";
@@ -130,6 +140,18 @@ export type Stock = {
   debtToEquity: number | null;
   profitMargin: number | null;
   weeklyCloses: WeeklyClose[];
+  // Price-history metrics (mirror server/src/engine/metrics.ts priceHistory). The server works them out from the
+  // weekly closing prices on every response; they are null when there is not enough history.
+  /** Highest / lowest of the last 52 weekly closes, in INR. */
+  high52w: number | null;
+  low52w: number | null;
+  /** Percent below the 52-week high / above the 52-week low (0 = at it). */
+  belowHigh52w: number | null;
+  aboveLow52w: number | null;
+  /** Percent change over 13, 26 and 52 weekly bars, e.g. 5.2 = +5.2%. */
+  change3m: number | null;
+  change6m: number | null;
+  change1y: number | null;
 };
 
 type ScreenResult = {

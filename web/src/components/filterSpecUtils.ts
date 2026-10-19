@@ -34,7 +34,15 @@ const FIELD_LABELS: Record<FilterField, string> = {
   debtToEquity: "Debt/Equity",
   profitMargin: "Profit Margin",
   change1m: "1-Month Change",
+  belowHigh52w: "Below 52W High",
+  aboveLow52w: "Above 52W Low",
+  change3m: "3-Month Change",
+  change6m: "6-Month Change",
+  change1y: "1-Year Change",
 };
+
+/** Price-history fields hold percents already (5 = 5%), so their chips show a "%" sign. */
+const PERCENT_POINT_FIELDS: readonly FilterField[] = ["belowHigh52w", "aboveLow52w", "change3m", "change6m", "change1y"];
 
 /**
  * The description of one filter split in two so FilterChips can show the field
@@ -43,7 +51,8 @@ const FIELD_LABELS: Record<FilterField, string> = {
 export function describeFilterParts(filter: Filter): { label: string; value: string } {
   const label = FIELD_LABELS[filter.field];
   const isPercent = filter.field === "profitMargin";
-  const fmt = (n: number) => (isPercent ? `${(n * 100).toFixed(0)}%` : String(n));
+  const isPercentPoints = PERCENT_POINT_FIELDS.includes(filter.field);
+  const fmt = (n: number) => (isPercent ? `${(n * 100).toFixed(0)}%` : isPercentPoints ? `${n}%` : String(n));
 
   switch (filter.op) {
     case "eq":

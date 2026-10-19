@@ -30,7 +30,7 @@ export const StockSchema = z.object({
   debtToEquity: z.number().nullable(),
   /** Raw fraction as reported by Yahoo's financialData.profitMargins (e.g. 0.066 = 6.6%). */
   profitMargin: z.number().nullable(),
-  /** ~1 year of weekly closes, oldest first. */
+  /** About 13 months of weekly closes, oldest first (older snapshots hold about 1 year). */
   weeklyCloses: z.array(WeeklyCloseSchema),
 });
 

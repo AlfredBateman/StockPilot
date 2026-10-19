@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { findStock, loadStocks } from "../data/loadStocks.js";
+import { priceHistory } from "../engine/metrics.js";
 
 // GET /api/stocks/:ticker — looks up one stock from the cached snapshot.
 export const stocksRouter = Router();
@@ -11,5 +12,5 @@ stocksRouter.get("/:ticker", async (req, res) => {
     res.status(404).json({ error: `No stock found for ticker "${req.params.ticker}"` });
     return;
   }
-  res.json({ data: stock });
+  res.json({ data: { ...stock, ...priceHistory(stock.weeklyCloses) } });
 });

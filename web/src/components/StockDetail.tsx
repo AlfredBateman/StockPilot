@@ -7,7 +7,8 @@ import { displayTicker, formatAsOfDate, formatPrice, formatSignedPercent } from 
 import { IconTrend } from "./Icons";
 import { countUp } from "./motion";
 import { BlockSkeleton, ErrorPanel } from "./StatePanels";
-import { change1mPercent, STOCK_METRICS } from "./stockMetrics";
+import { MetricHelp } from "./MetricHelp";
+import { change1mPercent, HISTORY_CAPTION, HISTORY_METRICS, STOCK_METRICS } from "./stockMetrics";
 
 type StockDetailProps = {
   ticker: string;
@@ -222,6 +223,41 @@ export function StockDetail({ ticker, onClose }: StockDetailProps) {
               </dd>
             </div>
           ))}
+        </dl>
+      </section>
+
+      <section className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-0.5">
+          <h3 className="flex items-center text-balance text-h3 text-stone-900">
+            Price History
+            <MetricHelp metric="range52w" />
+          </h3>
+          <p className="text-caption text-stone-500">{HISTORY_CAPTION}</p>
+        </div>
+        <dl className="grid grid-cols-2 gap-2">
+          {HISTORY_METRICS.map((metric) => {
+            const value = metric.value(stock);
+            return (
+              <div
+                key={metric.label}
+                className="flex min-w-0 flex-col gap-0.5 rounded-xl border border-stone-200 bg-card px-3.5 py-3 shadow-e1"
+              >
+                <dt className="text-label text-stone-500">{metric.label}</dt>
+                <dd
+                  className={`truncate text-h3 tabular-nums ${
+                    value === "n/a"
+                      ? "font-normal text-stone-500"
+                      : metric.signed
+                        ? changeTone(metric.signed(stock))
+                        : "text-stone-900"
+                  }`}
+                  title={value}
+                >
+                  {value}
+                </dd>
+              </div>
+            );
+          })}
         </dl>
       </section>
     </Drawer>

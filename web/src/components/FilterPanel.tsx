@@ -1,6 +1,8 @@
-import { MARKET_CAP_BUCKETS, type Filter, type FilterSpec, type MarketCapBucket } from "../api/client";
+import { MARKET_CAP_BUCKETS, type Filter, type FilterField, type FilterSpec, type MarketCapBucket } from "../api/client";
 import { buildRangeFilter, getFilter, withFilter } from "./filterSpecUtils";
 import { IconCheck } from "./Icons";
+import { HISTORY_CAPTION } from "./stockMetrics";
+import type { GlossaryKey } from "./glossary";
 import { MetricHelp } from "./MetricHelp";
 
 type FilterPanelProps = {
@@ -46,6 +48,14 @@ function ChoiceChip({ label, checked, onToggle }: { label: string; checked: bool
     </label>
   );
 }
+
+/** One price-history box: a plain percent (type 5 for 5%), setting either a maximum or a minimum. */
+const HISTORY_INPUTS: { field: FilterField; label: string; bound: "max" | "min"; metric: GlossaryKey; placeholder: string }[] = [
+  { field: "belowHigh52w", label: "Max % Below 52W High", bound: "max", metric: "range52w", placeholder: "No limit" },
+  { field: "change3m", label: "Min 3M Change", bound: "min", metric: "longChange", placeholder: "No minimum" },
+  { field: "change6m", label: "Min 6M Change", bound: "min", metric: "longChange", placeholder: "No minimum" },
+  { field: "change1y", label: "Min 1Y Change", bound: "min", metric: "longChange", placeholder: "No minimum" },
+];
 
 export function FilterPanel({ filters, onChange, sectors }: FilterPanelProps) {
   const selectedSectors = (getFilter(filters, "sector")?.value as string[] | undefined) ?? [];
@@ -193,6 +203,57 @@ export function FilterPanel({ filters, onChange, sectors }: FilterPanelProps) {
           </span>
         </div>
       </div>
+
+      <fieldset className="flex flex-col sm:col-span-full">
+        <legend className="mb-0.5 flex items-center text-label text-stone-600">
+          Price History
+          <MetricHelp metric="range52w" />
+        </legend>
+        <p className="mb-2.5 text-caption text-stone-500">{HISTORY_CAPTION}</p>
+        <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2 xl:grid-cols-4">
+          {HISTORY_INPUTS.map((input) => {
+            const bounds = rangeBounds(getFilter(filters, input.field));
+            const value = input.bound === "max" ? bounds.max : bounds.min;
+            const id = `history-${input.field}`;
+            return (
+              <div key={input.field} className="flex flex-col gap-2">
+                <span className="flex items-center text-label text-stone-600">
+                  <label htmlFor={id}>{input.label}</label>
+                  <MetricHelp metric={input.metric} />
+                </span>
+                <div className="relative">
+                  <input
+                    id={id}
+                    type="number"
+                    name={id}
+                    autoComplete="off"
+                    inputMode="decimal"
+                    placeholder={input.placeholder}
+                    aria-describedby={`${id}-unit`}
+                    value={value ?? ""}
+                    onChange={(e) => {
+                      const next = parseBound(e.target.value);
+                      const filter =
+                        input.bound === "max"
+                          ? buildRangeFilter(input.field, null, next)
+                          : buildRangeFilter(input.field, next, null);
+                      onChange(withFilter(filters, input.field, filter));
+                    }}
+                    className={`${NUMBER_INPUT_CLASS} pr-9`}
+                  />
+                  <span
+                    id={`${id}-unit`}
+                    className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-body font-medium text-stone-500"
+                  >
+                    <span aria-hidden="true">%</span>
+                    <span className="sr-only">percent</span>
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </fieldset>
     </div>
   );
 }

@@ -64,6 +64,33 @@
       "url": "https://en.wikipedia.org/wiki/Relative_change"
     }
   },
+  "longChange": {
+    "term": "3, 6 and 12-Month Change",
+    "definition": "The 3-month, 6-month and 1-year change are how much the share price moved, in percent, over the last 13, 26 and 52 weeks.",
+    "whyItMatters": "Looking at several time spans shows whether a recent move is part of a longer trend or goes against it. A share can be down over one month but up over a year.",
+    "example": "Say a share closed at ₹250 a year ago, ₹300 six months ago and ₹320 three months ago, and closes at ₹330 now. Its 1-year change is (330 − 250) ÷ 250 = +32.0%, its 6-month change is (330 − 300) ÷ 300 = +10.0%, and its 3-month change is (330 − 320) ÷ 320 = +3.1%.",
+    "howStockPilotUsesIt": "StockPilot compares the latest weekly closing price with the close 13, 26 or 52 weeks of data earlier. “Rose over 6 months” means a 6-month change above 0%, “fell over 6 months” means below 0%, and “rose over 1 year” and “fell over 1 year” do the same for the 1-year change. A stock without enough history shows n/a and never matches.",
+    "goodToKnow": [
+      "These are based on weekly closing prices, so they can differ a little from figures on other sites that use daily prices.",
+      "A past move does not tell you what a share will do next."
+    ],
+    "source": {
+      "label": "Wikipedia: Relative change",
+      "url": "https://en.wikipedia.org/wiki/Relative_change"
+    }
+  },
+  "range52w": {
+    "term": "52-Week High and Low",
+    "definition": "The 52-week high and low are the highest and lowest prices a share reached over the past year, which StockPilot works out from weekly closing prices.",
+    "whyItMatters": "They show where today’s price sits within its range over the last year, which gives a single price some context. A share near its low has fallen a long way from its best level of the year, and one near its high is close to its best level.",
+    "example": "Say a share’s weekly closing prices over the last year ranged from ₹400 to ₹500, and its latest close is ₹410. It is (500 − 410) ÷ 500 = 18.0% below its 52-week high and (410 − 400) ÷ 400 = 2.5% above its 52-week low. That is within 5% of the low, so StockPilot calls it near its 52-week low.",
+    "howStockPilotUsesIt": "StockPilot takes the last 52 weekly closing prices, finds the highest and lowest, and measures how far the latest close is from each. “Near 52 week low” means within 5% of the 52-week low, and “near 52 week high” means within 5% of the 52-week high. A stock with fewer than 52 weeks of data shows n/a and never matches.",
+    "goodToKnow": [
+      "Because these use weekly closing prices, not every trade during the day, they can differ from the intraday highs and lows shown on other sites.",
+      "Being near the 52-week low does not make a share cheap, and being near the high does not mean it will fall. It only says where the price sits in its recent range."
+    ],
+    "source": null
+  },
   "sector": {
     "term": "Sector",
     "definition": "A sector is the broad part of the economy a company earns its money in, such as Technology or Energy.",

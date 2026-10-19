@@ -24,14 +24,17 @@ function toIstDateString(date: Date): string {
   return date.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // en-CA prints YYYY-MM-DD
 }
 
-/** Fetches one ticker's summary and ~1 year of weekly closes. Throws on any Yahoo error. */
+/** Fetches one ticker's summary and ~13 months of weekly closes. Throws on any Yahoo error. */
 export async function fetchStock(ticker: string): Promise<Stock> {
   const summary = await yahooFinance.quoteSummary(ticker, {
     modules: ["price", "summaryDetail", "financialData", "assetProfile"],
   });
 
+  // A year plus 4 weeks: weekly bars start on a Monday, so exactly one year back
+  // leaves only 52 closes on most days, one short of a true 1-year change.
   const period1 = new Date();
   period1.setFullYear(period1.getFullYear() - 1);
+  period1.setDate(period1.getDate() - 28);
   const chart = await yahooFinance.chart(ticker, { period1, interval: "1wk" });
 
   const weeklyCloses: WeeklyClose[] = chart.quotes

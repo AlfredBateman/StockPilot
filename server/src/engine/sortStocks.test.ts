@@ -52,6 +52,19 @@ describe("sortStocks", () => {
     expect(tickers(sorted)).toEqual(["UP.NS", "FLAT.NS", "DOWN.NS"]);
   });
 
+  it("sorts on a price-history field, with too-short history last", () => {
+    const rising = (to: number) => makeCloses(...Array(53).fill(100).map((v, i) => (i === 52 ? to : v)));
+    const big = makeStock({ ticker: "BIG.NS", weeklyCloses: rising(150) });
+    const small = makeStock({ ticker: "SMALL.NS", weeklyCloses: rising(110) });
+    const young = makeStock({ ticker: "YOUNG.NS", weeklyCloses: makeCloses(100, 200) });
+
+    expect(tickers(sortStocks([young, small, big], { field: "change1y", direction: "desc" }))).toEqual([
+      "BIG.NS",
+      "SMALL.NS",
+      "YOUNG.NS",
+    ]);
+  });
+
   it("returns a new array and leaves the original order alone", () => {
     // loadStocks() hands out one cached array for the whole process, so an
     // in-place sort here would corrupt it for every later request.

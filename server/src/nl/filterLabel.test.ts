@@ -14,6 +14,11 @@ describe("describeFilter", () => {
     expect(describeFilter({ field: "profitMargin", op: "gt", value: 0.15 })).toBe("profit margin above 15%");
   });
 
+  it("shows the price-history fields as percents", () => {
+    expect(describeFilter({ field: "change6m", op: "gt", value: 10 })).toBe("6-month change above 10%");
+    expect(describeFilter({ field: "belowHigh52w", op: "lt", value: 5 })).toBe("drop from 52-week high below 5%");
+  });
+
   it("names text filters by their value", () => {
     expect(describeFilter({ field: "sector", op: "eq", value: "Energy" })).toBe("Energy sector");
     expect(describeFilter({ field: "marketCapBucket", op: "in", value: ["Large", "Mid"] })).toBe(

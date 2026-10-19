@@ -13,6 +13,13 @@ function makeStock(overrides: Partial<Stock>): Stock {
     debtToEquity: 0.5,
     profitMargin: 0.1,
     weeklyCloses: [],
+    high52w: null,
+    low52w: null,
+    belowHigh52w: null,
+    aboveLow52w: null,
+    change3m: null,
+    change6m: null,
+    change1y: null,
     ...overrides,
   };
 }
@@ -48,5 +55,14 @@ describe("sortStocksClient", () => {
     const original = [...stocks];
     sortStocksClient(stocks, { field: "price", direction: "asc" });
     expect(stocks).toEqual(original);
+  });
+
+  it("sorts a price-history field the server sends, with missing values last", () => {
+    const stocks = [
+      makeStock({ ticker: "A", change1y: null }),
+      makeStock({ ticker: "B", change1y: -4 }),
+      makeStock({ ticker: "C", change1y: 12 }),
+    ];
+    expect(sortStocksClient(stocks, { field: "change1y", direction: "desc" }).map((s) => s.ticker)).toEqual(["C", "B", "A"]);
   });
 });

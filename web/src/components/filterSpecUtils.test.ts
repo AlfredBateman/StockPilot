@@ -75,6 +75,11 @@ describe("describeFilter", () => {
     expect(describeFilter(filter)).toBe("Sector: Energy, Technology");
   });
 
+  it("shows price-history filters as plain percents", () => {
+    expect(describeFilter({ field: "belowHigh52w", op: "lt", value: 5 })).toBe("Below 52W High < 5%");
+    expect(describeFilter({ field: "change1y", op: "gt", value: 10 })).toBe("1-Year Change > 10%");
+  });
+
   it("describes a lt filter", () => {
     expect(describeFilter({ field: "pe", op: "lt", value: 30 })).toBe("P/E < 30");
   });

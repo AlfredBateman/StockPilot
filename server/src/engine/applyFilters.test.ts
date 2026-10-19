@@ -104,6 +104,18 @@ describe("applyFilters", () => {
       const filters: FilterSpec = [{ field: "change1m", op: "gt", value: 0 }];
       expect(tickers(filters, [riser, faller, noHistory])).toEqual(["UP.NS"]);
     });
+
+    it("filters on the price-history fields, and short history never matches", () => {
+      // 52 closes: a high of 200 early on, then 195 to the end (2.5% below the high).
+      const nearHigh = makeStock({ ticker: "NEAR.NS", weeklyCloses: makeCloses(200, ...Array(51).fill(195)) });
+      const farBelow = makeStock({ ticker: "FAR.NS", weeklyCloses: makeCloses(200, ...Array(51).fill(100)) });
+      const young = makeStock({ ticker: "NEW.NS", weeklyCloses: makeCloses(195, 195, 195) });
+      const list = [nearHigh, farBelow, young];
+
+      expect(tickers([{ field: "belowHigh52w", op: "lt", value: 5 }], list)).toEqual(["NEAR.NS"]);
+      expect(tickers([{ field: "change6m", op: "lt", value: 0 }], list)).toEqual([]);
+      expect(tickers([{ field: "aboveLow52w", op: "lt", value: 5 }], list)).toEqual(["NEAR.NS", "FAR.NS"]);
+    });
   });
 
   it("does not modify the list it was given", () => {
