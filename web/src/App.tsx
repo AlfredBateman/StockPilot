@@ -156,8 +156,8 @@ export function App() {
             </span>
             <p className="pt-0.5 text-stone-600">
               <strong className="font-semibold text-stone-900">Educational tool, not financial advice.</strong>{" "}
-              StockPilot screens a saved data snapshot to help you learn how screening works. Do your own research
-              before investing.
+              StockPilot uses end-of-day data, refreshed every weekday, not live prices, to help you learn how
+              screening works. Do your own research before investing.
             </p>
           </div>
         </div>

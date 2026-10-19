@@ -12,9 +12,9 @@ type QueryBoxProps = {
 type QueryState = { kind: "idle" } | { kind: "loading" } | { kind: "ready"; result: ParseResult } | { kind: "error"; message: string };
 
 const TIER_LABELS: Record<ParseTier, string> = {
-  rules: "Rules",
-  llm: "LLM",
-  cache: "Cached",
+  rules: "keywords",
+  llm: "AI helper",
+  cache: "saved answer",
 };
 
 function Badge({ text }: { text: string }) {
@@ -143,7 +143,7 @@ export function QueryBox({ onApply }: QueryBoxProps) {
             <p className="text-h3 text-accent-800">{resultTitle(state.result)}</p>
             <span className="flex flex-wrap gap-2">
               <Badge text={INTENT_LABELS[state.result.intent]} />
-              <Badge text={`Parsed by: ${TIER_LABELS[state.result.tier]}`} />
+              <Badge text={`Read using: ${TIER_LABELS[state.result.tier]}`} />
             </span>
           </div>
 
