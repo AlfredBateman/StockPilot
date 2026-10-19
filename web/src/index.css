@@ -102,6 +102,29 @@
     0 12px 32px -8px oklch(0.3 0.02 60 / 0.16);
   --shadow-e3: 0 2px 8px oklch(0.25 0.02 60 / 0.08), 0 32px 80px -16px oklch(0.25 0.02 60 / 0.32);
 
+  /* Motion tokens (section 18). The same numbers live in MOTION in components/motion.ts for anime.js;
+     motion.test.ts fails if the two disagree. Durations have no Tailwind namespace, so they are used
+     as duration-(--motion-base); the easings become ease-out-soft / ease-in-soft. */
+  --ease-out-soft: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-soft: cubic-bezier(0.4, 0, 1, 1);
+  --motion-press: 120ms;
+  --motion-fast: 150ms;
+  --motion-base: 180ms;
+  --motion-enter: 240ms;
+  --animate-enter: enter var(--motion-enter) var(--ease-out-soft);
+  --animate-fade: fade var(--motion-enter) var(--ease-out-soft);
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
   /* Skeleton shimmer (section 17): CSS animation, not anime.js */
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
   @keyframes shimmer {
@@ -169,8 +192,8 @@
     margin: 0;
   }
 
-  /* Reduced motion: the CSS-only motion (shimmer, drawer entrance, hover transitions) stops.
-     The four anime.js animations check the same setting in components/motion.ts. */
+  /* Reduced motion: all CSS motion (entrances, transitions, shimmer) collapses to an instant change.
+     Every anime.js function checks the same setting in components/motion.ts. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

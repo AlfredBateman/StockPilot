@@ -285,24 +285,61 @@ survive `overflow: hidden` and Windows High Contrast mode.
 
 ## 18. Motion
 
+MOTION_INTENSITY 4: motion explains what changed and never gets in the way.
+Rules every animation obeys: only `transform` and `opacity` move (never width,
+height or position); micro-interactions take 120-200ms and entrances at most
+350ms; nothing animates on a keystroke; nothing delays a click; and the page is
+fully usable if an animation never runs (no element is left hidden).
+
+**Tokens.** One set of numbers, written in `web/src/index.css` `@theme` for CSS
+and mirrored in `MOTION` in `web/src/components/motion.ts` for anime.js
+(`motion.test.ts` fails if they differ):
+
+| Token | Value | Used for |
+|---|---|---|
+| `--motion-press` / `MOTION.press` | 120ms | press scale on buttons |
+| `--motion-fast` / `MOTION.fast` | 150ms | hover, chip and popover entrance, star pop |
+| `--motion-base` / `MOTION.base` | 180ms | table rows, answer card, drawer in and out |
+| `--motion-enter` / `MOTION.enter` | 240ms | panels, notices, charts, page fade |
+| `MOTION.count` | 350ms | price count-up |
+| `MOTION.stagger` / `staggerMax` | 15ms / 12 | row stagger, first 12 rows only |
+| `--ease-out-soft` | cubic-bezier(0.2, 0, 0, 1) | entrances and presses |
+| `--ease-in-soft` | cubic-bezier(0.4, 0, 1, 1) | exits |
+
 **anime.js** (npm package `animejs`, v4) is used for exactly four things, all in
 `web/src/components/motion.ts`, and nowhere else:
 
 | # | What | Spec |
 |---|---|---|
-| a | Table rows (and mobile stock cards) animate in on each data load | fade from 0 + 4px slide up, 180ms each, 20ms stagger |
-| b | Stock price counts up when the StockDetail drawer opens | from 0 to the price, 700ms, ease-out |
-| c | FilterChips animate in when added and out when removed | scale 0.85 to 1 + fade, 120ms |
-| d | QueryBox results panel slides down when results appear | height 0 to natural height + fade, 200ms |
+| a | Table rows (and mobile stock cards) on the first data load and when Previous or Next turns the page | only the first 12 rows of the layout that is visible: fade from 0 and rise 4px, `base` each, 15ms stagger. Not on filter, sort, search, Clear all or returning from another tab. Reverted when the rows change or unmount |
+| b | Stock price counts up when the StockDetail drawer opens | from 0 to the price, `count` (350ms), ease-out |
+| c | Star pop when a stock is added to the watchlist | scale 1 to 1.15 to 1, `fast`; not on removal |
+| d | A drawer (StockDetail, Compare, Guide) closing | the drawer unmounts at once; a non-interactive copy of it (`inert`, `aria-hidden`, pointer-events none) fades out and slides 32px right, `base`, ease-in, then removes itself. Esc, focus return and re-opening never wait for it |
 
 **Every one checks `prefers-reduced-motion: reduce` first and, if set, shows
-the final state instantly** (rows fully visible, the final price, chips added
-or removed at once, the results panel at full height).
+the final state instantly** (rows untouched, the final price, no pop, no copy
+of the drawer).
 
-CSS-only motion: `transition-colors`/`transition-[opacity,transform]` on
-hover and focus (150ms), the drawer's entrance via `@starting-style` (200ms),
-and the skeleton shimmer. All three are disabled under reduced motion. No
-scroll-triggered animation, nothing animates on every keypress.
+**CSS motion.** All of it collapses to an instant change under reduced motion
+(the global block in `index.css`).
+
+- Hover and focus colors: `fast`.
+- Press: `active:scale` with a `scale` transition (`press`) on buttons, chips,
+  tabs, sort headers, stars and close buttons.
+- `starting:` entrances (`@starting-style`): the drawer panel and backdrop
+  (`base`), filter chips (`fast`, opacity and scale from .92), the query answer
+  card (`base`, opacity and a 4px rise) and the help popover (`fast`, opacity
+  and scale from .97, growing from the edge nearest its "?"). Removing a chip is
+  instant.
+- `animate-enter` (opacity and a 4px rise, `enter`): empty and error panels, the
+  wake-up and older-data notices, the first-visit hint, the compare bar, the
+  "Reading your question" line and the "Updating" badge.
+- `animate-fade` (opacity only, `enter`): the three charts, and each page on a
+  Screen / Watchlist tab swap.
+- The table dims to 60% while refreshing, and the skeleton shimmer.
+
+No scroll-triggered animation, no looping animation except the skeleton
+shimmer, and the charts' own animation stays off.
 
 ## 19. Disclaimer
 

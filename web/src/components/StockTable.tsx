@@ -168,7 +168,7 @@ function StarToggle({ ticker, watched, onToggle }: { ticker: string; watched: bo
       onClick={onToggle}
       aria-pressed={watched}
       aria-label={watched ? `Remove ${displayTicker(ticker)} from watchlist` : `Add ${displayTicker(ticker)} to watchlist`}
-      className={`flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-lg transition-colors duration-150 hover:bg-stone-100 ${
+      className={`flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-lg transition-colors duration-(--motion-fast) hover:bg-stone-100 ${
         watched ? "text-accent-600" : "text-stone-400 hover:text-stone-700"
       }`}
     >
@@ -244,7 +244,7 @@ export function StockTable({
 
   function renderPagination(className: string) {
     const buttonClass =
-      "inline-flex h-10 touch-manipulation items-center gap-1.5 rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-elevated disabled:active:scale-100";
+      "inline-flex h-10 touch-manipulation items-center gap-1.5 rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-stone-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-elevated disabled:active:scale-100";
     return (
       <div className={`flex flex-wrap items-center justify-between gap-3 text-body ${className}`}>
         <span aria-live="polite" className="tabular-nums text-stone-600">
@@ -285,7 +285,7 @@ export function StockTable({
               type="button"
               aria-pressed={view === v.key}
               onClick={() => setView(v.key)}
-              className={`inline-flex h-9 touch-manipulation items-center rounded-full border px-3.5 text-body shadow-e1 transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
+              className={`inline-flex h-9 touch-manipulation items-center rounded-full border px-3.5 text-body shadow-e1 transition-[background-color,border-color,color,transform] duration-(--motion-fast) active:scale-[0.97] ${
                 view === v.key
                   ? "border-accent-600 bg-accent-600 font-medium text-white hover:bg-accent-700"
                   : "border-stone-300 bg-elevated text-stone-700 hover:border-stone-400 hover:text-stone-900"
@@ -338,7 +338,7 @@ export function StockTable({
                         <button
                           type="button"
                           onClick={() => handleSort(column.field)}
-                          className="-mx-1 inline-flex touch-manipulation items-center gap-1 rounded-md px-1 py-1 transition-colors duration-150 hover:text-white focus-visible:outline-accent-300"
+                          className="-mx-1 inline-flex touch-manipulation items-center gap-1 rounded-md px-1 py-1 transition-colors duration-(--motion-fast) hover:text-white focus-visible:outline-accent-300"
                         >
                           {column.label}
                           <IconSort
@@ -361,7 +361,7 @@ export function StockTable({
                 return (
                   <tr
                     key={stock.ticker}
-                    className={`border-b border-stone-200 transition-colors duration-150 last:border-b-0 ${
+                    className={`border-b border-stone-200 transition-colors duration-(--motion-fast) last:border-b-0 ${
                       isSelected ? "bg-accent-100/70" : "even:bg-stone-50 hover:bg-accent-100/40"
                     }`}
                   >
@@ -392,7 +392,7 @@ export function StockTable({
                                 type="button"
                                 onClick={() => onViewDetail(stock.ticker)}
                                 translate="no"
-                                className="touch-manipulation truncate rounded-md font-mono text-ticker font-semibold text-stone-900 underline-offset-4 transition-colors duration-150 hover:text-accent-700 hover:underline"
+                                className="touch-manipulation truncate rounded-md font-mono text-ticker font-semibold text-stone-900 underline-offset-4 transition-colors duration-(--motion-fast) hover:text-accent-700 hover:underline"
                               >
                                 {value}
                               </button>
@@ -461,7 +461,7 @@ export function StockTable({
           return (
             <li
               key={stock.ticker}
-              className={`rounded-2xl border bg-card p-4 shadow-e1 transition-colors duration-150 ${
+              className={`rounded-2xl border bg-card p-4 shadow-e1 transition-colors duration-(--motion-fast) ${
                 isSelected ? "border-accent-300 ring-1 ring-accent-300" : "border-stone-200"
               }`}
             >
@@ -529,7 +529,7 @@ export function StockTable({
               )}
 
               <label
-                className={`mt-4 inline-flex h-9 touch-manipulation items-center gap-2 rounded-full border px-3.5 text-body shadow-e1 transition-colors duration-150 ${
+                className={`mt-4 inline-flex h-9 touch-manipulation items-center gap-2 rounded-full border px-3.5 text-body shadow-e1 transition-colors duration-(--motion-fast) ${
                   isSelected
                     ? "border-accent-600 bg-accent-100 font-medium text-accent-800"
                     : "border-stone-300 bg-elevated text-stone-700"

@@ -108,15 +108,15 @@ export function QueryBox({ onApply }: QueryBoxProps) {
           onChange={(e) => setValue(e.target.value)}
           placeholder="e.g. profitable large caps…"
           aria-describedby={helpId}
-          className="h-14 w-full rounded-2xl border border-stone-400 bg-elevated pl-12 pr-28 text-base text-stone-900 shadow-e1 transition-colors duration-150 placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500 sm:pr-32"
+          className="h-14 w-full rounded-2xl border border-stone-400 bg-elevated pl-12 pr-28 text-base text-stone-900 shadow-e1 transition-colors duration-(--motion-fast) placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500 sm:pr-32"
         />
         <button
           type="submit"
-          className="group absolute inset-y-1.5 right-1.5 inline-flex touch-manipulation items-center gap-2 rounded-[10px] bg-accent-600 pl-4 pr-1.5 text-body font-semibold text-white shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-700 active:scale-[0.98] sm:pl-5"
+          className="group absolute inset-y-1.5 right-1.5 inline-flex touch-manipulation items-center gap-2 rounded-[10px] bg-accent-600 pl-4 pr-1.5 text-body font-semibold text-white shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-accent-700 active:scale-[0.98] sm:pl-5"
         >
           Ask
           {/* Button-in-button: the arrow sits in its own well and nudges right on hover. */}
-          <span className="flex size-8 items-center justify-center rounded-lg bg-white/15 transition-transform duration-150 group-hover:translate-x-0.5">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-white/15 transition-transform duration-(--motion-fast) group-hover:translate-x-0.5">
             <IconArrowRight size={16} />
           </span>
         </button>
@@ -201,7 +201,7 @@ export function QueryBox({ onApply }: QueryBoxProps) {
                     <button
                       type="button"
                       onClick={() => onApply(suggestion.filters, state.result.search ?? "")}
-                      className="inline-flex h-9 touch-manipulation items-center rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-colors duration-150 hover:border-accent-500 hover:text-accent-800"
+                      className="inline-flex h-9 touch-manipulation items-center rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-colors duration-(--motion-fast) hover:border-accent-500 hover:text-accent-800"
                     >
                       {suggestion.label}
                     </button>

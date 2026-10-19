@@ -27,7 +27,7 @@ export function PresetBar({ activeName, onToggle }: PresetBarProps) {
               type="button"
               aria-pressed={active}
               onClick={() => onToggle(preset.name, preset.filters)}
-              className={`group flex w-full touch-manipulation flex-col gap-1.5 rounded-xl border p-4 text-left shadow-e1 transition-[border-color,box-shadow,transform] duration-150 hover:-translate-y-px hover:shadow-e2 active:translate-y-0 active:scale-[0.99] ${
+              className={`group flex w-full touch-manipulation flex-col gap-1.5 rounded-xl border p-4 text-left shadow-e1 transition-[border-color,box-shadow,transform] duration-(--motion-fast) hover:-translate-y-px hover:shadow-e2 active:translate-y-0 active:scale-[0.99] ${
                 active ? "border-accent-600 bg-accent-100 ring-1 ring-accent-600" : "border-stone-200 bg-elevated hover:border-accent-300"
               }`}
             >
@@ -39,7 +39,7 @@ export function PresetBar({ activeName, onToggle }: PresetBarProps) {
                     Active
                   </span>
                 ) : (
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-600 transition-colors duration-150 group-hover:bg-accent-600 group-hover:text-white">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-600 transition-colors duration-(--motion-fast) group-hover:bg-accent-600 group-hover:text-white">
                     <IconArrowRight size={14} />
                   </span>
                 )}

@@ -31,13 +31,13 @@ export function Drawer({ title, onClose, wide = false, children }: DrawerProps) 
         aria-label="Close"
         tabIndex={-1}
         onClick={onClose}
-        className="absolute inset-0 bg-stone-900/35 backdrop-blur-[2px] transition-opacity duration-200 starting:opacity-0 motion-reduce:transition-none"
+        className="absolute inset-0 bg-stone-900/35 backdrop-blur-[2px] transition-opacity duration-(--motion-base) starting:opacity-0 motion-reduce:transition-none"
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative z-10 flex h-full w-full flex-col overscroll-contain bg-elevated shadow-e3 transition-[translate,opacity] duration-200 ease-out starting:translate-x-8 starting:opacity-0 motion-reduce:transition-none sm:rounded-l-2xl sm:border-l sm:border-stone-200 ${
+        className={`relative z-10 flex h-full w-full flex-col overscroll-contain bg-elevated shadow-e3 transition-[translate,opacity] duration-(--motion-base) ease-out-soft starting:translate-x-8 starting:opacity-0 motion-reduce:transition-none sm:rounded-l-2xl sm:border-l sm:border-stone-200 ${
           wide ? "sm:max-w-[960px]" : "sm:max-w-xl"
         }`}
       >
@@ -48,7 +48,7 @@ export function Drawer({ title, onClose, wide = false, children }: DrawerProps) 
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-stone-500 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900"
+            className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-stone-500 transition-colors duration-(--motion-fast) hover:bg-stone-100 hover:text-stone-900"
           >
             <IconClose size={18} />
           </button>

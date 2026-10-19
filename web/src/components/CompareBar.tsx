@@ -29,7 +29,7 @@ export function CompareBar({ tickers, limit, onOpen }: CompareBarProps) {
         type="button"
         onClick={onOpen}
         disabled={!canCompare}
-        className="h-10 shrink-0 touch-manipulation rounded-xl bg-elevated px-5 text-body font-semibold text-accent-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-100 focus-visible:outline-white active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/70 disabled:shadow-none disabled:hover:bg-white/15 disabled:active:scale-100"
+        className="h-10 shrink-0 touch-manipulation rounded-xl bg-elevated px-5 text-body font-semibold text-accent-800 shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-accent-100 focus-visible:outline-white active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/70 disabled:shadow-none disabled:hover:bg-white/15 disabled:active:scale-100"
       >
         Compare ({tickers.length})
       </button>

@@ -136,7 +136,7 @@ export function MetricHelp({ metric }: MetricHelpProps) {
         aria-label={`What is ${entry.term}?`}
         // currentColor, so the "?" matches whatever it sits in: stone labels, or white text on the dark
         // table header. The ::before pad grows the 24px button to a 36px tap area without moving the layout.
-        className="relative ml-1.5 inline-flex size-6 shrink-0 touch-manipulation items-center justify-center rounded-full border border-current text-[0.8125rem] font-semibold leading-none opacity-80 transition-opacity duration-150 before:absolute before:-inset-1.5 before:content-[''] hover:opacity-100 aria-expanded:opacity-100"
+        className="relative ml-1.5 inline-flex size-6 shrink-0 touch-manipulation items-center justify-center rounded-full border border-current text-[0.8125rem] font-semibold leading-none opacity-80 transition-opacity duration-(--motion-fast) before:absolute before:-inset-1.5 before:content-[''] hover:opacity-100 aria-expanded:opacity-100"
       >
         ?
       </button>
@@ -166,7 +166,7 @@ export function MetricHelp({ metric }: MetricHelpProps) {
                   triggerRef.current?.focus();
                 }}
                 aria-label="Close"
-                className="-mr-2 -mt-2 flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-stone-500 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900"
+                className="-mr-2 -mt-2 flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-stone-500 transition-colors duration-(--motion-fast) hover:bg-stone-100 hover:text-stone-900"
               >
                 <IconClose size={18} />
               </button>
@@ -182,7 +182,7 @@ export function MetricHelp({ metric }: MetricHelpProps) {
                   href={entry.source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-10 items-center gap-1.5 rounded-lg text-body font-medium text-accent-700 underline decoration-accent-300 underline-offset-4 transition-colors duration-150 hover:text-accent-800 hover:decoration-accent-600"
+                  className="inline-flex h-10 items-center gap-1.5 rounded-lg text-body font-medium text-accent-700 underline decoration-accent-300 underline-offset-4 transition-colors duration-(--motion-fast) hover:text-accent-800 hover:decoration-accent-600"
                 >
                   Learn more
                   <IconExternal size={14} />
@@ -194,8 +194,8 @@ export function MetricHelp({ metric }: MetricHelpProps) {
                 onClick={handleOpenGuide}
                 className={
                   entry.source
-                    ? "inline-flex h-10 touch-manipulation items-center rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98]"
-                    : "inline-flex h-10 touch-manipulation items-center rounded-xl bg-accent-600 px-3.5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-700 active:scale-[0.98]"
+                    ? "inline-flex h-10 touch-manipulation items-center rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-stone-50 active:scale-[0.98]"
+                    : "inline-flex h-10 touch-manipulation items-center rounded-xl bg-accent-600 px-3.5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-accent-700 active:scale-[0.98]"
                 }
               >
                 {entry.source ? "See it in the Guide" : "Learn more"}

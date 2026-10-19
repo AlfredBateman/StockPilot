@@ -94,7 +94,7 @@ export function App() {
                   type="button"
                   onClick={() => setView(tab.view)}
                   aria-current={view === tab.view ? "page" : undefined}
-                  className={`h-9 touch-manipulation rounded-lg px-3.5 text-body font-medium transition-colors duration-150 sm:px-4 ${
+                  className={`h-9 touch-manipulation rounded-lg px-3.5 text-body font-medium transition-colors duration-(--motion-fast) sm:px-4 ${
                     view === tab.view
                       ? "bg-elevated text-accent-700 shadow-e1"
                       : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
@@ -125,7 +125,7 @@ export function App() {
               <button
                 type="button"
                 onClick={() => openGuide()}
-                className="inline-flex h-10 touch-manipulation items-center justify-center gap-2 rounded-xl border border-stone-300 bg-elevated px-2.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98] sm:px-3.5"
+                className="inline-flex h-10 touch-manipulation items-center justify-center gap-2 rounded-xl border border-stone-300 bg-elevated px-2.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-stone-50 active:scale-[0.98] sm:px-3.5"
               >
                 <IconBook size={18} />
                 <span className="sr-only sm:not-sr-only">Guide</span>

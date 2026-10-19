@@ -19,7 +19,7 @@ export function GlossaryLink({ metric }: GlossaryLinkProps) {
       type="button"
       onClick={() => openGuide(metric)}
       aria-label={`What does ${GLOSSARY[metric].term} mean? Opens the Guide`}
-      className="inline-flex h-6 touch-manipulation items-center rounded-md text-caption font-medium text-accent-700 underline decoration-accent-300 underline-offset-2 transition-colors duration-150 hover:text-accent-800 hover:decoration-accent-600"
+      className="inline-flex h-6 touch-manipulation items-center rounded-md text-caption font-medium text-accent-700 underline decoration-accent-300 underline-offset-2 transition-colors duration-(--motion-fast) hover:text-accent-800 hover:decoration-accent-600"
     >
       What does this mean?
     </button>

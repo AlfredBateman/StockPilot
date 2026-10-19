@@ -5,6 +5,22 @@
 // nothing. Components only call these; they never import anime.js directly.
 import { animate, stagger } from "animejs";
 
+/**
+ * The shared motion numbers, mirroring the CSS tokens in index.css @theme (milliseconds).
+ * motion.test.ts reads index.css and fails if the two disagree.
+ */
+export const MOTION = {
+  press: 120,
+  fast: 150,
+  base: 180,
+  enter: 240,
+  count: 350,
+  stagger: 15,
+  staggerMax: 12,
+  easeOut: "cubicBezier(0.2, 0, 0, 1)",
+  easeIn: "cubicBezier(0.4, 0, 1, 1)",
+} as const;
+
 /** True when the user has asked the OS/browser for reduced motion. Safe outside a browser (returns false). */
 export function prefersReducedMotion(): boolean {
   return (

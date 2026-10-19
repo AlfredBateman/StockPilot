@@ -71,7 +71,7 @@ export function EmptyPanel({ title, hint, action }: EmptyPanelProps) {
         <button
           type="button"
           onClick={action.onClick}
-          className="h-10 touch-manipulation rounded-xl bg-accent-600 px-5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-700 active:scale-[0.98]"
+          className="h-10 touch-manipulation rounded-xl bg-accent-600 px-5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-accent-700 active:scale-[0.98]"
         >
           {action.label}
         </button>
@@ -105,7 +105,7 @@ export function ErrorPanel({ title, message, hint, onRetry }: ErrorPanelProps) {
           <button
             type="button"
             onClick={onRetry}
-            className="mt-3 h-10 touch-manipulation rounded-xl border border-stone-300 bg-elevated px-5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98]"
+            className="mt-3 h-10 touch-manipulation rounded-xl border border-stone-300 bg-elevated px-5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-stone-50 active:scale-[0.98]"
           >
             Retry
           </button>

@@ -217,7 +217,7 @@ export function Screener() {
           )}
 
           {state.kind === "ready" && state.total > 0 && (
-            <div className={`transition-opacity duration-150 ${refreshing ? "opacity-60" : ""}`}>
+            <div className={`transition-opacity duration-(--motion-fast) ${refreshing ? "opacity-60" : ""}`}>
               <StockTable
                 items={state.items}
                 total={state.total}

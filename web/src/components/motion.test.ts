@@ -1,5 +1,42 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { animateChipIn, animateChipOut, animateRowsIn, countUp, prefersReducedMotion, slideDown } from "./motion";
+import { readFileSync } from "node:fs";
+import { animateChipIn, animateChipOut, animateRowsIn, countUp, MOTION, prefersReducedMotion, slideDown } from "./motion";
+
+// The CSS tokens and the anime.js numbers are written twice (index.css @theme and MOTION), so a test
+// keeps them equal. The raw CSS is also checked for the two things the motion rules promise.
+const cssSource = readFileSync(new URL("../index.css", import.meta.url), "utf8");
+
+describe("motion tokens", () => {
+  const token = (name: string) => cssSource.match(new RegExp(`--${name}:\\s*([^;]+);`))?.[1].trim();
+
+  it("MOTION matches the durations and easings in index.css", () => {
+    for (const name of ["press", "fast", "base", "enter"] as const) {
+      expect(token(`motion-${name}`), name).toBe(`${MOTION[name]}ms`);
+    }
+    expect(`cubicBezier(${token("ease-out-soft")?.match(/cubic-bezier\((.*)\)/)?.[1]})`).toBe(MOTION.easeOut);
+    expect(`cubicBezier(${token("ease-in-soft")?.match(/cubic-bezier\((.*)\)/)?.[1]})`).toBe(MOTION.easeIn);
+  });
+
+  it("every @keyframes touches only opacity, transform and background-position (no layout properties)", () => {
+    const blocks = cssSource.match(/@keyframes [\w-]+ \{[\s\S]*?\n  \}/g) ?? [];
+    expect(blocks.length).toBeGreaterThan(0);
+    for (const block of blocks) {
+      const props = [...block.matchAll(/^\s+([a-z-]+):/gm)].map((m) => m[1]);
+      for (const prop of props) expect(["opacity", "transform", "background-position"], block).toContain(prop);
+    }
+  });
+
+  it("keeps the global reduced-motion block", () => {
+    expect(cssSource).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*animation-duration: 0\.01ms !important/);
+    expect(cssSource).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*transition-duration: 0\.01ms !important/);
+  });
+
+  it("stays inside the entrance and micro-interaction caps", () => {
+    expect(MOTION.enter).toBeLessThanOrEqual(350);
+    expect(MOTION.count).toBeLessThanOrEqual(350);
+    for (const ms of [MOTION.press, MOTION.fast, MOTION.base]) expect(ms).toBeLessThanOrEqual(200);
+  });
+});
 
 // The reduced-motion contract: with prefers-reduced-motion set, every
 // animation must leave its element in the final state immediately and start

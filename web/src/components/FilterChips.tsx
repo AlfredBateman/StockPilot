@@ -59,7 +59,7 @@ export function FilterChips({ filters, onRemove, onClearAll }: FilterChipsProps)
         <button
           type="button"
           onClick={onClearAll}
-          className="touch-manipulation rounded-lg px-2 py-1 text-label font-semibold text-accent-700 underline-offset-2 transition-colors duration-150 hover:bg-accent-100 hover:underline"
+          className="touch-manipulation rounded-lg px-2 py-1 text-label font-semibold text-accent-700 underline-offset-2 transition-colors duration-(--motion-fast) hover:bg-accent-100 hover:underline"
         >
           Clear all filters
         </button>
@@ -78,7 +78,7 @@ export function FilterChips({ filters, onRemove, onClearAll }: FilterChipsProps)
                   type="button"
                   onClick={(e) => handleRemove(index, e.currentTarget.closest("li"))}
                   aria-label={`Remove filter: ${describeFilter(filter)}`}
-                  className="flex size-7 touch-manipulation items-center justify-center rounded-full bg-stone-100 text-stone-600 transition-colors duration-150 hover:bg-error-soft hover:text-error"
+                  className="flex size-7 touch-manipulation items-center justify-center rounded-full bg-stone-100 text-stone-600 transition-colors duration-(--motion-fast) hover:bg-error-soft hover:text-error"
                 >
                   <IconClose size={14} />
                 </button>

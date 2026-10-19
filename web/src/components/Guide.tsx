@@ -96,7 +96,7 @@ export function Guide({ onClose, focusKey }: GuideProps) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="e.g. debt or margin…"
-              className="h-11 w-full rounded-xl border border-stone-400 bg-elevated pl-11 pr-3.5 text-body text-stone-900 shadow-e1 transition-colors duration-150 placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500"
+              className="h-11 w-full rounded-xl border border-stone-400 bg-elevated pl-11 pr-3.5 text-body text-stone-900 shadow-e1 transition-colors duration-(--motion-fast) placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500"
             />
           </div>
           <p aria-live="polite" className="text-caption tabular-nums text-stone-500">
@@ -131,7 +131,7 @@ export function Guide({ onClose, focusKey }: GuideProps) {
                       href={entry.source.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-h-8 w-fit items-center gap-1.5 text-caption font-medium text-accent-700 underline decoration-accent-300 underline-offset-4 transition-colors duration-150 hover:text-accent-800 hover:decoration-accent-600"
+                      className="inline-flex min-h-8 w-fit items-center gap-1.5 text-caption font-medium text-accent-700 underline decoration-accent-300 underline-offset-4 transition-colors duration-(--motion-fast) hover:text-accent-800 hover:decoration-accent-600"
                     >
                       Learn more: {entry.source.label}
                       <IconExternal size={12} />

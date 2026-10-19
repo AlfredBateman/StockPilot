@@ -32,7 +32,7 @@ export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss this tip"
-        className="absolute right-1.5 top-1.5 flex size-8 touch-manipulation items-center justify-center rounded-lg text-stone-500 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900"
+        className="absolute right-1.5 top-1.5 flex size-8 touch-manipulation items-center justify-center rounded-lg text-stone-500 transition-colors duration-(--motion-fast) hover:bg-stone-100 hover:text-stone-900"
       >
         <IconClose size={16} />
       </button>
@@ -43,7 +43,7 @@ export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
       <button
         type="button"
         onClick={onOpen}
-        className="mt-3 inline-flex h-10 touch-manipulation items-center rounded-xl bg-accent-600 px-3.5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-700 active:scale-[0.98]"
+        className="mt-3 inline-flex h-10 touch-manipulation items-center rounded-xl bg-accent-600 px-3.5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-accent-700 active:scale-[0.98]"
       >
         Open the Guide
       </button>
