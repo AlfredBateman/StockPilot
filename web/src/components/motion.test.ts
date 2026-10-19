@@ -13,8 +13,8 @@ describe("motion tokens", () => {
     for (const name of ["press", "fast", "base", "enter"] as const) {
       expect(token(`motion-${name}`), name).toBe(`${MOTION[name]}ms`);
     }
-    expect(`cubicBezier(${token("ease-out-soft")?.match(/cubic-bezier\((.*)\)/)?.[1]})`).toBe(MOTION.easeOut);
-    expect(`cubicBezier(${token("ease-in-soft")?.match(/cubic-bezier\((.*)\)/)?.[1]})`).toBe(MOTION.easeIn);
+    expect(token("ease-out-soft")).toBe(`cubic-bezier(${MOTION.bezierOut.join(", ")})`);
+    expect(token("ease-in-soft")).toBe(`cubic-bezier(${MOTION.bezierIn.join(", ")})`);
   });
 
   it("every @keyframes touches only opacity, transform and background-position (no layout properties)", () => {

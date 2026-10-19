@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getHealth } from "./api/client";
 import { formatAsOfDate, isDataStale } from "./components/format";
 import type { GlossaryKey } from "./components/glossary";
@@ -26,10 +26,9 @@ export function App() {
   const [dataAsOf, setDataAsOf] = useState<string | null | undefined>(undefined);
   const [stale, setStale] = useState(false);
   // null = Guide closed; { key: null } = open at the top; { key } = open at that term.
-  const [guide, setGuide] = useState<{ key: GlossaryKey | null } | null>(null);
+  // `opener` is where focus was when it opened, so the Guide's drawer can put focus back there on close.
+  const [guide, setGuide] = useState<{ key: GlossaryKey | null; opener: HTMLElement | null } | null>(null);
   const { visible: hintVisible, dismiss: dismissHint } = useGuideHint();
-  // Where focus was when the Guide opened, so closing it can put focus back there.
-  const returnFocusTo = useRef<HTMLElement | null>(null);
 
   // The server decides these (DEMO_MODE, which data it loaded), so ask it
   // rather than guessing. If the health check fails the page still works; it
@@ -46,17 +45,12 @@ export function App() {
 
   const openGuide = useCallback(
     (key?: GlossaryKey) => {
-      returnFocusTo.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-      setGuide({ key: key ?? null });
+      setGuide({ key: key ?? null, opener: document.activeElement instanceof HTMLElement ? document.activeElement : null });
       dismissHint();
     },
     [dismissHint]
   );
-  const closeGuide = useCallback(() => {
-    setGuide(null);
-    const target = returnFocusTo.current;
-    if (target?.isConnected) target.focus();
-  }, []);
+  const closeGuide = useCallback(() => setGuide(null), []);
   const guideApi = useMemo(() => ({ openGuide }), [openGuide]);
 
   const asOfLabel =
@@ -182,7 +176,7 @@ export function App() {
 
         {view === "screener" ? <Screener /> : <Watchlist />}
 
-        {guide && <Guide onClose={closeGuide} focusKey={guide.key} />}
+        {guide && <Guide onClose={closeGuide} focusKey={guide.key} returnFocusTo={guide.opener} />}
       </div>
     </GuideContext.Provider>
   );

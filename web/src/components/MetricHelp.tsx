@@ -118,6 +118,8 @@ export function MetricHelp({ metric }: MetricHelpProps) {
   }
 
   function handleOpenGuide() {
+    // Focus the "?" first, so the Guide (which remembers the focused control) can return to it when it closes.
+    triggerRef.current?.focus();
     setOpen(false);
     openGuide(metric);
   }
