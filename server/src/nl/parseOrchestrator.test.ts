@@ -118,6 +118,38 @@ describe("parseWithTiers — rules first", () => {
   });
 });
 
+describe("parseWithTiers — company names beside generic words", () => {
+  const stocks = [
+    makeStock({ ticker: "SBIN.NS", name: "State Bank of India" }),
+    makeStock({ ticker: "SBILIFE.NS", name: "SBI Life Insurance Company Limited" }),
+    makeStock({ ticker: "BANKBARODA.NS", name: "Bank of Baroda" }),
+    makeStock({ ticker: "HDFCBANK.NS", name: "HDFC Bank Limited" }),
+    makeStock({ ticker: "TATAMOTORS.NS", name: "Tata Motors Limited" }),
+  ];
+
+  it.each([
+    ["state bank of india", "state"],
+    ["sbi", "sbi"],
+    ["bank of baroda", "baroda"],
+    ["hdfc bank", "hdfc"],
+    ["tata motors", "tata motors"],
+  ])("%s is answered by the rules, with no cache read and no LLM call", async (query, search) => {
+    const fetchMock = mockFetchJson(chatBody(JSON.stringify({ intent: "offtopic", filters: [], answer: "Off topic." })));
+    vi.stubGlobal("fetch", fetchMock);
+    // A stale entry that would win if the cache were read.
+    vi.mocked(readCacheEntry).mockResolvedValue({ filters: [], notes: [], unmatched: [], intent: "offtopic", answer: "Off topic." });
+
+    const result = await parseWithTiers(query, { ip: "1.1.1.1", guard: createLlmGuard(), stocks });
+
+    expect(result.search).toBe(search);
+    expect(result.intent).toBe("filter");
+    expect(result.answer).toBeNull();
+    expect(result.unmatched).toEqual([]);
+    expect(readCacheEntry).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
 describe("parseWithTiers — NVIDIA provider", () => {
   it("sends the documented thinking switch, turned off, with an 8s timeout", async () => {
     const fetchMock = mockFetchJson(chatBody(filterReply()));

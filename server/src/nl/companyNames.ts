@@ -9,7 +9,7 @@ import { nearestKnownWord } from "./typoFix.js";
 // the rule parser, on the words it could not use. Offline and deterministic.
 
 /** Words in many company names that say nothing about which company is meant. */
-const GENERIC_WORDS = new Set(
+export const GENERIC_WORDS = new Set(
   "limited ltd india indian company corporation industries industrial services solutions the of and bank finance financial investment holdings enterprises shares share".split(
     " "
   )

@@ -13,7 +13,11 @@ describe("matchReasons", () => {
   it("names the stock's value, the threshold and the vague word when the filter is one", () => {
     expect(matchReasons(stock, [{ field: "pe", op: "lt", value: 20 }])).toEqual(["P/E 18.2, below 20 (cheap)"]);
     expect(matchReasons(stock, [{ field: "debtToEquity", op: "lt", value: 0.5 }])).toEqual([
-      "Debt/Equity 0.3×, below 0.5 (low debt)",
+      "Debt/Equity 0.30×, below 0.5 (low debt)",
+    ]);
+    // 0.46 used to round to "0.5×, below 0.5×".
+    expect(matchReasons(makeStock({ debtToEquity: 0.46 }), [{ field: "debtToEquity", op: "lt", value: 0.5 }])).toEqual([
+      "Debt/Equity 0.46×, below 0.5 (low debt)",
     ]);
   });
 
@@ -63,8 +67,9 @@ describe("metricReadings", () => {
 
   it("reads Debt/Equity, and explains n/a for banks", () => {
     expect(readingFor({ debtToEquity: 1.2 }, "Debt/Equity")).toBe(
-      "Debt/Equity 1.2×: above 1×, which StockPilot calls high debt. It owes about ₹1.20 for every ₹1 of its owners’ money."
+      "Debt/Equity 1.20×: above 1×, which StockPilot calls high debt. It owes about ₹1.20 for every ₹1 of its owners’ money."
     );
+    expect(readingFor({ debtToEquity: 0.46 }, "Debt/Equity")).toContain("Debt/Equity 0.46×: below 0.5×");
     expect(readingFor({ debtToEquity: 0.7 }, "Debt/Equity")).toContain("neither low debt nor high debt");
     expect(readingFor({ debtToEquity: null, sector: "Financial Services" }, "Debt/Equity")).toContain("usual for banks");
     expect(readingFor({ debtToEquity: null, sector: "Energy" }, "Debt/Equity")).toBe(

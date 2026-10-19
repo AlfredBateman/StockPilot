@@ -2,19 +2,33 @@
 
 All routes are mounted in `server/src/app.ts`. Every response is JSON, and (with one exception noted below) every successful response is shaped `{ "data": ... }` and every error response `{ "error": "<message>" }`. There is no authentication — this is a single-user, offline-first demo.
 
-The server never talks to a live market data source at request time; every route below reads the same in-memory snapshot loaded once from `data/stocks.json` (`server/src/data/loadStocks.ts`), except `/api/parse`, which may make an outbound network call to an LLM provider (see [AI tier flow in the README](../README.md#ai-tier-flow)).
+The server never calls Yahoo at request time. Every route below reads the same end-of-day snapshot through `loadStocks()` (`server/src/data/loadStocks.ts`), which reads MongoDB first (kept in memory for 10 minutes, then read again) and falls back to the committed `data/stocks.json` if MongoDB is unreachable or empty. With `DEMO_MODE=true` it reads only the file and makes no network calls. The snapshot is refreshed by the weekday GitHub Actions ingest, so the data is end of day, not live. The one route that may make an outbound call is `/api/parse`, which can call an LLM provider, except `/api/parse`, which may make an outbound network call to an LLM provider (see [AI tier flow in the README](../README.md#ai-tier-flow)).
 
 ---
 
 ## `GET /api/health`
 
-Reports whether the server is up and whether it's running in demo mode.
+Reports whether the server is up, where its stock data came from, and whether the AI helper is set up.
 
 **Response `200`**
 ```json
-{ "data": { "status": "ok", "demoMode": false } }
+{
+  "data": {
+    "status": "ok",
+    "demoMode": false,
+    "dataSource": "mongo",
+    "asOf": "2026-10-19T10:20:55.445Z",
+    "llmConfigured": true,
+    "llmProvider": "nvidia",
+    "llmLastError": null,
+    "llmLastErrorAt": null
+  }
+}
 ```
-`demoMode` is `true` only when the server's `DEMO_MODE` environment variable is exactly the string `"true"`.
+- `demoMode` is `true` only when the server's `DEMO_MODE` environment variable is exactly the string `"true"`.
+- `dataSource` is `"mongo"` or `"file"`, and `asOf` is when that snapshot was taken. If the data cannot be loaded at all, both are `null` and the route still answers `200`.
+- `llmConfigured` and `llmProvider` say whether an LLM key is set and which provider is chosen (the name only, never the key).
+- `llmLastError` is the category of the AI helper's most recent failure (`not_configured`, `timeout`, `network_error`, `http_<status>`, `bad_json`, `validation_failed`, `rate_capped_ip` or `rate_capped_daily`), or `null` after a good answer; `llmLastErrorAt` is when it happened. They are kept in memory, so they reset when the server restarts. The prompt, the query and the provider's reply are never included.
 
 ---
 
@@ -212,7 +226,7 @@ Turns free text into a `FilterSpec`, or (through the LLM tier) into a short educ
 - `filters`: same `FilterSpec` shape `/api/screen` accepts; can be fed straight into it. Empty for a question, advice or off-topic reply.
 - `notes`: one plain-language line per filter (the rule parser's vocabulary note, or for an LLM answer a line generated from the filter itself, so notes always describe the filters actually returned).
 - `unmatched`: leftover words nothing understood, after stripping stopwords.
-- `search`: a company-name search to send as `search` to `/api/screen`, or `null` when the query named no company. After the rule parser, the words it did not use are checked against the company names and tickers in the snapshot (with a strict one-or-two-letter typo allowance, so "infosis" finds Infosys), so `"tata stocks"` gives `"tata"` and `"infosys and wipro"` gives `"infosys, wipro"`. "companies like infosys" (or "similar to") gives a `sector` filter for Infosys's sector and nothing more, with a note saying so. Words that are only part of a company name, such as "india", "indian", "limited" or "bank", never start a name search, and "state" and "united" only count together with another leftover word (so "state bank of india" works, but "state" alone does not). When filters or a name were found and no words are left over, the LLM is not called.
+- `search`: a company-name search to send as `search` to `/api/screen`, or `null` when the query named no company. After the rule parser, the words it did not use are checked against the company names and tickers in the snapshot (with a strict one-or-two-letter typo allowance, so "infosis" finds Infosys), so `"tata stocks"` gives `"tata"` and `"infosys and wipro"` gives `"infosys, wipro"`. "companies like infosys" (or "similar to") gives a `sector` filter for Infosys's sector and nothing more, with a note saying so. Words that are only part of a company name, such as "india", "indian", "limited" or "bank", never start a name search, and "state" and "united" only count together with another leftover word (so "state bank of india" works, but "state" alone does not). Generic name words ("india", "limited", "ltd", "company" and similar) left over beside a filter or a name do not count as unrecognised words. When filters or a name were found and no other words are left over, neither the cache nor the LLM is used.
 - `tier`: which source produced the result: `"rules"` (offline dictionary), `"llm"` (cloud model), or `"cache"` (a saved model answer for this exact query, re-served without a network call).
 - `intent`: `"filter"` (a screening request), `"question"` (e.g. "what is P/E"), `"advice"` (e.g. "should I buy X"), or `"offtopic"`. Only the LLM tier can return anything other than `"filter"`.
 - `answer`: plain text (at most 3 sentences, tags stripped) for the three non-filter intents, else `null`. Advice always ends with "This is educational, not financial advice."; off-topic always ends with a line pointing back to screening. Both lines are added by the server, not the model.

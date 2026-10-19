@@ -1,6 +1,6 @@
 import type { Stock } from "../data/stockSchema.js";
 import type { FilterSpec } from "../engine/filterSpec.js";
-import { findCompanies } from "./companyNames.js";
+import { findCompanies, GENERIC_WORDS } from "./companyNames.js";
 import { filterNote } from "./filterLabel.js";
 import { callLlm, isLlmConfigured } from "./llmClient.js";
 import { llmGuard, type LlmGuard } from "./llmGuard.js";
@@ -116,11 +116,15 @@ export function parseOffline(query: string, stocks: Stock[]) {
   // The rule parser's notes are one per filter, in the same order, so they are dropped together.
   const kept = parsed.filters.map((filter, i) => ({ filter, note: parsed.notes[i] })).filter((m) => !replaced.has(m.filter.field));
 
+  const filters = [...kept.map((m) => m.filter), ...names.filters];
+  // "india" or "limited" left over beside a real filter or name is not a word the rules failed to
+  // understand, so it must not send the query on to the cache or the LLM.
+  const understood = filters.length > 0 || names.search !== null;
   const rules: ParseResult & { search: string | null } = {
     ...parsed,
-    filters: [...kept.map((m) => m.filter), ...names.filters],
+    filters,
     notes: [...kept.map((m) => m.note), ...names.notes],
-    unmatched: names.unmatched,
+    unmatched: understood ? names.unmatched.filter((word) => !GENERIC_WORDS.has(word)) : names.unmatched,
     search: names.search,
   };
   return { fixed, rules };
