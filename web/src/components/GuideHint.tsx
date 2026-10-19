@@ -7,9 +7,9 @@ type GuideHintProps = {
 };
 
 /**
- * The first-visit nudge that points at the header's Guide button. It sits just
- * under that button (the caller wraps both in a relative box), never takes
- * focus, never covers the page, and stays gone once dismissed (useGuideHint
+ * The first-visit nudge that points at the header's Guide button. The caller
+ * places it in the page flow right under that button, so it pushes content
+ * down instead of covering it. It never takes focus and stays gone once dismissed (useGuideHint
  * remembers that). Esc dismisses it too. No animation, so nothing to gate on
  * reduced motion.
  */
@@ -26,7 +26,7 @@ export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
     <div
       role="note"
       aria-label="Tip: the Guide"
-      className="absolute right-0 top-full z-30 mt-3 w-72 max-w-[calc(100vw-2rem)] rounded-xl border border-stone-200 bg-elevated p-4 text-left shadow-e2"
+      className="relative w-72 max-w-full rounded-xl border border-stone-200 bg-elevated p-4 text-left shadow-e2"
     >
       {/* The little arrow pointing up at the Guide button. */}
       <span

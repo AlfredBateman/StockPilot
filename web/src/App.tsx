@@ -122,18 +122,14 @@ export function App() {
                   <span className="sm:hidden">Offline</span>
                 </span>
               )}
-              {/* The Guide button; the first-visit hint hangs under it. */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => openGuide()}
-                  className="inline-flex h-10 touch-manipulation items-center justify-center gap-2 rounded-xl border border-stone-300 bg-elevated px-2.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98] sm:px-3.5"
-                >
-                  <IconBook size={18} />
-                  <span className="sr-only sm:not-sr-only">Guide</span>
-                </button>
-                {hintVisible && !guide && <GuideHint onOpen={() => openGuide()} onDismiss={dismissHint} />}
-              </div>
+              <button
+                type="button"
+                onClick={() => openGuide()}
+                className="inline-flex h-10 touch-manipulation items-center justify-center gap-2 rounded-xl border border-stone-300 bg-elevated px-2.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98] sm:px-3.5"
+              >
+                <IconBook size={18} />
+                <span className="sr-only sm:not-sr-only">Guide</span>
+              </button>
             </div>
           </div>
           {/* Below lg the header row has no room, so the data date gets its own line. */}
@@ -144,6 +140,13 @@ export function App() {
             </p>
           )}
         </header>
+
+        {/* In the page flow, right-aligned under the Guide button (the header's last item), so it never covers the notes below. */}
+        {hintVisible && !guide && (
+          <div className="mx-auto flex max-w-7xl justify-end px-4 pt-3 md:px-6">
+            <GuideHint onOpen={() => openGuide()} onDismiss={dismissHint} />
+          </div>
+        )}
 
         <WakeNotice />
 
