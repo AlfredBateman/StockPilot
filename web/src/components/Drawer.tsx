@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useEscapeLayer } from "../hooks/useEscapeLayer";
 import { IconClose } from "./Icons";
 
 type DrawerProps = {
@@ -17,15 +18,11 @@ type DrawerProps = {
 export function Drawer({ title, onClose, wide = false, children }: DrawerProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
+  useEscapeLayer(onClose);
+
   useEffect(() => {
     closeButtonRef.current?.focus();
-
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, []);
 
   return (
     <div className="fixed inset-0 z-40 flex justify-end">
