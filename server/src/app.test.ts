@@ -74,6 +74,12 @@ describe("serving the built frontend", () => {
     expect(await res.text()).toContain("<title>shell</title>");
   });
 
+  it("answers a missing file with 404, not the app shell", async () => {
+    const res = await fetch(`${await start({ webDist: makeWebDist() })}/favicon.ico`);
+    expect(res.status).toBe(404);
+    expect(await res.text()).not.toContain("<title>shell</title>");
+  });
+
   it("does not give API paths the app shell", async () => {
     const res = await fetch(`${await start({ webDist: makeWebDist() })}/api/nope`);
     expect(res.status).toBe(404);

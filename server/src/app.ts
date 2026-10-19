@@ -55,8 +55,10 @@ export function createApp(options: AppOptions = {}) {
   if (fs.existsSync(indexHtml)) {
     app.use(express.static(webDist));
     // SPA fallback: any other GET that is not an API call gets the app shell.
+    // A missing file (it has an extension, e.g. /favicon.ico or an old JS
+    // chunk) gets a 404, not HTML that a browser would try to use as that file.
     app.use((req, res, next) => {
-      if ((req.method !== "GET" && req.method !== "HEAD") || req.path.startsWith("/api")) {
+      if ((req.method !== "GET" && req.method !== "HEAD") || req.path.startsWith("/api") || path.extname(req.path)) {
         next();
         return;
       }
