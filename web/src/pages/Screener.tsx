@@ -249,7 +249,13 @@ export function Screener() {
         )}
       </section>
 
-      {detailTicker && <StockDetail ticker={detailTicker} onClose={() => setDetailTicker(null)} />}
+      {detailTicker && (
+        <StockDetail
+          ticker={detailTicker}
+          onClose={() => setDetailTicker(null)}
+          reasons={state.kind === "ready" ? state.items.find((s) => s.ticker === detailTicker)?.reasons : undefined}
+        />
+      )}
 
       {compareOpen && compareTickers.length > 0 && (
         <CompareView tickers={compareTickers} onClose={() => setCompareOpen(false)} onRemove={toggleCompare} />

@@ -31,7 +31,7 @@ export const PERCENT_FIELDS: ReadonlySet<FilterField> = new Set([
 ]);
 
 /** profitMargin is stored as a fraction (0.1) but read as a percent (10%); the price-history fields are already percents. */
-function formatValue(field: FilterField, value: string | number): string {
+export function formatValue(field: FilterField, value: string | number): string {
   if (typeof value === "string") return value;
   if (field === "profitMargin") return `${Number((value * 100).toFixed(2))}%`;
   if (PERCENT_FIELDS.has(field)) return `${value}%`;
@@ -63,7 +63,7 @@ function sameFilter(a: Filter, b: Filter): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function vagueTerm(filter: Filter) {
+export function vagueTerm(filter: Filter) {
   return VAGUE_TERMS.find((t) => sameFilter(t.filter, filter));
 }
 

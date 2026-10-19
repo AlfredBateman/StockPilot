@@ -4,7 +4,7 @@ import { getStock, type Stock } from "../api/client";
 import { CHART_TICK, CHART_TOOLTIP_STYLE } from "./chartData";
 import { Drawer } from "./Drawer";
 import { displayTicker, formatAsOfDate, formatPrice, formatSignedPercent } from "./format";
-import { IconTrend } from "./Icons";
+import { IconCheck, IconTrend } from "./Icons";
 import { countUp } from "./motion";
 import { BlockSkeleton, ErrorPanel } from "./StatePanels";
 import { MetricHelp } from "./MetricHelp";
@@ -13,7 +13,29 @@ import { change1mPercent, HISTORY_CAPTION, HISTORY_METRICS, STOCK_METRICS } from
 type StockDetailProps = {
   ticker: string;
   onClose: () => void;
+  /** From the results row: how this stock meets the active filters. Omitted (or empty) when nothing is filtered. */
+  reasons?: string[];
 };
+
+/** A titled list of plain-text lines (no HTML), used for "why it matched" and "what the numbers mean". */
+function TextList({ title, caption, lines }: { title: string; caption: string; lines: string[] }) {
+  return (
+    <section className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-0.5">
+        <h3 className="text-balance text-h3 text-stone-900">{title}</h3>
+        <p className="text-caption text-stone-500">{caption}</p>
+      </div>
+      <ul className="flex flex-col gap-2 rounded-xl border border-stone-200 bg-card px-3.5 py-3 shadow-e1">
+        {lines.map((line) => (
+          <li key={line} className="flex items-start gap-2 text-body text-stone-800">
+            <IconCheck size={14} className="mt-1 shrink-0 text-accent-600" />
+            {line}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 type DetailState = { kind: "loading" } | { kind: "ready"; stock: Stock } | { kind: "error"; message: string };
 
@@ -49,7 +71,7 @@ function ChangeChip({ change }: { change: number | null }) {
 
 // Drawer showing one stock's price history and headline metrics, opened by
 // clicking its ticker in StockTable.
-export function StockDetail({ ticker, onClose }: StockDetailProps) {
+export function StockDetail({ ticker, onClose, reasons = [] }: StockDetailProps) {
   const [state, setState] = useState<DetailState>({ kind: "loading" });
   const priceRef = useRef<HTMLSpanElement>(null);
 
@@ -135,6 +157,10 @@ export function StockDetail({ ticker, onClose }: StockDetailProps) {
           </div>
         </div>
       </div>
+
+      {reasons.length > 0 && (
+        <TextList title="Why This Matched" caption="Each of your active filters, with this stock’s value." lines={reasons} />
+      )}
 
       {/* The chart card: the area runs edge to edge; the price axis sits inside the plot. */}
       <section className="overflow-hidden rounded-2xl border border-stone-200 bg-card shadow-e1">
@@ -260,6 +286,14 @@ export function StockDetail({ ticker, onClose }: StockDetailProps) {
           })}
         </dl>
       </section>
+
+      {stock.readings && stock.readings.length > 0 && (
+        <TextList
+          title="What These Numbers Mean"
+          caption="Read with StockPilot’s own cut-offs. A description of the numbers, not advice."
+          lines={stock.readings}
+        />
+      )}
     </Drawer>
   );
 }

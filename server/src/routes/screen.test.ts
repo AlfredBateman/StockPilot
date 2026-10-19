@@ -76,11 +76,24 @@ describe("POST /api/screen", () => {
     expect(below).toEqual([...below].sort((a, b) => a - b));
   });
 
-  it("serves the price-history metrics on GET /api/stocks/:ticker too", async () => {
+  it("serves the price-history metrics and the plain-English readings on GET /api/stocks/:ticker", async () => {
     const json = (await (await fetch(`${baseUrl}/api/stocks/TCS.NS`)).json()) as { data: Record<string, unknown> };
     expect(json.data.ticker).toBe("TCS.NS");
     expect(json.data).toHaveProperty("change1y");
     expect(json.data).toHaveProperty("belowHigh52w");
+    const readings = json.data.readings as string[];
+    expect(readings.length).toBeGreaterThan(0);
+    expect(readings[0]).toMatch(/^P\/E /);
+  });
+
+  it("explains why each row matched the active filters and name search, and nothing when there are none", async () => {
+    const filtered = await screen({ filters: [{ field: "pe", op: "lt", value: 20 }], search: "a" });
+    for (const item of filtered.json.data.items as { reasons: string[] }[]) {
+      expect(item.reasons[0]).toMatch(/^P\/E \d+\.\d, below 20 \(cheap\)$/);
+      expect(item.reasons[1]).toBe('Name or ticker matches "a"');
+    }
+    const plain = await screen({ pageSize: 3 });
+    for (const item of plain.json.data.items as { reasons: string[] }[]) expect(item.reasons).toEqual([]);
   });
 
   it("returns an empty page past the end without erroring", async () => {

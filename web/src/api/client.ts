@@ -152,6 +152,10 @@ export type Stock = {
   change3m: number | null;
   change6m: number | null;
   change1y: number | null;
+  /** POST /api/screen only: one plain line per active filter (and name search) saying how this stock meets it. */
+  reasons?: string[];
+  /** GET /api/stocks/:ticker only: one plain-English reading per metric, from fixed templates (server/src/nl/explain.ts). */
+  readings?: string[];
 };
 
 type ScreenResult = {

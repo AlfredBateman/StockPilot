@@ -10,7 +10,7 @@ import {
   formatRatio,
   formatSignedPercent,
 } from "./format";
-import { IconChevron, IconSort, IconStar } from "./Icons";
+import { IconCheck, IconChevron, IconSort, IconStar } from "./Icons";
 import type { GlossaryKey } from "./glossary";
 import { MetricHelp } from "./MetricHelp";
 import { animateRowsIn } from "./motion";
@@ -145,6 +145,20 @@ const VIEWS: { key: TableView; label: string; columns: Column[] }[] = [
 /** The four numeric columns shown as a 2x2 grid on mobile cards (price and sector have their own spots there). */
 function metricColumns(columns: Column[]): Column[] {
   return columns.filter((column) => column.metricKey && column.field !== "price" && column.field !== "sector");
+}
+
+/** The lines saying how one stock meets each active filter, shown when its "Why?" disclosure is open. */
+function ReasonList({ reasons }: { reasons: string[] }) {
+  return (
+    <ul className="mt-1.5 mb-1 flex flex-col gap-1 whitespace-normal text-caption text-stone-700">
+      {reasons.map((reason) => (
+        <li key={reason} className="flex items-start gap-1.5">
+          <IconCheck size={12} className="mt-0.5 shrink-0 text-accent-600" />
+          {reason}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function StarToggle({ ticker, watched, onToggle }: { ticker: string; watched: boolean; onToggle: () => void }) {
@@ -386,6 +400,26 @@ export function StockTable({
                           </td>
                         );
                       }
+                      if (column.field === "name" && stock.reasons?.length) {
+                        // A native disclosure: keyboard and screen-reader support for free, and the
+                        // row only grows while it is open.
+                        return (
+                          <td key={column.field} className="min-w-0 px-3 py-3.5 text-left text-stone-600">
+                            <details>
+                              <summary className="flex cursor-pointer list-none items-center gap-2 [&::-webkit-details-marker]:hidden">
+                                <span className="min-w-0 truncate" title={value}>
+                                  {value}
+                                </span>
+                                <span className="inline-flex h-5 shrink-0 items-center rounded-full bg-accent-100 px-2 text-label text-accent-800 ring-1 ring-accent-200">
+                                  <span aria-hidden="true">Why?</span>
+                                  <span className="sr-only">Why this stock matched</span>
+                                </span>
+                              </summary>
+                              <ReasonList reasons={stock.reasons} />
+                            </details>
+                          </td>
+                        );
+                      }
                       const isNumber = column.align === "right";
                       const isPrice = column.field === "price";
                       const tone =
@@ -484,6 +518,15 @@ export function StockTable({
                   );
                 })}
               </dl>
+
+              {stock.reasons && stock.reasons.length > 0 && (
+                <details className="mt-3 border-t border-stone-200 pt-3">
+                  <summary className="cursor-pointer touch-manipulation text-label font-semibold text-accent-700">
+                    Why this matched ({stock.reasons.length})
+                  </summary>
+                  <ReasonList reasons={stock.reasons} />
+                </details>
+              )}
 
               <label
                 className={`mt-4 inline-flex h-9 touch-manipulation items-center gap-2 rounded-full border px-3.5 text-body shadow-e1 transition-colors duration-150 ${

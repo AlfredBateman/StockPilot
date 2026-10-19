@@ -7,6 +7,7 @@ import { paginate } from "../engine/paginate.js";
 import { ScreenRequestSchema } from "../engine/screenRequest.js";
 import { searchStocks } from "../engine/searchStocks.js";
 import { sortStocks } from "../engine/sortStocks.js";
+import { matchReasons } from "../nl/explain.js";
 
 // POST /api/screen — the one endpoint that answers "which stocks match this?".
 export const screenRouter = Router();
@@ -32,8 +33,14 @@ screenRouter.post("/", async (req, res) => {
   // asOf lets the client show "data as of <date>" without a separate
   // request; it's the one field from the snapshot that isn't per-stock.
   // Price-history metrics are worked out from the stored weekly closes on the way out, never stored.
-  const withHistory = items.map((stock) => ({ ...stock, ...priceHistory(stock.weeklyCloses) }));
-  res.json({ data: { items: withHistory, total, asOf: snapshot.asOf } });
+  // `reasons` says how each row meets the active filters and name search (empty when there are none).
+  const explain = filters.length > 0 || search.trim() !== "";
+  const rows = items.map((stock) => ({
+    ...stock,
+    ...priceHistory(stock.weeklyCloses),
+    reasons: explain ? matchReasons(stock, filters, search) : [],
+  }));
+  res.json({ data: { items: rows, total, asOf: snapshot.asOf } });
 });
 
 /** Turns zod's issue list into one readable sentence for the client. */
