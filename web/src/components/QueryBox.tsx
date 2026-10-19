@@ -1,9 +1,8 @@
-import { useId, useLayoutEffect, useRef, useState } from "react";
+import { useId, useState } from "react";
 import { parseQuery, type FilterSpec, type ParseIntent, type ParseResult, type ParseTier } from "../api/client";
 import { glossaryKeyForNote } from "./glossary";
 import { GlossaryLink } from "./GlossaryLink";
 import { IconArrowRight, IconChat, IconCheck, IconInfo, IconWarning } from "./Icons";
-import { slideDown } from "./motion";
 
 type QueryBoxProps = {
   /** A search sets the whole screen: its filters and its company-name search ("" when it named no company). */
@@ -55,13 +54,6 @@ export function QueryBox({ onApply }: QueryBoxProps) {
   const [state, setState] = useState<QueryState>({ kind: "idle" });
   const inputId = useId();
   const helpId = useId();
-  const resultsRef = useRef<HTMLDivElement>(null);
-
-  // Animation (d): the results panel slides down each time a new result arrives.
-  // A layout effect, so the panel is collapsed before the browser paints it once at full height.
-  useLayoutEffect(() => {
-    if (state.kind === "ready" && resultsRef.current) slideDown(resultsRef.current);
-  }, [state]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -123,7 +115,7 @@ export function QueryBox({ onApply }: QueryBoxProps) {
       </div>
 
       {state.kind === "loading" && (
-        <p aria-live="polite" className="text-body text-stone-600">
+        <p aria-live="polite" className="animate-enter text-body text-stone-600">
           Reading your question…
         </p>
       )}
@@ -137,9 +129,9 @@ export function QueryBox({ onApply }: QueryBoxProps) {
 
       {state.kind === "ready" && (
         <div
-          ref={resultsRef}
           aria-live="polite"
-          className="flex flex-col gap-3 rounded-xl border border-accent-200 bg-accent-100/60 p-4 text-body sm:p-5"
+          // Remounts on every Ask (the loading state sits between two answers), so it enters once per answer, never per keystroke.
+          className="flex flex-col gap-3 rounded-xl border border-accent-200 bg-accent-100/60 p-4 text-body transition-[opacity,translate] duration-(--motion-base) ease-out-soft starting:-translate-y-1 starting:opacity-0 sm:p-5"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-h3 text-accent-800">{resultTitle(state.result)}</p>

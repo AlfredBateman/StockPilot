@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
-import { animateChipIn, animateChipOut, animateRowsIn, countUp, MOTION, prefersReducedMotion, slideDown } from "./motion";
+import { animateRowsIn, countUp, MOTION, prefersReducedMotion } from "./motion";
 
 // The CSS tokens and the anime.js numbers are written twice (index.css @theme and MOTION), so a test
 // keeps them equal. The raw CSS is also checked for the two things the motion rules promise.
@@ -82,24 +82,5 @@ describe("under prefers-reduced-motion", () => {
     const el = fakeElement();
     countUp(el, 2993.5, (n) => n.toFixed(2));
     expect(el.textContent).toBe("2993.50");
-  });
-
-  it("(c) shows an added chip as-is and removes a chip at once", () => {
-    setReducedMotion(true);
-    const chip = fakeElement();
-    animateChipIn(chip);
-    expect(chip.style.opacity).toBeUndefined();
-
-    const done = vi.fn();
-    animateChipOut(fakeElement(), done);
-    expect(done).toHaveBeenCalledOnce();
-  });
-
-  it("(d) leaves the results panel at its natural height", () => {
-    setReducedMotion(true);
-    const panel = fakeElement();
-    slideDown(panel);
-    expect(panel.style.height).toBeUndefined();
-    expect(panel.style.opacity).toBeUndefined();
   });
 });
