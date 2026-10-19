@@ -262,6 +262,11 @@ server is in demo mode.
   Units sit inside the input on the right ("%" on profit margin). The P/E
   range pair is joined by a "to" separator.
 - Disabled: `opacity-40`, no hover change, `cursor-not-allowed`.
+- **Hover beyond color** on the header and Guide hint controls: the Guide
+  button and "Open the Guide" lift like the preset tiles (`-translate-y-px`
+  + `shadow-e2`); an unselected header tab and the hint's Dismiss X get a
+  raised fill (`shadow-e1`, the tab also `elevated/70`). All use
+  `--motion-press`; the global reduced-motion rule makes them instant.
 
 ## 16. Focus ring
 
@@ -352,6 +357,13 @@ shimmer, and the charts' own animation stays off.
 rounded inner-panel strip at the top of the content, under the header, with an
 info icon in a teal well, a bold first sentence, and one plain sentence about
 the data. `role="note"`.
+
+A thin footer (`SiteFooter`) closes every page: a `stone-200` hairline, then
+one muted `text-label` `stone-600` line (`stone-500` is only 4.59:1 on the darkest end of the page gradient) with the data source and date ("Data:
+Yahoo Finance (unofficial), end-of-day, last updated <date>", "n/a" when
+missing), "Educational, not financial advice", and an underlined `accent-700`
+"Read the Guide" text button. It sits after `<main>`, so the sticky CompareBar
+never covers it.
 
 ## 20. Charts
 

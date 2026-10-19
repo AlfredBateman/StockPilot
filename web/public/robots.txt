@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://stockpilot-hw7d.onrender.com/sitemap.xml

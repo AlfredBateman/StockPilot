@@ -6,8 +6,9 @@
     <meta name="theme-color" content="#fbf9f5" />
     <meta
       name="description"
-      content="A beginner-friendly screener for about 100 Indian stocks, with plain-English search and a built-in glossary. End-of-day data, for learning only, not financial advice."
+      content="A beginner stock screener for about 100 large Indian stocks (NIFTY 50 and NIFTY Next 50), with plain-English search and every term explained. End-of-day data, educational, not financial advice."
     />
+    <link rel="canonical" href="https://stockpilot-hw7d.onrender.com/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96" />
     <!-- Link previews: crawlers need absolute URLs, so these point at the live site. -->
@@ -32,10 +33,12 @@
     <meta name="twitter:image" content="https://stockpilot-hw7d.onrender.com/og-image.png" />
     <!-- Self-hosted font (docs/DESIGN.md section 5): preloaded so text doesn't swap fonts late. -->
     <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
-    <title>StockPilot</title>
+    <title>StockPilot: beginner screener for 100 large Indian stocks</title>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Static fallback for crawlers and no-JS visitors; React replaces it on mount.
+         Visually hidden (inline, so it works before the CSS loads) so nothing flashes or shifts. -->
+    <div id="root"><main style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap"><h1>StockPilot: a beginner stock screener</h1><p>StockPilot helps beginners learn stock screening on about 100 large Indian companies from the NIFTY 50 and NIFTY Next 50, with plain-English search and every term explained. It uses end-of-day data, not live prices. It is an educational tool, not financial advice.</p></main></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

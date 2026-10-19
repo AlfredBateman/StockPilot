@@ -68,10 +68,43 @@ describe("serving the built frontend", () => {
     expect(await (await fetch(`${base}/`)).text()).toContain("<title>shell</title>");
   });
 
-  it("falls back to index.html for unknown non-API GET routes", async () => {
-    const res = await fetch(`${await start({ webDist: makeWebDist() })}/watchlist/anything`);
+  it("answers unknown non-API paths with 404 and the app shell", async () => {
+    const base = await start({ webDist: makeWebDist() });
+    for (const route of ["/watchlist/anything", "/nope", "/stocks/TCS"]) {
+      const res = await fetch(`${base}${route}`);
+      expect(res.status).toBe(404);
+      expect(await res.text()).toContain("<title>shell</title>");
+    }
+    const head = await fetch(`${base}/nope`, { method: "HEAD" });
+    expect(head.status).toBe(404);
+  });
+
+  it("keeps the home page 200, with or without a query string", async () => {
+    const base = await start({ webDist: makeWebDist() });
+    for (const route of ["/", "/?q=banks", "/index.html"]) {
+      const res = await fetch(`${base}${route}`);
+      expect(res.status).toBe(200);
+      expect(await res.text()).toContain("<title>shell</title>");
+    }
+  });
+
+  it("serves robots.txt and sitemap.xml as files with 200", async () => {
+    const dist = makeWebDist();
+    fs.writeFileSync(path.join(dist, "robots.txt"), "User-agent: *\nAllow: /\n");
+    fs.writeFileSync(path.join(dist, "sitemap.xml"), "<urlset></urlset>");
+    const base = await start({ webDist: dist });
+    const robots = await fetch(`${base}/robots.txt`);
+    expect(robots.status).toBe(200);
+    expect(await robots.text()).toContain("User-agent: *");
+    const sitemap = await fetch(`${base}/sitemap.xml`);
+    expect(sitemap.status).toBe(200);
+    expect(sitemap.headers.get("content-type")).toContain("xml");
+  });
+
+  it("still answers real API routes normally", async () => {
+    const res = await fetch(`${await start({ webDist: makeWebDist() })}/api/health`);
     expect(res.status).toBe(200);
-    expect(await res.text()).toContain("<title>shell</title>");
+    expect(await res.text()).not.toContain("<title>shell</title>");
   });
 
   it("answers a missing file with 404, not the app shell", async () => {

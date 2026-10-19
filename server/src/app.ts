@@ -54,15 +54,18 @@ export function createApp(options: AppOptions = {}) {
   const indexHtml = path.join(webDist, "index.html");
   if (fs.existsSync(indexHtml)) {
     app.use(express.static(webDist));
-    // SPA fallback: any other GET that is not an API call gets the app shell.
+    // The app has one real page, "/" (Screen and Watchlist are tabs, not
+    // URLs), which express.static already served above. Any other GET that is
+    // not an API call still gets the app shell, so a visitor lands somewhere
+    // useful, but with status 404 so search engines do not index it.
     // A missing file (it has an extension, e.g. /favicon.ico or an old JS
-    // chunk) gets a 404, not HTML that a browser would try to use as that file.
+    // chunk) gets a plain 404, not HTML that a browser would try to use as that file.
     app.use((req, res, next) => {
       if ((req.method !== "GET" && req.method !== "HEAD") || req.path.startsWith("/api") || path.extname(req.path)) {
         next();
         return;
       }
-      res.sendFile(indexHtml);
+      res.status(404).sendFile(indexHtml);
     });
   }
 

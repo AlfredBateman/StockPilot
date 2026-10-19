@@ -6,6 +6,7 @@ import { Guide } from "./components/Guide";
 import { GuideHint } from "./components/GuideHint";
 import { IconBook, IconInfo, IconOffline, LogoMark } from "./components/Icons";
 import { MetricHelp } from "./components/MetricHelp";
+import { SiteFooter } from "./components/SiteFooter";
 import { WakeNotice } from "./components/WakeNotice";
 import { GuideContext } from "./hooks/guideContext";
 import { useGuideHint } from "./hooks/useGuideHint";
@@ -87,10 +88,10 @@ export function App() {
                   type="button"
                   onClick={() => setView(tab.view)}
                   aria-current={view === tab.view ? "page" : undefined}
-                  className={`h-9 touch-manipulation rounded-lg px-3.5 text-body font-medium transition-[color,background-color,scale] duration-(--motion-press) active:scale-[0.97] sm:px-4 ${
+                  className={`h-9 touch-manipulation rounded-lg px-3.5 text-body font-medium transition-[color,background-color,box-shadow,scale] duration-(--motion-press) active:scale-[0.97] sm:px-4 ${
                     view === tab.view
                       ? "bg-elevated text-accent-700 shadow-e1"
-                      : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
+                      : "text-stone-600 hover:bg-elevated/70 hover:text-stone-900 hover:shadow-e1"
                   }`}
                 >
                   {tab.label}
@@ -121,7 +122,7 @@ export function App() {
               <button
                 type="button"
                 onClick={() => openGuide()}
-                className="inline-flex h-10 touch-manipulation items-center justify-center gap-2 rounded-xl border border-stone-300 bg-elevated px-2.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-stone-50 active:scale-[0.98] sm:px-3.5"
+                className="inline-flex h-10 touch-manipulation items-center justify-center gap-2 rounded-xl border border-stone-300 bg-elevated px-2.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,box-shadow,translate,scale] duration-(--motion-press) hover:-translate-y-px hover:bg-stone-50 hover:shadow-e2 active:translate-y-0 active:scale-[0.98] sm:px-3.5"
               >
                 <IconBook size={18} />
                 <span className="sr-only sm:not-sr-only">Guide</span>
@@ -180,6 +181,8 @@ export function App() {
         </div>
 
         {view === "screener" ? <Screener /> : <Watchlist />}
+
+        <SiteFooter asOf={dataAsOf} onOpenGuide={() => openGuide()} />
 
         {guide && <Guide onClose={closeGuide} focusKey={guide.key} />}
       </div>
