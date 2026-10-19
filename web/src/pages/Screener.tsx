@@ -9,7 +9,7 @@ import { PresetBar } from "../components/PresetBar";
 import { QueryBox } from "../components/QueryBox";
 import { SearchBar } from "../components/SearchBar";
 import { SectorChart } from "../components/SectorChart";
-import { EmptyPanel, ErrorPanel, TableSkeleton } from "../components/StatePanels";
+import { ChartSkeleton, EmptyPanel, ErrorPanel, TableSkeleton } from "../components/StatePanels";
 import { StockDetail } from "../components/StockDetail";
 import { COMPARE_LIMIT, StockTable } from "../components/StockTable";
 import { useWatchlist } from "../hooks/useWatchlist";
@@ -41,7 +41,9 @@ export function Screener() {
   // All stocks matching the current filters/search (not just the visible
   // page), for SectorChart. Kept separate from the table's own paginated
   // fetch above so neither has to know about the other.
-  const [allMatching, setAllMatching] = useState<Stock[]>([]);
+  // null until the first answer, so the chart's column is held open (a skeleton) instead of the Filters card
+  // changing width when the chart arrives.
+  const [allMatching, setAllMatching] = useState<Stock[] | null>(null);
 
   const [detailTicker, setDetailTicker] = useState<string | null>(null);
   const [compareTickers, setCompareTickers] = useState<string[]>([]);
@@ -93,6 +95,7 @@ export function Screener() {
       .catch(() => {
         // SectorChart is a secondary view; if this fetch fails the main
         // table's own error state (above) already tells the user why.
+        if (!cancelled) setAllMatching((current) => current ?? []);
       });
     return () => {
       cancelled = true;
@@ -140,7 +143,7 @@ export function Screener() {
     setPage(1);
   }
 
-  const showChart = allMatching.length > 0;
+  const showChart = allMatching === null || allMatching.length > 0;
   const refreshing = state.kind === "ready" && state.refreshing;
 
   return (
@@ -180,7 +183,7 @@ export function Screener() {
           />
         </section>
 
-        {showChart && <SectorChart items={allMatching} />}
+        {showChart && (allMatching === null ? <ChartSkeleton /> : <SectorChart items={allMatching} />)}
       </div>
 
       <section aria-labelledby="results-heading" className="flex flex-col gap-4">

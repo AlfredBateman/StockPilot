@@ -100,12 +100,15 @@ export function App() {
             </nav>
 
             <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-              {asOfLabel && (
-                <span className="hidden items-center text-label text-stone-500 lg:inline-flex">
-                  {asOfLabel}
-                  <MetricHelp metric="asOf" />
-                </span>
-              )}
+              {/* Always rendered with a fixed minimum width, so the header does not change size when the health check answers. */}
+              <span className="hidden min-w-[19rem] items-center justify-end text-label text-stone-500 lg:inline-flex">
+                {asOfLabel && (
+                  <>
+                    {asOfLabel}
+                    <MetricHelp metric="asOf" />
+                  </>
+                )}
+              </span>
               {demoMode && (
                 <span
                   title="No live data sources or network calls; answers come from the saved snapshot, cache, and offline parser."
@@ -127,12 +130,15 @@ export function App() {
             </div>
           </div>
           {/* Below lg the header row has no room, so the data date gets its own line. */}
-          {asOfLabel && (
-            <p className="mx-auto flex max-w-7xl items-center px-4 pb-2 text-label text-stone-500 md:px-6 lg:hidden">
-              {asOfLabel}
-              <MetricHelp metric="asOf" />
-            </p>
-          )}
+          {/* min-h-8 is the height of the line (24px "?" plus pb-2) once the label is there, so the page does not move when it arrives. */}
+          <p className="mx-auto flex min-h-8 max-w-7xl items-center px-4 pb-2 text-label text-stone-500 md:px-6 lg:hidden">
+            {asOfLabel && (
+              <>
+                {asOfLabel}
+                <MetricHelp metric="asOf" />
+              </>
+            )}
+          </p>
         </header>
 
         {/* In the page flow, right-aligned under the Guide button (the header's last item), so it never covers the notes below. */}

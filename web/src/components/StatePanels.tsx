@@ -30,6 +30,19 @@ export function TableSkeleton({ rows = 6, label }: { rows?: number; label: strin
   );
 }
 
+/** The sector chart's place while its first answer is on the way, about as tall as the real chart, so the page does not move when it arrives. */
+export function ChartSkeleton() {
+  return (
+    <section className="flex flex-col gap-4 self-start rounded-2xl border border-stone-200 bg-card p-4 shadow-e1 sm:p-6">
+      <span className="sr-only">Loading the sector chart…</span>
+      <div aria-hidden="true" className="flex flex-col gap-4">
+        <span className="skeleton h-7 w-2/3 rounded-full" />
+        <span className="skeleton h-[21rem] w-full rounded-2xl" />
+      </div>
+    </section>
+  );
+}
+
 /** Shimmering bars in the shape of the drawer content (name, price, chart, tiles). */
 export function BlockSkeleton({ label }: { label: string }) {
   return (
