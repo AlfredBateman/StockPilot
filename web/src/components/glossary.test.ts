@@ -6,7 +6,7 @@ import vocabularySource from "../../../server/src/nl/vocabulary.ts?raw";
 import presetsSource from "../content/presets.json?raw";
 import snapshotSource from "../../../data/stocks.json?raw";
 import { FILTER_FIELDS } from "../api/client";
-import { formatMarketCapCrore, formatPrice } from "./format";
+import { formatMarketCapCrore } from "./format";
 import {
   GLOSSARY,
   GLOSSARY_KEYS,
@@ -27,12 +27,6 @@ type SnapshotStock = {
   weeklyCloses: { date: string; close: number | null }[];
 };
 const snapshot = JSON.parse(snapshotSource) as { asOf: string; stocks: SnapshotStock[] };
-
-function stock(ticker: string): SnapshotStock {
-  const found = snapshot.stocks.find((s) => s.ticker === ticker);
-  if (!found) throw new Error(`${ticker} is not in data/stocks.json`);
-  return found;
-}
 
 function allText(entry: GlossaryEntry): string[] {
   return [
@@ -140,70 +134,74 @@ describe("thresholds quoted in the glossary match the code", () => {
   });
 });
 
-// The worked examples are real numbers from the 22 Sep 2026 snapshot. If data/stocks.json is ever
-// refreshed, these fail on purpose: re-pick the examples from the new data and update the date in the text.
-describe.skipIf(!snapshot.asOf.startsWith("2026-09-22"))("worked examples match data/stocks.json", () => {
-  const fixed = (n: number | null, digits = 1) => (n === null ? "n/a" : n.toFixed(digits));
-  const croreOf = (ticker: string) => formatMarketCapCrore(stock(ticker).marketCap).replace(/\s*Cr$/u, "");
+// The worked examples use made-up round numbers, never a real stock's figures, so they stay true
+// whatever data is loaded. These tests always run: they check the arithmetic written in each example,
+// and that no example (or note) names a real company, ticker or date.
+describe("worked examples are correct whatever data is loaded", () => {
+  const ratio = (top: number, bottom: number, digits = 1) => (top / bottom).toFixed(digits);
 
   it("P/E", () => {
-    expect(GLOSSARY.pe.example).toContain(formatPrice(stock("TCS.NS").price));
-    expect(GLOSSARY.pe.example).toContain(`P/E of ${fixed(stock("TCS.NS").pe)}`);
-    expect(GLOSSARY.pe.example).toContain(`P/E of ${fixed(stock("ADANIENT.NS").pe)}`);
+    expect(GLOSSARY.pe.example).toContain(`100 ÷ 5 = ${ratio(100, 5, 0)}`);
+    expect(GLOSSARY.pe.example).toContain(`P/E of ${ratio(100, 2, 0)}`);
   });
 
   it("Market Cap", () => {
-    expect(croreOf("RELIANCE.NS")).toBe("16,90,206");
-    expect(GLOSSARY.marketCap.example).toContain("₹16,90,206 crore");
-    expect(croreOf("CIPLA.NS")).toBe("1,11,097");
-    expect(GLOSSARY.marketCap.example).toContain("₹1,11,097 crore");
+    const large = Number(/MARKET_CAP_LARGE_MIN_INR = ([\d_]+)/.exec(metricsSource)?.[1].replaceAll("_", ""));
+    const mid = Number(/MARKET_CAP_MID_MIN_INR = ([\d_]+)/.exec(metricsSource)?.[1].replaceAll("_", ""));
+    const crore = 10_000_000;
+    const groupOf = (capCrore: number) => (capCrore * crore >= large ? "Large" : capCrore * crore >= mid ? "Mid" : "Small");
+    const small = 100 * 500;
+    const big = 100 * 3000;
+    expect(GLOSSARY.marketCap.example).toContain(`100 crore × ₹500 = ₹${small.toLocaleString("en-IN")} crore, which puts it in the ${groupOf(small)} group`);
+    expect(GLOSSARY.marketCap.example).toContain(`₹${big.toLocaleString("en-IN")} crore, which is in the ${groupOf(big)} group`);
   });
 
   it("Debt/Equity", () => {
-    expect(GLOSSARY.debtToEquity.example).toContain(`${fixed(stock("ADANIENT.NS").debtToEquity)}×`);
-    expect(GLOSSARY.debtToEquity.example).toContain(`${fixed(stock("INFY.NS").debtToEquity)}×`);
-    const missing = snapshot.stocks.filter((s) => s.debtToEquity === null);
-    expect(missing).toHaveLength(10);
-    expect(missing.every((s) => s.sector === "Financial Services")).toBe(true);
-    expect(GLOSSARY.debtToEquity.goodToKnow.join(" ")).toContain("all 10 stocks with n/a are in Financial Services");
+    expect(GLOSSARY.debtToEquity.example).toContain(`120 ÷ 100 = ${ratio(120, 100)}×`);
+    expect(GLOSSARY.debtToEquity.example).toContain(`about ₹${ratio(120, 100, 2)} for every ₹1`);
+    expect(GLOSSARY.debtToEquity.example).toContain(`shows ${ratio(10, 100)}×`);
+    expect(GLOSSARY.debtToEquity.example).toContain(`about ₹${ratio(10, 100, 2)} for every ₹1`);
   });
 
   it("Profit Margin", () => {
-    expect(GLOSSARY.profitMargin.example).toContain(`${fixed((stock("ITC.NS").profitMargin ?? 0) * 100)}%`);
-    expect(GLOSSARY.profitMargin.example).toContain(`${fixed((stock("RELIANCE.NS").profitMargin ?? 0) * 100)}%`);
+    expect(GLOSSARY.profitMargin.example).toContain(`profit margin is ${(25 / 100) * 100}%`);
+    expect(GLOSSARY.profitMargin.example).toContain(`a margin of ${(6 / 100) * 100}%`);
   });
 
   it("1-Month Change", () => {
-    // Same rule as the server: drop null closes, then compare the latest with the close 4 closes earlier.
-    function change(ticker: string) {
-      const closes = stock(ticker).weeklyCloses.filter((w) => w.close !== null) as { date: string; close: number }[];
-      const latest = closes[closes.length - 1];
-      const base = closes[closes.length - 5];
-      return { latest, base, percent: ((latest.close - base.close) / base.close) * 100 };
+    const percent = (from: number, to: number) => ((to - from) / from) * 100;
+    expect(GLOSSARY.change1m.example).toContain(`(210 − 200) ÷ 200 = +${percent(200, 210).toFixed(1)}%`);
+    expect(GLOSSARY.change1m.example).toContain(`the change would be ${percent(200, 180).toFixed(1)}%`);
+  });
+
+  it("Price", () => {
+    expect(GLOSSARY.price.example).toContain(`its P/E is ${ratio(1000, 100, 0)}`);
+    expect(GLOSSARY.price.example).toContain(`its P/E is ${ratio(100, 2, 0)}`);
+  });
+
+  it("Sector and Data as of", () => {
+    // Sector labels are the data's own categories; both must be real ones in the loaded data.
+    const sectors = new Set(snapshot.stocks.map((s) => s.sector));
+    for (const label of ["Technology", "Consumer Defensive"]) {
+      expect(GLOSSARY.sector.example).toContain(label);
+      expect(sectors.has(label), `${label} is not a sector in data/stocks.json`).toBe(true);
     }
-    const tcs = change("TCS.NS");
-    expect(tcs.base.date).toBe("2026-08-24");
-    expect(tcs.latest.date).toBe("2026-09-22");
-    expect(GLOSSARY.change1m.example).toContain(`${formatPrice(tcs.base.close)} on 24 Aug 2026`);
-    expect(GLOSSARY.change1m.example).toContain(`${formatPrice(tcs.latest.close)} on 22 Sep 2026`);
-    expect(GLOSSARY.change1m.example).toContain(`${tcs.percent.toFixed(1)}%`);
-    const coal = change("COALINDIA.NS");
-    expect(GLOSSARY.change1m.example).toContain(`${formatPrice(coal.base.close)} to ${formatPrice(coal.latest.close)}`);
-    expect(GLOSSARY.change1m.example).toContain(`+${coal.percent.toFixed(1)}%`);
+    expect(GLOSSARY.asOf.example).toContain("Data as of");
   });
 
-  it("Sector", () => {
-    expect(stock("TCS.NS").sector).toBe("Technology");
-    expect(stock("INFY.NS").sector).toBe("Technology");
-    expect(stock("ITC.NS").sector).toBe("Consumer Defensive");
-    expect(GLOSSARY.sector.example).toContain(`(${fixed(stock("TCS.NS").pe)} and ${fixed(stock("INFY.NS").pe)})`);
-  });
-
-  it("Price and Data as of", () => {
-    expect(GLOSSARY.price.example).toContain(formatPrice(stock("INFY.NS").price));
-    expect(GLOSSARY.price.example).toContain(formatPrice(stock("TCS.NS").price));
-    expect(GLOSSARY.price.example).toContain(`(${fixed(stock("INFY.NS").pe)} and ${fixed(stock("TCS.NS").pe)})`);
-    expect(GLOSSARY.asOf.example).toContain(formatPrice(stock("ADANIENT.NS").price));
+  it("no entry names a real company or ticker, or quotes a date, so none can go stale", () => {
+    const datePattern = /\b\d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* 20\d\d\b/;
+    const tickers = new Set(snapshot.stocks.map((s) => s.ticker.replace(/\.NS$/, "")));
+    for (const key of GLOSSARY_KEYS) {
+      const text = allText(GLOSSARY[key]).join(" ");
+      expect(text, `${key} quotes a date`).not.toMatch(datePattern);
+      const words = new Set(text.split(/[^A-Za-z&-]+/));
+      for (const s of snapshot.stocks) {
+        const shortName = s.name.replace(/ (Limited|Ltd\.?|Corporation|Corp\.?)$/i, "");
+        expect(text, `${key} names ${s.name}`).not.toContain(shortName);
+      }
+      for (const ticker of tickers) expect(words.has(ticker), `${key} uses the ticker ${ticker}`).toBe(false);
+    }
   });
 });
 
