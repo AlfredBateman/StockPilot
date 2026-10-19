@@ -43,13 +43,13 @@ on (white inputs and chips on warm cards).
 |---|---|---|---|
 | `accent-100` | 0.955 0.024 190 | `#dff6f4` | Selected row, results panel fill, empty-state icon disc |
 | `accent-200` | 0.90 0.048 190 | `#bbe9e5` | Borders on accent surfaces; secondary text on dark accent (12.03:1 on accent-900) |
-| `accent-300` | 0.81 0.075 191 | `#86d1cc` | Hover border on preset tiles; sorted-column arrow on the dark table header (9.08:1) |
+| `accent-300` | 0.81 0.075 191 | `#86d1cc` | Hover border on preset tiles; sorted-column arrow on the table header (5.29:1 on accent-700) |
 | `accent-400` | 0.68 0.095 192 | `#43aba7` | Focus ring on dark surfaces |
 | `accent-500` | 0.56 0.095 193 | `#058684` | Focused input border |
 | `accent-600` | 0.47 0.085 195 | `#00696a` | **Primary**: buttons, active chips, links, focus ring, checkboxes (6.19:1 on card; white on it 6.50:1) |
-| `accent-700` | 0.39 0.072 197 | `#005052` | Primary hover, active tab text |
+| `accent-700` | 0.39 0.072 197 | `#005052` | Primary hover, active tab text, **table header** (white on it 9.25:1, white at 80% 6.54:1) |
 | `accent-800` | 0.31 0.058 199 | `#00393b` | Text on accent-100 (11.30:1) |
-| `accent-900` | 0.245 0.045 201 | `#002729` | **Dark table header**, compare bar (white on it 15.88:1) |
+| `accent-900` | 0.245 0.045 201 | `#002729` | Compare bar (white on it 15.88:1) |
 
 Why teal: it reads as calm and financial, it is distinct from the previous
 cobalt, and it pairs with the warm page without the "AI purple" look. It is
@@ -217,11 +217,11 @@ server is in demo mode.
 
 - In a card; below `xl` it keeps a minimum width and scrolls sideways inside
   the card (the page body itself never scrolls sideways).
-- **Header row: `bg-accent-900`, white text**, 44px, `text-label`. Sort
+- **Header row: `bg-accent-700`, white text**, 44px, `text-label`. Sort
   buttons are white at 80% opacity, full white when sorted. Every sortable
-  column shows an arrow: a faint up/down pair (white at 45%) when unsorted, a
-  single `accent-300` arrow when sorted. The "?" glossary buttons inherit the
-  header's text color.
+  column shows an arrow: a faint up/down pair (white at 70%, 5.40:1) when unsorted, a
+  single `accent-300` arrow when sorted (5.29:1). The "?" glossary buttons inherit the
+  header's text color (4.79:1).
 - Rows: 52px, hairline `stone-200` dividers, **alternating tint** (`stone-50`
   on even rows, barely visible), hover `accent-100` at 40%, compare-selected
   rows `accent-100` at 70% plus a 3px teal inset bar on the left edge.
@@ -273,7 +273,7 @@ survive `overflow: hidden` and Windows High Contrast mode.
 ## 17. States
 
 - **Loading:** a skeleton the same shape as the final layout (the table
-  skeleton even has the dark header), with a soft **CSS shimmer** sweeping
+  skeleton even has the teal header), with a soft **CSS shimmer** sweeping
   across `stone-100` blocks on the card surface. The shimmer is a CSS
   animation (not anime.js) and stops under `prefers-reduced-motion`.
   Space that fills in after the first API answers is held open from the first
