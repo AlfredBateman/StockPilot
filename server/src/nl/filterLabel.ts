@@ -13,13 +13,28 @@ const FIELD_NAMES: Record<FilterField, string> = {
   debtToEquity: "Debt/Equity",
   profitMargin: "profit margin",
   change1m: "1-month change",
+  belowHigh52w: "drop from 52-week high",
+  aboveLow52w: "rise from 52-week low",
+  change3m: "3-month change",
+  change6m: "6-month change",
+  change1y: "1-year change",
 };
 
-/** profitMargin is stored as a fraction (0.1) but read as a percent (10%); change1m is already a percent. */
-function formatValue(field: FilterField, value: string | number): string {
+/** Fields whose numbers are already percents (5 means 5%). */
+export const PERCENT_FIELDS: ReadonlySet<FilterField> = new Set([
+  "change1m",
+  "belowHigh52w",
+  "aboveLow52w",
+  "change3m",
+  "change6m",
+  "change1y",
+]);
+
+/** profitMargin is stored as a fraction (0.1) but read as a percent (10%); the price-history fields are already percents. */
+export function formatValue(field: FilterField, value: string | number): string {
   if (typeof value === "string") return value;
   if (field === "profitMargin") return `${Number((value * 100).toFixed(2))}%`;
-  if (field === "change1m") return `${value}%`;
+  if (PERCENT_FIELDS.has(field)) return `${value}%`;
   return String(value);
 }
 
@@ -48,7 +63,7 @@ function sameFilter(a: Filter, b: Filter): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function vagueTerm(filter: Filter) {
+export function vagueTerm(filter: Filter) {
   return VAGUE_TERMS.find((t) => sameFilter(t.filter, filter));
 }
 

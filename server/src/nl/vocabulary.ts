@@ -61,6 +61,39 @@ export const VAGUE_TERMS: VocabTerm[] = [
     filter: { field: "change1m", op: "lt", value: 0 },
     note: "fell this month = 1-month change below 0%",
   },
+  // The four price-history terms below are worked out from weekly closing
+  // prices (see server/src/engine/metrics.ts), not intraday highs and lows.
+  {
+    pattern: /\b(?:near|close to)\b.*\b52[\s-]?weeks?[\s-]?lows?\b/,
+    filter: { field: "aboveLow52w", op: "lt", value: 5 },
+    note: "near 52-week low = within 5% of the 52-week low (weekly closes)",
+  },
+  {
+    pattern: /\b(?:near|close to)\b.*\b52[\s-]?weeks?[\s-]?highs?\b/,
+    filter: { field: "belowHigh52w", op: "lt", value: 5 },
+    note: "near 52-week high = within 5% of the 52-week high (weekly closes)",
+  },
+  // "months" is plural on purpose: the singular is the 1-month terms above.
+  {
+    pattern: /\b(?:rose|gained?|up|climbed?)\b.*\b(?:6|six)[\s-]?months\b/,
+    filter: { field: "change6m", op: "gt", value: 0 },
+    note: "rose over 6 months = 6-month change above 0%",
+  },
+  {
+    pattern: /\b(?:fell|dropped?|down|declined?)\b.*\b(?:6|six)[\s-]?months\b/,
+    filter: { field: "change6m", op: "lt", value: 0 },
+    note: "fell over 6 months = 6-month change below 0%",
+  },
+  {
+    pattern: /\b(?:rose|gained?|up|climbed?)\b.*\b(?:year|12[\s-]?months)\b/,
+    filter: { field: "change1y", op: "gt", value: 0 },
+    note: "rose over 1 year = 1-year change above 0%",
+  },
+  {
+    pattern: /\b(?:fell|dropped?|down|declined?)\b.*\b(?:year|12[\s-]?months)\b/,
+    filter: { field: "change1y", op: "lt", value: 0 },
+    note: "fell over 1 year = 1-year change below 0%",
+  },
 ];
 
 // The 11 sectors present in data/stocks.json today (see GET /api/sectors).
@@ -122,7 +155,7 @@ export const VOCABULARY: VocabTerm[] = [...VAGUE_TERMS, ...SECTOR_TERMS];
  * the patterns above actually matches it.
  */
 export const VAGUE_TERM_WORDS =
-  "cheap expensive profitable low high debt small mid large cap caps smallcap smallcaps midcap midcaps largecap largecaps rose gain gained climb climbed fell drop dropped decline declined down month".split(
+  "cheap expensive profitable low high debt small mid large cap caps smallcap smallcaps midcap midcaps largecap largecaps rose gain gained climb climbed fell drop dropped decline declined down month near close week weeks lows highs months six year".split(
     " "
   );
 
@@ -130,7 +163,8 @@ export const VAGUE_TERM_WORDS =
 // it) can define them, so guessing a threshold would be inventing data:
 //   - stable / safe / risky: no volatility or beta figure in the snapshot.
 //   - growth / momentum: no revenue history; the only trend data available
-//     (weeklyCloses) is already covered by "rose/fell this month".
+//     (weeklyCloses) is already covered by "rose/fell this month / over 6
+//     months / over 1 year" and "near 52-week high/low".
 //   - quality / value / blue chip: subjective, and would just re-skin
 //     cheap/profitable/large-cap under a vaguer name instead of adding
 //     information.

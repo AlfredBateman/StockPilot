@@ -129,3 +129,30 @@ describe("parseQuery — combined queries and edge cases", () => {
     expect(parseQuery("")).toEqual({ filters: [], notes: [], unmatched: [], tier: "rules" });
   });
 });
+
+describe("parseQuery — price-history terms", () => {
+  it.each([
+    ["stocks near 52 week low", { field: "aboveLow52w", op: "lt", value: 5 }, "near 52-week low = within 5% of the 52-week low (weekly closes)"],
+    ["close to their 52-week lows", { field: "aboveLow52w", op: "lt", value: 5 }, "near 52-week low = within 5% of the 52-week low (weekly closes)"],
+    ["near 52 week high", { field: "belowHigh52w", op: "lt", value: 5 }, "near 52-week high = within 5% of the 52-week high (weekly closes)"],
+    ["stocks that rose over 6 months", { field: "change6m", op: "gt", value: 0 }, "rose over 6 months = 6-month change above 0%"],
+    ["fell over the last six months", { field: "change6m", op: "lt", value: 0 }, "fell over 6 months = 6-month change below 0%"],
+    ["stocks up over 1 year", { field: "change1y", op: "gt", value: 0 }, "rose over 1 year = 1-year change above 0%"],
+    ["shares that dropped in the past 12 months", { field: "change1y", op: "lt", value: 0 }, "fell over 1 year = 1-year change below 0%"],
+  ])("%s", (query, filter, note) => {
+    const result = parseQuery(query);
+    expect(result.filters).toEqual([filter]);
+    expect(result.notes).toEqual([note]);
+  });
+
+  it('keeps "rose this month" on the 1-month change, not 6 months or 1 year', () => {
+    expect(parseQuery("rose this month").filters).toEqual([{ field: "change1m", op: "gt", value: 0 }]);
+  });
+
+  it("parses explicit 3-month, 6-month and 1-year numbers", () => {
+    expect(parseQuery("3 month change over 5").filters).toEqual([{ field: "change3m", op: "gt", value: 5 }]);
+    expect(parseQuery("6-month change below -10").filters).toEqual([]); // negative numbers are not supported
+    expect(parseQuery("6 month change over 10").filters).toEqual([{ field: "change6m", op: "gt", value: 10 }]);
+    expect(parseQuery("yearly change under 20").filters).toEqual([{ field: "change1y", op: "lt", value: 20 }]);
+  });
+});

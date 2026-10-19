@@ -5,11 +5,12 @@ import { readSnapshotFromFile } from "../server/src/data/loadStocks.js";
 import type { Filter, FilterSpec } from "../server/src/engine/filterSpec.js";
 import { callLlm } from "../server/src/nl/llmClient.js";
 import type { ParseIntent } from "../server/src/nl/llmPrompt.js";
-import { parseQuery } from "../server/src/nl/ruleParser.js";
-import { fixTypos } from "../server/src/nl/typoFix.js";
+import { searchStocks } from "../server/src/engine/searchStocks.js";
+import { parseOffline } from "../server/src/nl/parseOrchestrator.js";
 import { zeroResultHelp } from "../server/src/nl/zeroResultHelp.js";
 
-// Scores the offline pipeline (typo fix + rule parser, always) and, if an LLM
+// Scores the offline pipeline (typo fix + rule parser + company names, the
+// same parseOffline the app runs, always) and, if an LLM
 // key is configured, the LLM tier ALONE (callLlm, no guard/cache/rules
 // fallback) against a hand-built set of queries. It also checks that the
 // server's zero-result help finds a suggestion where one is expected, and
@@ -37,6 +38,7 @@ const CATEGORIES = [
   "advice",
   "offtopic",
   "zeroResult",
+  "names",
 ] as const;
 type Category = (typeof CATEGORIES)[number];
 
@@ -45,6 +47,8 @@ type EvalQuery = {
   query: string;
   category: Category;
   expectedFilters: FilterSpec;
+  /** The company-name search the query should produce; omitted means none (null). */
+  expectedSearch?: string;
   /** Defaults to "filter". The rule parser can only ever answer "filter". */
   expectedIntent?: ParseIntent;
   /** True for queries that match zero stocks and should get a suggestion chip. */
@@ -69,7 +73,8 @@ function filterKey(f: Filter): string {
   return JSON.stringify({ field: f.field, op: f.op, value });
 }
 
-function scoreFilters(expected: FilterSpec, actual: FilterSpec): FilterScore {
+/** A full match also needs the right company-name search (none expected = null). */
+function scoreFilters(expected: FilterSpec, actual: FilterSpec, searchOk = true): FilterScore {
   const remaining = expected.map(filterKey);
   let truePositives = 0;
   for (const key of actual.map(filterKey)) {
@@ -81,7 +86,7 @@ function scoreFilters(expected: FilterSpec, actual: FilterSpec): FilterScore {
   }
   const precision = actual.length === 0 ? (expected.length === 0 ? 1 : 0) : truePositives / actual.length;
   const recall = expected.length === 0 ? 1 : truePositives / expected.length;
-  return { precision, recall, fullMatch: truePositives === expected.length && truePositives === actual.length };
+  return { precision, recall, fullMatch: searchOk && truePositives === expected.length && truePositives === actual.length };
 }
 
 function average(nums: number[]): number {
@@ -105,6 +110,8 @@ function seconds(ms: number): string {
 
 type TierRun = {
   filters: FilterSpec;
+  /** Company-name search; the LLM never produces one, so it is always null there. */
+  search: string | null;
   intent: ParseIntent;
   score: FilterScore;
   intentOk: boolean;
@@ -227,11 +234,13 @@ function buildReport(rows: Row[], llmConfigured: boolean): string {
     for (const row of failing) {
       const intent = row.q.expectedIntent ?? "filter";
       lines.push(`- **${row.q.id}** \`${row.q.query}\` (${row.q.category})`);
-      lines.push(`  - expected: intent ${intent}, filters ${JSON.stringify(row.q.expectedFilters)}`);
+      const expectedSearch = row.q.expectedSearch ? `, search "${row.q.expectedSearch}"` : "";
+      lines.push(`  - expected: intent ${intent}, filters ${JSON.stringify(row.q.expectedFilters)}${expectedSearch}`);
       if (row.correctedQuery) lines.push(`  - typo fix: \`${row.correctedQuery}\``);
       if (!row.rules.score.fullMatch || !row.rules.intentOk || row.rules.suggestionsOk === false) {
         const help = row.rules.suggestionsOk === false ? ", no zero-result suggestion" : "";
-        lines.push(`  - rules got: intent ${row.rules.intent}, filters ${JSON.stringify(row.rules.filters)}${help}`);
+        const search = row.rules.search ? `, search "${row.rules.search}"` : "";
+        lines.push(`  - rules got: intent ${row.rules.intent}, filters ${JSON.stringify(row.rules.filters)}${search}${help}`);
       }
       if (llmConfigured && (!row.llm!.score.fullMatch || !row.llm!.intentOk || row.llm!.suggestionsOk === false)) {
         const status = row.llmFailed ? " (call failed or reply discarded)" : "";
@@ -250,21 +259,24 @@ async function main() {
   );
   const { stocks } = await readSnapshotFromFile(STOCKS_PATH);
 
-  function run(q: EvalQuery, filters: FilterSpec, intent: ParseIntent, unmatched: string[]): TierRun {
+  function run(q: EvalQuery, filters: FilterSpec, intent: ParseIntent, unmatched: string[], search: string | null = null): TierRun {
     return {
       filters,
+      search,
       intent,
-      score: scoreFilters(q.expectedFilters, filters),
+      score: scoreFilters(q.expectedFilters, filters, search === (q.expectedSearch ?? null)),
       intentOk: intent === (q.expectedIntent ?? "filter"),
-      suggestionsOk: q.expectSuggestions ? zeroResultHelp(stocks, filters, unmatched).length > 0 : null,
+      // Narrowed to the named companies, as routes/parse.ts does.
+      suggestionsOk: q.expectSuggestions
+        ? zeroResultHelp(search ? searchStocks(stocks, search) : stocks, filters, unmatched).length > 0
+        : null,
     };
   }
 
   const rows: Row[] = [];
   for (const [index, q] of queries.entries()) {
-    const fixed = fixTypos(q.query);
-    const parsed = parseQuery(fixed.text);
-    const rules = run(q, parsed.filters, "filter", parsed.unmatched);
+    const { fixed, rules: parsed } = parseOffline(q.query, stocks);
+    const rules = run(q, parsed.filters, "filter", parsed.unmatched, parsed.search);
 
     let llm: TierRun | null = null;
     let llmMs: number | null = null;

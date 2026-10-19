@@ -6,15 +6,39 @@ import {
   formatPercent,
   formatPrice,
   formatRatio,
+  formatSignedPercent,
 } from "./format";
 
+type StockMetric = {
+  label: string;
+  value: (s: Stock) => string;
+  /** Hover text for the value (e.g. why a bank has no Debt/Equity). */
+  title?: (s: Stock) => string | undefined;
+  /** For a signed change: the raw number, so the view can color it gain or loss. */
+  signed?: (s: Stock) => number | null;
+};
+
 /** The headline metrics shown for one stock, shared by StockDetail and CompareView. */
-export const STOCK_METRICS: { label: string; value: (s: Stock) => string; title?: (s: Stock) => string | undefined }[] = [
+export const STOCK_METRICS: StockMetric[] = [
   { label: "Price", value: (s) => formatPrice(s.price) },
   { label: "Market Cap", value: (s) => formatMarketCapCrore(s.marketCap) },
   { label: "P/E", value: (s) => formatRatio(s.pe) },
   { label: "Debt/Equity", value: (s) => formatDebtToEquity(s.debtToEquity), title: debtToEquityNote },
   { label: "Profit Margin", value: (s) => formatPercent(s.profitMargin) },
+];
+
+/** Shown under every price-history block, because these are not the intraday highs and lows other sites show. */
+export const HISTORY_CAPTION = "Based on weekly closing prices, not intraday highs and lows.";
+
+/** Price-history metrics (worked out by the server from the weekly closes), shared by StockDetail and CompareView. */
+export const HISTORY_METRICS: StockMetric[] = [
+  { label: "52W High", value: (s) => formatPrice(s.high52w) },
+  { label: "52W Low", value: (s) => formatPrice(s.low52w) },
+  { label: "Below 52W High", value: (s) => formatRatio(s.belowHigh52w, "%") },
+  { label: "Above 52W Low", value: (s) => formatRatio(s.aboveLow52w, "%") },
+  { label: "3M Change", value: (s) => formatSignedPercent(s.change3m), signed: (s) => s.change3m },
+  { label: "6M Change", value: (s) => formatSignedPercent(s.change6m), signed: (s) => s.change6m },
+  { label: "1Y Change", value: (s) => formatSignedPercent(s.change1y), signed: (s) => s.change1y },
 ];
 
 const CHANGE_1M_LOOKBACK_WEEKS = 4;

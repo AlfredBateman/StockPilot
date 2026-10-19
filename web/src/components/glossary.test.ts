@@ -44,7 +44,7 @@ function allText(entry: GlossaryEntry): string[] {
 describe("glossary content", () => {
   it("covers every term the Guide promises", () => {
     expect(GLOSSARY_KEYS.sort()).toEqual(
-      ["asOf", "change1m", "debtToEquity", "marketCap", "pe", "price", "profitMargin", "sector"].sort()
+      ["asOf", "change1m", "debtToEquity", "longChange", "marketCap", "pe", "price", "profitMargin", "range52w", "sector"].sort()
     );
   });
 
@@ -121,6 +121,28 @@ describe("thresholds quoted in the glossary match the code", () => {
     expect(GLOSSARY.profitMargin.howStockPilotUsesIt).toContain("above 0% as profitable");
   });
 
+  it("the 52-week window, the 3/6/12-month lookbacks and the near-high/low rule match the engine and vocabulary", () => {
+    expect(metricsSource).toContain("RANGE_52W_CLOSES = 52");
+    expect(GLOSSARY.range52w.howStockPilotUsesIt).toContain("last 52 weekly closing prices");
+    expect(metricsSource).toContain("CHANGE_3M_WEEKS = 13");
+    expect(metricsSource).toContain("CHANGE_6M_WEEKS = 26");
+    expect(metricsSource).toContain("CHANGE_1Y_WEEKS = 52");
+    expect(GLOSSARY.longChange.definition).toContain("13, 26 and 52 weeks");
+    expect(vocabularySource).toContain("near 52-week low = within 5% of the 52-week low");
+    expect(vocabularySource).toContain("near 52-week high = within 5% of the 52-week high");
+    expect(GLOSSARY.range52w.howStockPilotUsesIt).toContain("within 5% of the 52-week low");
+    expect(GLOSSARY.range52w.howStockPilotUsesIt).toContain("within 5% of the 52-week high");
+    expect(vocabularySource).toContain("rose over 6 months = 6-month change above 0%");
+    expect(vocabularySource).toContain("fell over 6 months = 6-month change below 0%");
+    expect(GLOSSARY.longChange.howStockPilotUsesIt).toContain("6-month change above 0%");
+  });
+
+  it("both price-history entries say they are based on weekly closing prices", () => {
+    for (const key of ["range52w", "longChange"] as const) {
+      expect(allText(GLOSSARY[key]).join(" "), key).toContain("weekly closing prices");
+    }
+  });
+
   it("the preset thresholds quoted in the glossary match presets.json", () => {
     const presets = JSON.parse(presetsSource) as { name: string; filters: { field: string; value: number }[] }[];
     const valueOf = (name: string, field: string) =>
@@ -173,6 +195,23 @@ describe("worked examples are correct whatever data is loaded", () => {
     const percent = (from: number, to: number) => ((to - from) / from) * 100;
     expect(GLOSSARY.change1m.example).toContain(`(210 − 200) ÷ 200 = +${percent(200, 210).toFixed(1)}%`);
     expect(GLOSSARY.change1m.example).toContain(`the change would be ${percent(200, 180).toFixed(1)}%`);
+  });
+
+  it("52-Week High and Low", () => {
+    const below = ((500 - 410) / 500) * 100;
+    const above = ((410 - 400) / 400) * 100;
+    expect(GLOSSARY.range52w.example).toContain(`(500 − 410) ÷ 500 = ${below.toFixed(1)}% below`);
+    expect(GLOSSARY.range52w.example).toContain(`(410 − 400) ÷ 400 = ${above.toFixed(1)}% above`);
+    // 2.5% is within the 5% "near" rule, which is what the example says.
+    expect(above).toBeLessThan(5);
+    expect(GLOSSARY.range52w.example).toContain("near its 52-week low");
+  });
+
+  it("3, 6 and 12-Month Change", () => {
+    const percent = (from: number, to: number) => (((to - from) / from) * 100).toFixed(1);
+    expect(GLOSSARY.longChange.example).toContain(`(330 − 250) ÷ 250 = +${percent(250, 330)}%`);
+    expect(GLOSSARY.longChange.example).toContain(`(330 − 300) ÷ 300 = +${percent(300, 330)}%`);
+    expect(GLOSSARY.longChange.example).toContain(`(330 − 320) ÷ 320 = +${percent(320, 330)}%`);
   });
 
   it("Price", () => {
@@ -232,6 +271,12 @@ describe("glossaryKeyForNote", () => {
     ['"margin above 10" = profit margin above 10%', "profitMargin"],
     ['"debt to equity under 2" = Debt/Equity below 2', "debtToEquity"],
     ['"1 month change over 5" = 1-month change above 5', "change1m"],
+    ["near 52-week low = within 5% of the 52-week low (weekly closes)", "range52w"],
+    ["near 52-week high = within 5% of the 52-week high (weekly closes)", "range52w"],
+    ["drop from 52-week high below 10%", "range52w"],
+    ["rose over 6 months = 6-month change above 0%", "longChange"],
+    ["fell over 1 year = 1-year change below 0%", "longChange"],
+    ['"3 month change over 5" = 3-month change above 5', "longChange"],
   ])("%s -> %s", (note, key) => {
     expect(glossaryKeyForNote(note)).toBe(key);
   });

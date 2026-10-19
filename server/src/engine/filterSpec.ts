@@ -11,6 +11,11 @@ export const FILTER_FIELDS = [
   "debtToEquity",
   "profitMargin",
   "change1m",
+  "belowHigh52w",
+  "aboveLow52w",
+  "change3m",
+  "change6m",
+  "change1y",
 ] as const;
 
 export const FILTER_OPS = ["eq", "in", "lt", "gt", "between"] as const;
@@ -32,6 +37,11 @@ const FIELD_KINDS: Record<FilterField, "text" | "number"> = {
   debtToEquity: "number",
   profitMargin: "number",
   change1m: "number",
+  belowHigh52w: "number",
+  aboveLow52w: "number",
+  change3m: "number",
+  change6m: "number",
+  change1y: "number",
 };
 
 /** Text fields can only be compared for equality — "sector < 3" is meaningless. */

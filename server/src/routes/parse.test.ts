@@ -39,6 +39,17 @@ describe("POST /api/parse", () => {
     expect(data.notes.length).toBe(data.filters.length);
   });
 
+  it("recognises company names from the real data and returns them as a name search", async () => {
+    const { json } = await parse({ query: "cheap tata stocks" });
+    expect(json.data).toMatchObject({
+      tier: "rules",
+      search: "tata",
+      filters: [{ field: "pe", op: "lt", value: 20 }],
+      unmatched: [],
+    });
+    expect((json.data as { notes: string[] }).notes).toContain("Showing companies whose name contains Tata");
+  });
+
   it("returns 200 with empty filters for gibberish, never an error", async () => {
     const { status, json } = await parse({ query: "asdkjh qweoiuqwe" });
     expect(status).toBe(200);

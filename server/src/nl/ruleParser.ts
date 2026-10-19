@@ -29,6 +29,9 @@ export const NUMERIC_FIELDS: NumericFieldSpec[] = [
   { field: "debtToEquity", label: "Debt/Equity", aliases: ["debt to equity", "debt/equity", "d/e"] },
   { field: "profitMargin", label: "profit margin", aliases: ["profit margin", "margin"], percent: true },
   { field: "change1m", label: "1-month change", aliases: ["1 month change", "1-month change", "monthly change"] },
+  { field: "change3m", label: "3-month change", aliases: ["3 month change", "3-month change"] },
+  { field: "change6m", label: "6-month change", aliases: ["6 month change", "6-month change"] },
+  { field: "change1y", label: "1-year change", aliases: ["1 year change", "1-year change", "yearly change"] },
 ];
 
 export const COMPARATORS: { words: string[]; op: "lt" | "gt" }[] = [

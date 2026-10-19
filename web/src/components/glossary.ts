@@ -33,6 +33,11 @@ export const GLOSSARY_KEY_FOR_FIELD: Record<FilterField, GlossaryKey> = {
   debtToEquity: "debtToEquity",
   profitMargin: "profitMargin",
   change1m: "change1m",
+  belowHigh52w: "range52w",
+  aboveLow52w: "range52w",
+  change3m: "longChange",
+  change6m: "longChange",
+  change1y: "longChange",
 };
 
 /**
@@ -48,6 +53,8 @@ export function glossaryKeyForNote(note: string): GlossaryKey | null {
   if (text.includes("debt/equity")) return "debtToEquity";
   if (text.includes("profit margin")) return "profitMargin";
   if (text.includes("1-month change")) return "change1m";
+  if (text.includes("52-week")) return "range52w";
+  if (/(?:3-month|6-month|1-year) change/.test(text)) return "longChange";
   if (text.includes("market-cap") || text.includes("market cap")) return "marketCap";
   if (text.includes("sector")) return "sector";
   return null;

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { loadStocks } from "../data/loadStocks.js";
+import { searchStocks } from "../engine/searchStocks.js";
 import { parseWithTiers } from "../nl/parseOrchestrator.js";
 import { zeroResultHelp } from "../nl/zeroResultHelp.js";
 
@@ -11,17 +12,20 @@ export const parseRouter = Router();
 
 parseRouter.post("/", async (req, res) => {
   const query = typeof req.body?.query === "string" ? req.body.query : "";
-  const result = await parseWithTiers(query, { ip: req.ip });
 
-  // Zero-result help is worked out here on the real data, never by the LLM.
-  // If the data can't be loaded the answer simply has no suggestions.
+  // The stocks are needed to recognise company names. If the data can't be
+  // loaded, names are simply not recognised and the answer has no suggestions.
+  const stocks = await loadStocks().then(
+    (snapshot) => snapshot.stocks,
+    () => []
+  );
+  const result = await parseWithTiers(query, { ip: req.ip, stocks });
+
+  // Zero-result help is worked out here on the real data, never by the LLM,
+  // within the companies the query named (if any).
   if (result.intent === "filter" && (result.filters.length > 0 || result.unmatched.length > 0)) {
-    try {
-      const snapshot = await loadStocks();
-      result.suggestions = zeroResultHelp(snapshot.stocks, result.filters, result.unmatched);
-    } catch {
-      // Data not loadable: the answer keeps its empty suggestions.
-    }
+    const named = result.search ? searchStocks(stocks, result.search) : stocks;
+    result.suggestions = zeroResultHelp(named, result.filters, result.unmatched);
   }
 
   res.status(200).json({ data: result });
