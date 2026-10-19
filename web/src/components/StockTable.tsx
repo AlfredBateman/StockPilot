@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SortField, SortSpec, Stock } from "../api/client";
 import {
   debtToEquityNote,
@@ -13,7 +13,7 @@ import {
 import { IconCheck, IconChevron, IconSort, IconStar } from "./Icons";
 import type { GlossaryKey } from "./glossary";
 import { MetricHelp } from "./MetricHelp";
-import { animateRowsIn } from "./motion";
+import { animateRowsIn, popStar } from "./motion";
 import { HISTORY_CAPTION } from "./stockMetrics";
 
 export const COMPARE_LIMIT = 3;
@@ -165,13 +165,23 @@ function ReasonList({ reasons }: { reasons: string[] }) {
 }
 
 function StarToggle({ ticker, watched, onToggle }: { ticker: string; watched: boolean; onToggle: () => void }) {
+  // Animation (c): a pop when the star turns on (not on first render, not when it turns off).
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const wasWatched = useRef(watched);
+  useEffect(() => {
+    const added = watched && !wasWatched.current;
+    wasWatched.current = watched;
+    if (added && buttonRef.current) return popStar(buttonRef.current);
+  }, [watched]);
+
   return (
     <button
+      ref={buttonRef}
       type="button"
       onClick={onToggle}
       aria-pressed={watched}
       aria-label={watched ? `Remove ${displayTicker(ticker)} from watchlist` : `Add ${displayTicker(ticker)} to watchlist`}
-      className={`flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-lg transition-colors duration-(--motion-fast) hover:bg-stone-100 ${
+      className={`flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-lg transition-[color,background-color,scale] duration-(--motion-press) active:scale-95 hover:bg-stone-100 ${
         watched ? "text-accent-600" : "text-stone-400 hover:text-stone-700"
       }`}
     >
@@ -261,7 +271,7 @@ export function StockTable({
 
   function renderPagination(className: string) {
     const buttonClass =
-      "inline-flex h-10 touch-manipulation items-center gap-1.5 rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-stone-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-elevated disabled:active:scale-100";
+      "inline-flex h-10 touch-manipulation items-center gap-1.5 rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-stone-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-elevated disabled:active:scale-100";
     return (
       <div className={`flex flex-wrap items-center justify-between gap-3 text-body ${className}`}>
         <span aria-live="polite" className="tabular-nums text-stone-600">
@@ -302,7 +312,7 @@ export function StockTable({
               type="button"
               aria-pressed={view === v.key}
               onClick={() => setView(v.key)}
-              className={`inline-flex h-9 touch-manipulation items-center rounded-full border px-3.5 text-body shadow-e1 transition-[background-color,border-color,color,transform] duration-(--motion-fast) active:scale-[0.97] ${
+              className={`inline-flex h-9 touch-manipulation items-center rounded-full border px-3.5 text-body shadow-e1 transition-[background-color,border-color,color,scale] duration-(--motion-press) active:scale-[0.97] ${
                 view === v.key
                   ? "border-accent-600 bg-accent-600 font-medium text-white hover:bg-accent-700"
                   : "border-stone-300 bg-elevated text-stone-700 hover:border-stone-400 hover:text-stone-900"
@@ -355,7 +365,7 @@ export function StockTable({
                         <button
                           type="button"
                           onClick={() => handleSort(column.field)}
-                          className="-mx-1 inline-flex touch-manipulation items-center gap-1 rounded-md px-1 py-1 transition-colors duration-(--motion-fast) hover:text-white focus-visible:outline-accent-300"
+                          className="-mx-1 inline-flex touch-manipulation items-center gap-1 rounded-md px-1 py-1 transition-[color,scale] duration-(--motion-press) hover:text-white active:scale-[0.97] focus-visible:outline-accent-300"
                         >
                           {column.label}
                           <IconSort

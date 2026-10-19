@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { animateRowsIn } from "./motion";
+import { animateRowsIn, popStar } from "./motion";
 
 // Real anime.js against a jsdom document (not reduced motion: jsdom has no matchMedia).
 function makeRows(count: number): HTMLElement[] {
@@ -24,5 +24,15 @@ describe("animateRowsIn", () => {
 
   it("does nothing for no rows", () => {
     expect(() => animateRowsIn([])()).not.toThrow();
+  });
+});
+
+describe("popStar", () => {
+  it("scales the button while it runs and leaves plain CSS once reverted", () => {
+    const [star] = makeRows(1);
+    const revert = popStar(star);
+    expect(star.style.transform).toContain("scale");
+    revert();
+    expect(star.style.cssText).toBe("");
   });
 });

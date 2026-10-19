@@ -69,7 +69,7 @@ export function countUp(el: HTMLElement, to: number, format: (n: number) => stri
   el.textContent = format(0);
   const animation = animate(counter, {
     value: to,
-    duration: 700,
+    duration: MOTION.count,
     ease: "outCubic",
     onUpdate: () => {
       el.textContent = format(counter.value);
@@ -79,5 +79,22 @@ export function countUp(el: HTMLElement, to: number, format: (n: number) => stri
   return () => {
     animation.pause();
     finish();
+  };
+}
+
+/**
+ * (c) A small pop on the star when a stock is added to the watchlist: 1 to 1.15 and back, 150ms.
+ * Returns a function that reverts the button to plain CSS (effect cleanup). Reduced motion: nothing happens.
+ */
+export function popStar(el: HTMLElement): () => void {
+  if (prefersReducedMotion()) return () => {};
+  const animation = animate(el, {
+    scale: [{ to: 1.15 }, { to: 1 }],
+    duration: MOTION.fast,
+    ease: MOTION.easeOut,
+    onComplete: (self) => self.revert(),
+  });
+  return () => {
+    animation.revert();
   };
 }

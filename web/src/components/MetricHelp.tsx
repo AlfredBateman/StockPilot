@@ -168,7 +168,7 @@ export function MetricHelp({ metric }: MetricHelpProps) {
                   triggerRef.current?.focus();
                 }}
                 aria-label="Close"
-                className="-mr-2 -mt-2 flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-stone-500 transition-colors duration-(--motion-fast) hover:bg-stone-100 hover:text-stone-900"
+                className="-mr-2 -mt-2 flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-stone-500 transition-[color,background-color,scale] duration-(--motion-press) active:scale-95 hover:bg-stone-100 hover:text-stone-900"
               >
                 <IconClose size={18} />
               </button>
@@ -196,8 +196,8 @@ export function MetricHelp({ metric }: MetricHelpProps) {
                 onClick={handleOpenGuide}
                 className={
                   entry.source
-                    ? "inline-flex h-10 touch-manipulation items-center rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-stone-50 active:scale-[0.98]"
-                    : "inline-flex h-10 touch-manipulation items-center rounded-xl bg-accent-600 px-3.5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-accent-700 active:scale-[0.98]"
+                    ? "inline-flex h-10 touch-manipulation items-center rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-stone-50 active:scale-[0.98]"
+                    : "inline-flex h-10 touch-manipulation items-center rounded-xl bg-accent-600 px-3.5 text-body font-medium text-white shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-accent-700 active:scale-[0.98]"
                 }
               >
                 {entry.source ? "See it in the Guide" : "Learn more"}

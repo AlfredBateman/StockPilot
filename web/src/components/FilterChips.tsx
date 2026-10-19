@@ -57,7 +57,7 @@ export function FilterChips({ filters, onRemove, onClearAll }: FilterChipsProps)
                   type="button"
                   onClick={() => onRemove(index)}
                   aria-label={`Remove filter: ${describeFilter(filter)}`}
-                  className="flex size-7 touch-manipulation items-center justify-center rounded-full bg-stone-100 text-stone-600 transition-colors duration-(--motion-fast) hover:bg-error-soft hover:text-error"
+                  className="flex size-7 touch-manipulation items-center justify-center rounded-full bg-stone-100 text-stone-600 transition-[color,background-color,scale] duration-(--motion-press) active:scale-95 hover:bg-error-soft hover:text-error"
                 >
                   <IconClose size={14} />
                 </button>

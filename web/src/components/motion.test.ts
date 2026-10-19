@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
-import { animateRowsIn, countUp, MOTION, prefersReducedMotion } from "./motion";
+import { animateRowsIn, countUp, MOTION, popStar, prefersReducedMotion } from "./motion";
 
 // The CSS tokens and the anime.js numbers are written twice (index.css @theme and MOTION), so a test
 // keeps them equal. The raw CSS is also checked for the two things the motion rules promise.
@@ -82,5 +82,13 @@ describe("under prefers-reduced-motion", () => {
     const el = fakeElement();
     countUp(el, 2993.5, (n) => n.toFixed(2));
     expect(el.textContent).toBe("2993.50");
+  });
+
+  it("(c) does not pop the star", () => {
+    setReducedMotion(true);
+    const star = fakeElement();
+    const revert = popStar(star);
+    expect(star.style.transform).toBeUndefined();
+    expect(() => revert()).not.toThrow();
   });
 });

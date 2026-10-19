@@ -48,7 +48,7 @@ export function Drawer({ title, onClose, wide = false, children }: DrawerProps) 
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-stone-500 transition-colors duration-(--motion-fast) hover:bg-stone-100 hover:text-stone-900"
+            className="flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-stone-500 transition-[color,background-color,scale] duration-(--motion-press) active:scale-95 hover:bg-stone-100 hover:text-stone-900"
           >
             <IconClose size={18} />
           </button>

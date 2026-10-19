@@ -104,7 +104,7 @@ export function QueryBox({ onApply }: QueryBoxProps) {
         />
         <button
           type="submit"
-          className="group absolute inset-y-1.5 right-1.5 inline-flex touch-manipulation items-center gap-2 rounded-[10px] bg-accent-600 pl-4 pr-1.5 text-body font-semibold text-white shadow-e1 transition-[background-color,transform] duration-(--motion-fast) hover:bg-accent-700 active:scale-[0.98] sm:pl-5"
+          className="group absolute inset-y-1.5 right-1.5 inline-flex touch-manipulation items-center gap-2 rounded-[10px] bg-accent-600 pl-4 pr-1.5 text-body font-semibold text-white shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-accent-700 active:scale-[0.98] sm:pl-5"
         >
           Ask
           {/* Button-in-button: the arrow sits in its own well and nudges right on hover. */}
@@ -193,7 +193,7 @@ export function QueryBox({ onApply }: QueryBoxProps) {
                     <button
                       type="button"
                       onClick={() => onApply(suggestion.filters, state.result.search ?? "")}
-                      className="inline-flex h-9 touch-manipulation items-center rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-colors duration-(--motion-fast) hover:border-accent-500 hover:text-accent-800"
+                      className="inline-flex h-9 touch-manipulation items-center rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-[color,border-color,scale] duration-(--motion-press) hover:border-accent-500 hover:text-accent-800 active:scale-[0.97]"
                     >
                       {suggestion.label}
                     </button>

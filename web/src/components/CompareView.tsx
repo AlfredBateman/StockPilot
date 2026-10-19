@@ -52,7 +52,7 @@ function RemoveButton({ ticker, onRemove }: { ticker: string; onRemove: (ticker:
       type="button"
       onClick={() => onRemove(ticker)}
       aria-label={`Remove ${displayTicker(ticker)} from comparison`}
-      className="flex size-7 shrink-0 touch-manipulation items-center justify-center rounded-lg text-stone-500 transition-colors duration-(--motion-fast) hover:bg-error-soft hover:text-error"
+      className="flex size-7 shrink-0 touch-manipulation items-center justify-center rounded-lg text-stone-500 transition-[color,background-color,scale] duration-(--motion-press) active:scale-95 hover:bg-error-soft hover:text-error"
     >
       <IconClose size={14} />
     </button>
