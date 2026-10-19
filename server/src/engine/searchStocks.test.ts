@@ -51,3 +51,10 @@ describe("searchStocks", () => {
     expect(list).toHaveLength(2);
   });
 });
+
+describe("searchStocks — alternatives", () => {
+  it("treats commas as 'or', so one search can name several companies", () => {
+    expect(tickers("reliance, tcs")).toEqual(["RELIANCE.NS", "TCS.NS"]);
+    expect(tickers(" tcs , ")).toEqual(["TCS.NS"]);
+  });
+});

@@ -6,7 +6,8 @@ import { IconArrowRight, IconChat, IconCheck, IconInfo, IconWarning } from "./Ic
 import { slideDown } from "./motion";
 
 type QueryBoxProps = {
-  onApply: (filters: FilterSpec) => void;
+  /** A search sets the whole screen: its filters and its company-name search ("" when it named no company). */
+  onApply: (filters: FilterSpec, search: string) => void;
 };
 
 type QueryState = { kind: "idle" } | { kind: "loading" } | { kind: "ready"; result: ParseResult } | { kind: "error"; message: string };
@@ -40,7 +41,8 @@ const RESULT_TITLES: Record<Exclude<ParseIntent, "filter">, string> = {
 
 function resultTitle(result: ParseResult): string {
   if (result.intent !== "filter") return RESULT_TITLES[result.intent];
-  return result.filters.length === 0 ? "No Filters Found" : "Filters Applied";
+  if (result.filters.length > 0) return "Filters Applied";
+  return result.search ? "Search Applied" : "No Filters Found";
 }
 
 // A free-text alternative to FilterPanel: "cheap profitable midcaps that fell
@@ -68,7 +70,7 @@ export function QueryBox({ onApply }: QueryBoxProps) {
     try {
       const result = await parseQuery(value);
       // Only a search changes the screen; a question or off-topic reply leaves the current filters alone.
-      if (result.intent === "filter") onApply(result.filters);
+      if (result.intent === "filter") onApply(result.filters, result.search ?? "");
       setState({ kind: "ready", result });
     } catch (err) {
       setState({ kind: "error", message: err instanceof Error ? err.message : "n/a" });
@@ -164,10 +166,10 @@ export function QueryBox({ onApply }: QueryBoxProps) {
           {/* The answer is plain text from the server and is rendered as text, never as HTML. */}
           {state.result.intent !== "filter" ? (
             <p className="max-w-2xl text-stone-800">{state.result.answer ?? "n/a"}</p>
-          ) : state.result.filters.length === 0 ? (
+          ) : state.result.filters.length === 0 && !state.result.search ? (
             <p className="text-stone-700">
               None of those words are terms StockPilot knows yet. Try words like &ldquo;cheap&rdquo;,
-              &ldquo;profitable&rdquo;, &ldquo;small cap&rdquo;, or a sector name.
+              &ldquo;profitable&rdquo;, &ldquo;small cap&rdquo;, a sector name, or a company name.
             </p>
           ) : (
             <ul className="grid gap-2 sm:grid-cols-2">
@@ -198,7 +200,7 @@ export function QueryBox({ onApply }: QueryBoxProps) {
                   <li key={suggestion.label}>
                     <button
                       type="button"
-                      onClick={() => onApply(suggestion.filters)}
+                      onClick={() => onApply(suggestion.filters, state.result.search ?? "")}
                       className="inline-flex h-9 touch-manipulation items-center rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-colors duration-150 hover:border-accent-500 hover:text-accent-800"
                     >
                       {suggestion.label}

@@ -204,6 +204,8 @@ type Suggestion = { label: string; filters: FilterSpec };
 
 export type ParseResult = {
   filters: FilterSpec;
+  /** Company names for the name search ("tata", or "infosys, wipro"), or null when none were named. */
+  search: string | null;
   notes: string[];
   unmatched: string[];
   tier: ParseTier;

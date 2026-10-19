@@ -3,6 +3,7 @@ import type { FilterSpec } from "../engine/filterSpec.js";
 import { NVIDIA_TIMEOUT_MS } from "./llmClient.js";
 import { createLlmGuard } from "./llmGuard.js";
 import { readCacheEntry, writeCacheEntry } from "./nlCache.js";
+import { makeStock } from "../engine/testStocks.js";
 import { AI_RESTING_NOTICE, TRUNCATED_NOTICE, parseWithTiers } from "./parseOrchestrator.js";
 
 // Every test here runs with fetch replaced, so nothing ever leaves the
@@ -69,6 +70,31 @@ describe("parseWithTiers — rules first", () => {
     expect(readCacheEntry).not.toHaveBeenCalled();
     expect(result).toMatchObject({ tier: "rules", intent: "filter", answer: null, notice: null });
     expect(result.filters).toHaveLength(4);
+  });
+
+  it("answers company names and 'companies like X' offline, without the cache or the LLM", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const stocks = [
+      makeStock({ ticker: "INFY.NS", name: "Infosys Limited", sector: "Technology" }),
+      makeStock({ ticker: "TATASTEEL.NS", name: "Tata Steel Limited", sector: "Basic Materials" }),
+    ];
+
+    const named = await parseWithTiers("cheap tata stocks", { stocks, guard: createLlmGuard() });
+    expect(named).toMatchObject({ tier: "rules", search: "tata", filters: [{ field: "pe", op: "lt", value: 20 }] });
+
+    const like = await parseWithTiers("companies like infosys", { stocks, guard: createLlmGuard() });
+    expect(like).toMatchObject({ tier: "rules", search: null, filters: [{ field: "sector", op: "eq", value: "Technology" }] });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(readCacheEntry).not.toHaveBeenCalled();
+  });
+
+  it("does not recognise names when no stocks are given", async () => {
+    vi.stubGlobal("fetch", mockFetchJson(chatBody(filterReply())));
+    const result = await parse("tata stocks");
+    expect(result.search).toBeNull();
+    expect(result.tier).toBe("llm");
   });
 
   it("fixes typos before the rules run and reports the corrected query", async () => {

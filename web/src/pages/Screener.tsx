@@ -121,6 +121,11 @@ export function Screener() {
     setActivePreset(next.active);
     setPage(1);
   }
+  /** The main search box sets the whole screen: filters and the company-name search together. */
+  function applyQuery(nextFilters: FilterSpec, nextSearch: string) {
+    updateFilters(nextFilters);
+    setSearch(nextSearch);
+  }
   function clearAll() {
     updateFilters([]);
     setSearch("");
@@ -148,7 +153,7 @@ export function Screener() {
           query reads as the entry point. The outer shell is a teal-tinted tray; the inner core is the card. */}
       <section className="rounded-[1.75rem] bg-gradient-to-b from-accent-100 to-stone-100 p-1.5 shadow-e2 ring-1 ring-accent-200/70">
         <div className="flex flex-col gap-7 rounded-[1.375rem] bg-card p-5 shadow-[inset_0_1px_0_rgb(255_255_255/0.9)] sm:p-8">
-          <QueryBox key={queryBoxKey} onApply={updateFilters} />
+          <QueryBox key={queryBoxKey} onApply={applyQuery} />
           <div className="flex flex-col gap-3.5 border-t border-stone-200 pt-6">
             <h2 className="text-balance text-h3 text-stone-800">Or Start From a Preset</h2>
             <PresetBar activeName={activePreset?.name ?? null} onToggle={applyPreset} />

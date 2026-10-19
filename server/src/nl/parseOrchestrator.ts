@@ -1,4 +1,6 @@
+import type { Stock } from "../data/stockSchema.js";
 import type { FilterSpec } from "../engine/filterSpec.js";
+import { findCompanies } from "./companyNames.js";
 import { filterNote } from "./filterLabel.js";
 import { callLlm, isLlmConfigured } from "./llmClient.js";
 import { llmGuard, type LlmGuard } from "./llmGuard.js";
@@ -18,6 +20,8 @@ export const TRUNCATED_NOTICE = `Only the first ${MAX_QUERY_LENGTH} characters w
 export type Suggestion = { label: string; filters: FilterSpec };
 
 type QueryResult = ParseResult & {
+  /** A company-name search for the name field ("tata", or "infosys, wipro"), or null when no company was named. */
+  search: string | null;
   intent: ParseIntent;
   /** Plain-text reply for question/advice/offtopic; null for a filter request. */
   answer: string | null;
@@ -32,6 +36,8 @@ type QueryResult = ParseResult & {
 type ParseOptions = {
   /** Who is asking, for the per-IP LLM rate limit. */
   ip?: string;
+  /** The stocks whose names can be recognised. Empty (the default) turns name matching off. */
+  stocks?: Stock[];
   /** Tests pass their own guard; the server shares one. */
   guard?: LlmGuard;
 };
@@ -39,8 +45,9 @@ type ParseOptions = {
 /**
  * Decides which tier answers a query.
  *
- *   1. Cut to 200 characters, fix typos, run the rule parser (always).
- *   2. Rules found filters and understood every word -> done, no network.
+ *   1. Cut to 200 characters, fix typos, run the rule parser, then look for
+ *      company names in the leftover words (always, see parseOffline).
+ *   2. That found filters or a company and understood every word -> done, no network.
  *   3. Cache (identical query seen before) -> done.
  *   4. Not DEMO_MODE: cloud LLM (if configured and the guard allows it).
  *   5. Nothing better answered -> the rules result, with a notice saying the
@@ -51,8 +58,7 @@ type ParseOptions = {
  */
 export async function parseWithTiers(rawQuery: string, options: ParseOptions = {}): Promise<QueryResult> {
   const query = rawQuery.slice(0, MAX_QUERY_LENGTH);
-  const fixed = fixTypos(query);
-  const rules = parseQuery(fixed.text);
+  const { fixed, rules } = parseOffline(query, options.stocks ?? []);
 
   const base: QueryResult = {
     ...rules,
@@ -64,7 +70,7 @@ export async function parseWithTiers(rawQuery: string, options: ParseOptions = {
   };
 
   if (!query.trim()) return base;
-  if (rules.filters.length > 0 && rules.unmatched.length === 0) return base;
+  if ((rules.filters.length > 0 || rules.search) && rules.unmatched.length === 0) return base;
 
   const cached = await readCacheEntry(query);
   if (cached) {
@@ -95,6 +101,29 @@ export async function parseWithTiers(rawQuery: string, options: ParseOptions = {
   }
 
   return { ...base, notice: [base.notice, AI_RESTING_NOTICE].filter(Boolean).join(" ") };
+}
+
+/**
+ * The offline part every query gets, also scored by eval/run.ts: typo fix,
+ * rule parser, then company names in the words the rules left over. A
+ * "companies like X" sector filter replaces a sector the rules found.
+ */
+export function parseOffline(query: string, stocks: Stock[]) {
+  const fixed = fixTypos(query);
+  const parsed = parseQuery(fixed.text);
+  const names = findCompanies(stocks, fixed.text, parsed.unmatched);
+  const replaced = new Set(names.filters.map((f) => f.field));
+  // The rule parser's notes are one per filter, in the same order, so they are dropped together.
+  const kept = parsed.filters.map((filter, i) => ({ filter, note: parsed.notes[i] })).filter((m) => !replaced.has(m.filter.field));
+
+  const rules: ParseResult & { search: string | null } = {
+    ...parsed,
+    filters: [...kept.map((m) => m.filter), ...names.filters],
+    notes: [...kept.map((m) => m.note), ...names.notes],
+    unmatched: names.unmatched,
+    search: names.search,
+  };
+  return { fixed, rules };
 }
 
 /** The cloud LLM (rate-limited and capped). Null if it is off, over its limit or gave no valid reply. */

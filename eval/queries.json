@@ -615,5 +615,86 @@
     ],
     "expectSuggestions": true,
     "status": "unreviewed"
+  },
+  {
+    "id": "h01",
+    "query": "stocks near 52 week low",
+    "category": "vague",
+    "expectedFilters": [{ "field": "aboveLow52w", "op": "lt", "value": 5 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "h02",
+    "query": "large caps near their 52-week high",
+    "category": "vague",
+    "expectedFilters": [{ "field": "belowHigh52w", "op": "lt", "value": 5 }, { "field": "marketCapBucket", "op": "eq", "value": "Large" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "h03",
+    "query": "profitable stocks that rose over 6 months",
+    "category": "vague",
+    "expectedFilters": [{ "field": "profitMargin", "op": "gt", "value": 0 }, { "field": "change6m", "op": "gt", "value": 0 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "h04",
+    "query": "banks that fell over the last year",
+    "category": "vague",
+    "expectedFilters": [{ "field": "change1y", "op": "lt", "value": 0 }, { "field": "sector", "op": "eq", "value": "Financial Services" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "h05",
+    "query": "6 month change over 10",
+    "category": "numeric",
+    "expectedFilters": [{ "field": "change6m", "op": "gt", "value": 10 }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "c01",
+    "query": "tata stocks",
+    "category": "names",
+    "expectedFilters": [],
+    "expectedSearch": "tata",
+    "status": "unreviewed"
+  },
+  {
+    "id": "c02",
+    "query": "cheap tata stocks",
+    "category": "names",
+    "expectedFilters": [{ "field": "pe", "op": "lt", "value": 20 }],
+    "expectedSearch": "tata",
+    "status": "unreviewed"
+  },
+  {
+    "id": "c03",
+    "query": "companies like infosys",
+    "category": "names",
+    "expectedFilters": [{ "field": "sector", "op": "eq", "value": "Technology" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "c04",
+    "query": "stocks similar to hdfc bank",
+    "category": "names",
+    "expectedFilters": [{ "field": "sector", "op": "eq", "value": "Financial Services" }],
+    "status": "unreviewed"
+  },
+  {
+    "id": "c05",
+    "query": "infosis",
+    "category": "names",
+    "expectedFilters": [],
+    "expectedSearch": "infosys",
+    "status": "unreviewed"
+  },
+  {
+    "id": "c06",
+    "query": "infosys and wipro",
+    "category": "names",
+    "expectedFilters": [],
+    "expectedSearch": "infosys, wipro",
+    "status": "unreviewed"
   }
 ]
