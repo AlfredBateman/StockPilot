@@ -102,29 +102,35 @@ export function cleanAnswer(text: string): string {
  * repaired; any other intent must come with a non-empty answer.
  */
 export function parseModelOutput(text: string): LlmReply | null {
+  const result = checkModelOutput(text);
+  return typeof result === "string" ? null : result;
+}
+
+/** Same as parseModelOutput, but says why it failed: no JSON in the text, or JSON the schemas reject. */
+export function checkModelOutput(text: string): LlmReply | "bad_json" | "validation_failed" {
   const visible = text.replace(/<think>[\s\S]*?<\/think>/gi, "");
   const start = visible.indexOf("{");
   const end = visible.lastIndexOf("}");
-  if (start === -1 || end <= start) return null;
+  if (start === -1 || end <= start) return "bad_json";
 
   let body: unknown;
   try {
     body = JSON.parse(visible.slice(start, end + 1));
   } catch {
-    return null;
+    return "bad_json";
   }
 
   const envelope = LlmEnvelopeSchema.safeParse(body);
-  if (!envelope.success) return null;
+  if (!envelope.success) return "validation_failed";
   const { intent, filters, answer } = envelope.data;
 
   if (intent === "filter") {
     const validated = FilterSpecSchema.safeParse(filters);
-    return validated.success ? { intent, filters: validated.data, answer: null } : null;
+    return validated.success ? { intent, filters: validated.data, answer: null } : "validation_failed";
   }
 
   const cleaned = cleanAnswer(answer ?? "");
-  if (!cleaned) return null;
+  if (!cleaned) return "validation_failed";
 
   const fixedLine = intent === "advice" ? ADVICE_LINE : intent === "offtopic" ? OFFTOPIC_LINE : null;
   return { intent, filters: [], answer: fixedLine ? `${cleaned} ${fixedLine}` : cleaned };
