@@ -36,24 +36,39 @@ export function prefersReducedMotion(): boolean {
 }
 
 /**
+ * Runs an animation that hands its elements back to plain CSS when it finishes (revert), so nothing keeps an
+ * inline style. The returned function reverts it early, for effect cleanup; after the end it does nothing.
+ */
+function playThenRevert(targets: HTMLElement | HTMLElement[], params: Parameters<typeof animate>[1]): () => void {
+  let finished = false;
+  const animation = animate(targets, {
+    ...params,
+    onComplete: (self) => {
+      finished = true;
+      self.revert();
+    },
+  });
+  return () => {
+    if (!finished) animation.revert();
+  };
+}
+
+/**
  * (a) Table rows / mobile stock cards: the first 12 fade in and rise 4px, 180ms
  * each, 15ms apart (the rest simply appear). anime.js writes the start values
  * as soon as it is called, so there is no flash and no hand-set opacity.
- * Returns a function that reverts the rows to plain CSS (effect cleanup).
+ * Returns a function that stops it and reverts the rows to plain CSS (effect cleanup).
  * Reduced motion: nothing is touched, rows are simply visible.
  */
 export function animateRowsIn(rows: HTMLElement[]): () => void {
   if (rows.length === 0 || prefersReducedMotion()) return () => {};
-  const animation = animate(rows.slice(0, MOTION.staggerMax), {
+  return playThenRevert(rows.slice(0, MOTION.staggerMax), {
     opacity: [0, 1],
     translateY: [4, 0],
     duration: MOTION.base,
     delay: stagger(MOTION.stagger),
     ease: easeOut,
   });
-  return () => {
-    animation.revert();
-  };
 }
 
 /**
@@ -89,19 +104,11 @@ export function countUp(el: HTMLElement, to: number, format: (n: number) => stri
 
 /**
  * (c) A small pop on the star when a stock is added to the watchlist: 1 to 1.15 and back, 150ms.
- * Returns a function that reverts the button to plain CSS (effect cleanup). Reduced motion: nothing happens.
+ * Returns a function that stops it and reverts the button to plain CSS (effect cleanup). Reduced motion: nothing happens.
  */
 export function popStar(el: HTMLElement): () => void {
   if (prefersReducedMotion()) return () => {};
-  const animation = animate(el, {
-    scale: [{ to: 1.15 }, { to: 1 }],
-    duration: MOTION.fast,
-    ease: easeOut,
-    onComplete: (self) => self.revert(),
-  });
-  return () => {
-    animation.revert();
-  };
+  return playThenRevert(el, { scale: [{ to: 1.15 }, { to: 1 }], duration: MOTION.fast, ease: easeOut });
 }
 
 /**
