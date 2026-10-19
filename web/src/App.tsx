@@ -155,7 +155,7 @@ export function App() {
           <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6 md:pt-6">
             <p
               role="status"
-              className="flex items-start gap-3 rounded-xl border border-warning/25 bg-warning-soft px-4 py-3 text-body text-warning"
+              className="animate-enter flex items-start gap-3 rounded-xl border border-warning/25 bg-warning-soft px-4 py-3 text-body text-warning"
             >
               <IconInfo size={18} className="mt-0.5 shrink-0" />
               Showing older data from {formatAsOfDate(dataAsOf)}. Prices may be out of date.

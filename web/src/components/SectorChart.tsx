@@ -22,7 +22,7 @@ export function SectorChart({ items }: SectorChartProps) {
   return (
     <section
       aria-labelledby="sector-chart-heading"
-      className="flex flex-col gap-4 self-start rounded-2xl border border-stone-200 bg-card p-4 shadow-e1 sm:p-6"
+      className="animate-fade flex flex-col gap-4 self-start rounded-2xl border border-stone-200 bg-card p-4 shadow-e1 sm:p-6"
     >
       <div className="flex items-baseline justify-between gap-2">
         <h2 id="sector-chart-heading" className="text-balance text-h2 text-stone-900">

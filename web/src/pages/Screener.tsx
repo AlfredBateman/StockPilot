@@ -195,7 +195,7 @@ export function Screener() {
           </h2>
           {/* A reserved slot, so "Updating" never pushes the table down. */}
           {refreshing && (
-            <span className="inline-flex h-7 items-center rounded-full border border-stone-200 bg-elevated px-3 text-label text-stone-600 shadow-e1">
+            <span className="animate-enter inline-flex h-7 items-center rounded-full border border-stone-200 bg-elevated px-3 text-label text-stone-600 shadow-e1">
               Updating…
             </span>
           )}

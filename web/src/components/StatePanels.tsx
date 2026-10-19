@@ -59,7 +59,7 @@ type EmptyPanelProps = {
 
 export function EmptyPanel({ title, hint, action }: EmptyPanelProps) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-stone-200 bg-card px-6 py-14 text-center shadow-e1">
+    <div className="animate-enter flex flex-col items-center gap-4 rounded-2xl border border-stone-200 bg-card px-6 py-14 text-center shadow-e1">
       <span className="flex size-14 items-center justify-center rounded-2xl bg-accent-100 text-accent-700 ring-8 ring-accent-100/40">
         <IconTray size={26} />
       </span>
@@ -92,7 +92,7 @@ export function ErrorPanel({ title, message, hint, onRetry }: ErrorPanelProps) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-4 rounded-2xl border border-error-border bg-error-soft p-5 shadow-e1"
+      className="animate-enter flex items-start gap-4 rounded-2xl border border-error-border bg-error-soft p-5 shadow-e1"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-elevated text-error shadow-e1">
         <IconWarning size={20} />

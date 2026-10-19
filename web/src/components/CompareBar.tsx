@@ -13,7 +13,7 @@ export function CompareBar({ tickers, limit, onOpen }: CompareBarProps) {
   const canCompare = tickers.length >= 2;
 
   return (
-    <div className="sticky bottom-4 z-20 flex flex-col gap-3 rounded-2xl bg-accent-900 p-3 text-white shadow-e2 ring-1 ring-white/10 sm:flex-row sm:items-center sm:justify-between sm:pl-5">
+    <div className="animate-enter sticky bottom-4 z-20 flex flex-col gap-3 rounded-2xl bg-accent-900 p-3 text-white shadow-e2 ring-1 ring-white/10 sm:flex-row sm:items-center sm:justify-between sm:pl-5">
       <div className="flex min-w-0 flex-col gap-0.5">
         <p className="text-h3">
           {tickers.length} of {limit} selected to compare

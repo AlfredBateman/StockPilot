@@ -11,8 +11,8 @@ type GuideHintProps = {
  * places it in the page flow right under that button, so it pushes content
  * down instead of covering it. It never takes focus and stays gone once dismissed (useGuideHint
  * remembers that). Esc dismisses it too, but only when nothing opened later
- * (a drawer or popover) is on top of it (see useEscapeLayer). No animation, so nothing to gate on
- * reduced motion.
+ * (a drawer or popover) is on top of it (see useEscapeLayer). Enters with the shared CSS fade-rise
+ * (animate-enter), which the global reduced-motion rule switches off.
  */
 export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
   useEscapeLayer(onDismiss);
@@ -21,7 +21,7 @@ export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
     <div
       role="note"
       aria-label="Tip: the Guide"
-      className="relative w-72 max-w-full rounded-xl border border-stone-200 bg-elevated p-4 text-left shadow-e2"
+      className="animate-enter relative w-72 max-w-full rounded-xl border border-stone-200 bg-elevated p-4 text-left shadow-e2"
     >
       {/* The little arrow pointing up at the Guide button. */}
       <span

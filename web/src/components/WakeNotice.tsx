@@ -10,7 +10,7 @@ export function WakeNotice() {
     <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6 md:pt-6">
       <div
         role="status"
-        className="flex items-start gap-3 rounded-xl border border-warning/25 bg-warning-soft px-4 py-3 text-body text-warning"
+        className="animate-enter flex items-start gap-3 rounded-xl border border-warning/25 bg-warning-soft px-4 py-3 text-body text-warning"
       >
         <IconWarning size={18} />
         <p>Waking the server up, free hosting sleeps after inactivity. This takes about a minute.</p>

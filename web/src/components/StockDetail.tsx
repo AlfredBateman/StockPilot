@@ -163,7 +163,7 @@ export function StockDetail({ ticker, onClose, reasons = [] }: StockDetailProps)
       )}
 
       {/* The chart card: the area runs edge to edge; the price axis sits inside the plot. */}
-      <section className="overflow-hidden rounded-2xl border border-stone-200 bg-card shadow-e1">
+      <section className="animate-fade overflow-hidden rounded-2xl border border-stone-200 bg-card shadow-e1">
         <div className="flex items-baseline justify-between gap-2 px-4 pb-1 pt-4">
           <h3 className="text-balance text-h3 text-stone-900">Weekly Closing Price</h3>
           <span className="text-caption text-stone-500">{closes.length} weeks</span>

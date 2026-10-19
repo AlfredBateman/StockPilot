@@ -55,6 +55,8 @@ export function MetricHelp({ metric }: MetricHelpProps) {
     const height = Math.min(naturalHeight, placeBelow ? spaceBelow : spaceAbove);
     popover.style.maxHeight = `${height}px`;
     popover.style.left = `${left}px`;
+    // Grow from the edge nearest the "?", horizontally centred on it.
+    popover.style.transformOrigin = `${anchor.left + anchor.width / 2 - left}px ${placeBelow ? "top" : "bottom"}`;
     popover.style.top = `${placeBelow ? anchor.bottom + ANCHOR_GAP : anchor.top - ANCHOR_GAP - height}px`;
   }
 
@@ -153,7 +155,7 @@ export function MetricHelp({ metric }: MetricHelpProps) {
             onClick={(e) => e.stopPropagation()}
             // The text styles are set outright (not left to inherit) so nothing from a table header, such as
             // nowrap, uppercase or letter-spacing, can ever change how the popover reads.
-            className="fixed z-50 flex outline-none max-h-[calc(100dvh-2rem)] max-w-[calc(100vw-2rem)] flex-col overflow-hidden whitespace-normal break-words rounded-xl border border-stone-200 bg-elevated text-left text-body font-normal normal-case tracking-normal text-stone-700 shadow-e2"
+            className="fixed z-50 flex transition-[opacity,scale] duration-(--motion-fast) ease-out-soft outline-none starting:scale-[0.97] starting:opacity-0 max-h-[calc(100dvh-2rem)] max-w-[calc(100vw-2rem)] flex-col overflow-hidden whitespace-normal break-words rounded-xl border border-stone-200 bg-elevated text-left text-body font-normal normal-case tracking-normal text-stone-700 shadow-e2"
           >
             <div className="flex shrink-0 items-start justify-between gap-3 px-4 pt-4 pb-3">
               <h3 id={titleId} className="text-h3 text-stone-900">

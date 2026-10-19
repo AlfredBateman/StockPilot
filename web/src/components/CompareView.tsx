@@ -237,7 +237,7 @@ export function CompareView({ tickers, onClose, onRemove }: CompareViewProps) {
 
       {state.kind === "ready" && (
         <>
-          <section className="rounded-2xl border border-stone-200 bg-card shadow-e1">
+          <section className="animate-fade rounded-2xl border border-stone-200 bg-card shadow-e1">
             <div className="flex flex-col gap-1 px-4 pb-2 pt-4">
               <h3 className="text-balance text-h3 text-stone-900">Performance, Indexed to 100</h3>
               <p className="text-caption text-stone-600">
