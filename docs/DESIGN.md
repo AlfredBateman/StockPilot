@@ -276,6 +276,11 @@ survive `overflow: hidden` and Windows High Contrast mode.
   skeleton even has the dark header), with a soft **CSS shimmer** sweeping
   across `stone-100` blocks on the card surface. The shimmer is a CSS
   animation (not anime.js) and stops under `prefers-reduced-motion`.
+  Space that fills in after the first API answers is held open from the first
+  paint, so nothing shifts: the sector chart's column is a `ChartSkeleton`, the
+  header's "Data as of" slot has a fixed minimum width (a minimum height below
+  `lg`), and Geist has metric-matched Arial / Courier New stand-ins
+  (`size-adjust`, `font-display: swap`) so the font swap moves nothing.
 - **Refreshing:** the current table dims to 60% with `aria-busy`, and an
   "Updating" badge appears in a reserved slot, so nothing shifts.
 - **Empty:** icon in an `accent-100` disc, a real heading, a one-line hint, and
