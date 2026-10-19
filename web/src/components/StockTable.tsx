@@ -419,7 +419,7 @@ export function StockTable({
                                 type="button"
                                 onClick={() => onViewDetail(stock.ticker)}
                                 translate="no"
-                                className="touch-manipulation truncate rounded-md font-mono text-ticker font-semibold text-stone-900 underline-offset-4 transition-colors duration-(--motion-fast) hover:text-accent-700 hover:underline"
+                                className="-my-1 touch-manipulation truncate rounded-md py-1 font-mono text-ticker font-semibold text-stone-900 underline-offset-4 transition-colors duration-(--motion-fast) hover:text-accent-700 hover:underline"
                               >
                                 {value}
                               </button>
