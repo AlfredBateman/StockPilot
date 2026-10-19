@@ -11,8 +11,8 @@ type GuideHintProps = {
  * places it in the page flow right under that button, so it pushes content
  * down instead of covering it. It never takes focus and stays gone once dismissed (useGuideHint
  * remembers that). Esc dismisses it too, but only when nothing opened later
- * (a drawer or popover) is on top of it (see useEscapeLayer). No animation, so nothing to gate on
- * reduced motion.
+ * (a drawer or popover) is on top of it (see useEscapeLayer). Enters with the shared CSS fade-rise
+ * (animate-enter), which the global reduced-motion rule switches off.
  */
 export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
   useEscapeLayer(onDismiss);
@@ -21,7 +21,7 @@ export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
     <div
       role="note"
       aria-label="Tip: the Guide"
-      className="relative w-72 max-w-full rounded-xl border border-stone-200 bg-elevated p-4 text-left shadow-e2"
+      className="animate-enter relative w-72 max-w-full rounded-xl border border-stone-200 bg-elevated p-4 text-left shadow-e2"
     >
       {/* The little arrow pointing up at the Guide button. */}
       <span
@@ -32,7 +32,7 @@ export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss this tip"
-        className="absolute right-1.5 top-1.5 flex size-8 touch-manipulation items-center justify-center rounded-lg text-stone-500 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900"
+        className="absolute right-1.5 top-1.5 flex size-8 touch-manipulation items-center justify-center rounded-lg text-stone-500 transition-[color,background-color,scale] duration-(--motion-press) active:scale-95 hover:bg-stone-100 hover:text-stone-900"
       >
         <IconClose size={16} />
       </button>
@@ -43,7 +43,7 @@ export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
       <button
         type="button"
         onClick={onOpen}
-        className="mt-3 inline-flex h-10 touch-manipulation items-center rounded-xl bg-accent-600 px-3.5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-700 active:scale-[0.98]"
+        className="mt-3 inline-flex h-10 touch-manipulation items-center rounded-xl bg-accent-600 px-3.5 text-body font-medium text-white shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-accent-700 active:scale-[0.98]"
       >
         Open the Guide
       </button>

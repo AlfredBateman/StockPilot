@@ -1,9 +1,8 @@
-import { useId, useLayoutEffect, useRef, useState } from "react";
+import { useId, useState } from "react";
 import { parseQuery, type FilterSpec, type ParseIntent, type ParseResult, type ParseTier } from "../api/client";
 import { glossaryKeyForNote } from "./glossary";
 import { GlossaryLink } from "./GlossaryLink";
 import { IconArrowRight, IconChat, IconCheck, IconInfo, IconWarning } from "./Icons";
-import { slideDown } from "./motion";
 
 type QueryBoxProps = {
   /** A search sets the whole screen: its filters and its company-name search ("" when it named no company). */
@@ -55,13 +54,6 @@ export function QueryBox({ onApply }: QueryBoxProps) {
   const [state, setState] = useState<QueryState>({ kind: "idle" });
   const inputId = useId();
   const helpId = useId();
-  const resultsRef = useRef<HTMLDivElement>(null);
-
-  // Animation (d): the results panel slides down each time a new result arrives.
-  // A layout effect, so the panel is collapsed before the browser paints it once at full height.
-  useLayoutEffect(() => {
-    if (state.kind === "ready" && resultsRef.current) slideDown(resultsRef.current);
-  }, [state]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -108,22 +100,22 @@ export function QueryBox({ onApply }: QueryBoxProps) {
           onChange={(e) => setValue(e.target.value)}
           placeholder="e.g. profitable large caps…"
           aria-describedby={helpId}
-          className="h-14 w-full rounded-2xl border border-stone-400 bg-elevated pl-12 pr-28 text-base text-stone-900 shadow-e1 transition-colors duration-150 placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500 sm:pr-32"
+          className="h-14 w-full rounded-2xl border border-stone-400 bg-elevated pl-12 pr-28 text-base text-stone-900 shadow-e1 transition-colors duration-(--motion-fast) placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500 sm:pr-32"
         />
         <button
           type="submit"
-          className="group absolute inset-y-1.5 right-1.5 inline-flex touch-manipulation items-center gap-2 rounded-[10px] bg-accent-600 pl-4 pr-1.5 text-body font-semibold text-white shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-700 active:scale-[0.98] sm:pl-5"
+          className="group absolute inset-y-1.5 right-1.5 inline-flex touch-manipulation items-center gap-2 rounded-[10px] bg-accent-600 pl-4 pr-1.5 text-body font-semibold text-white shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-accent-700 active:scale-[0.98] sm:pl-5"
         >
           Ask
           {/* Button-in-button: the arrow sits in its own well and nudges right on hover. */}
-          <span className="flex size-8 items-center justify-center rounded-lg bg-white/15 transition-transform duration-150 group-hover:translate-x-0.5">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-white/15 transition-transform duration-(--motion-fast) group-hover:translate-x-0.5">
             <IconArrowRight size={16} />
           </span>
         </button>
       </div>
 
       {state.kind === "loading" && (
-        <p aria-live="polite" className="text-body text-stone-600">
+        <p aria-live="polite" className="animate-enter text-body text-stone-600">
           Reading your question…
         </p>
       )}
@@ -137,9 +129,9 @@ export function QueryBox({ onApply }: QueryBoxProps) {
 
       {state.kind === "ready" && (
         <div
-          ref={resultsRef}
           aria-live="polite"
-          className="flex flex-col gap-3 rounded-xl border border-accent-200 bg-accent-100/60 p-4 text-body sm:p-5"
+          // Remounts on every Ask (the loading state sits between two answers), so it enters once per answer, never per keystroke.
+          className="flex flex-col gap-3 rounded-xl border border-accent-200 bg-accent-100/60 p-4 text-body transition-[opacity,translate] duration-(--motion-base) ease-out-soft starting:-translate-y-1 starting:opacity-0 sm:p-5"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-h3 text-accent-800">{resultTitle(state.result)}</p>
@@ -201,7 +193,7 @@ export function QueryBox({ onApply }: QueryBoxProps) {
                     <button
                       type="button"
                       onClick={() => onApply(suggestion.filters, state.result.search ?? "")}
-                      className="inline-flex h-9 touch-manipulation items-center rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-colors duration-150 hover:border-accent-500 hover:text-accent-800"
+                      className="inline-flex h-9 touch-manipulation items-center rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-[color,border-color,scale] duration-(--motion-press) hover:border-accent-500 hover:text-accent-800 active:scale-[0.97]"
                     >
                       {suggestion.label}
                     </button>

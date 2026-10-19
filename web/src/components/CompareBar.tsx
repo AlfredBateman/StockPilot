@@ -13,7 +13,7 @@ export function CompareBar({ tickers, limit, onOpen }: CompareBarProps) {
   const canCompare = tickers.length >= 2;
 
   return (
-    <div className="sticky bottom-4 z-20 flex flex-col gap-3 rounded-2xl bg-accent-900 p-3 text-white shadow-e2 ring-1 ring-white/10 sm:flex-row sm:items-center sm:justify-between sm:pl-5">
+    <div className="animate-enter sticky bottom-4 z-20 flex flex-col gap-3 rounded-2xl bg-accent-900 p-3 text-white shadow-e2 ring-1 ring-white/10 sm:flex-row sm:items-center sm:justify-between sm:pl-5">
       <div className="flex min-w-0 flex-col gap-0.5">
         <p className="text-h3">
           {tickers.length} of {limit} selected to compare
@@ -29,7 +29,7 @@ export function CompareBar({ tickers, limit, onOpen }: CompareBarProps) {
         type="button"
         onClick={onOpen}
         disabled={!canCompare}
-        className="h-10 shrink-0 touch-manipulation rounded-xl bg-elevated px-5 text-body font-semibold text-accent-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-100 focus-visible:outline-white active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/70 disabled:shadow-none disabled:hover:bg-white/15 disabled:active:scale-100"
+        className="h-10 shrink-0 touch-manipulation rounded-xl bg-elevated px-5 text-body font-semibold text-accent-800 shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-accent-100 focus-visible:outline-white active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/70 disabled:shadow-none disabled:hover:bg-white/15 disabled:active:scale-100"
       >
         Compare ({tickers.length})
       </button>

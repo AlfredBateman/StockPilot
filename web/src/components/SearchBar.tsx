@@ -24,7 +24,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="e.g. Infosys or TCS…"
-          className="h-11 w-full rounded-xl border border-stone-400 bg-elevated pl-11 pr-3.5 text-body text-stone-900 shadow-e1 transition-colors duration-150 placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500"
+          className="h-11 w-full rounded-xl border border-stone-400 bg-elevated pl-11 pr-3.5 text-body text-stone-900 shadow-e1 transition-colors duration-(--motion-fast) placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500"
         />
       </div>
     </div>

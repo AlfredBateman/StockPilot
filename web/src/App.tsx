@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getHealth } from "./api/client";
 import { formatAsOfDate, isDataStale } from "./components/format";
 import type { GlossaryKey } from "./components/glossary";
@@ -28,8 +28,6 @@ export function App() {
   // null = Guide closed; { key: null } = open at the top; { key } = open at that term.
   const [guide, setGuide] = useState<{ key: GlossaryKey | null } | null>(null);
   const { visible: hintVisible, dismiss: dismissHint } = useGuideHint();
-  // Where focus was when the Guide opened, so closing it can put focus back there.
-  const returnFocusTo = useRef<HTMLElement | null>(null);
 
   // The server decides these (DEMO_MODE, which data it loaded), so ask it
   // rather than guessing. If the health check fails the page still works; it
@@ -46,17 +44,12 @@ export function App() {
 
   const openGuide = useCallback(
     (key?: GlossaryKey) => {
-      returnFocusTo.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       setGuide({ key: key ?? null });
       dismissHint();
     },
     [dismissHint]
   );
-  const closeGuide = useCallback(() => {
-    setGuide(null);
-    const target = returnFocusTo.current;
-    if (target?.isConnected) target.focus();
-  }, []);
+  const closeGuide = useCallback(() => setGuide(null), []);
   const guideApi = useMemo(() => ({ openGuide }), [openGuide]);
 
   const asOfLabel =
@@ -94,7 +87,7 @@ export function App() {
                   type="button"
                   onClick={() => setView(tab.view)}
                   aria-current={view === tab.view ? "page" : undefined}
-                  className={`h-9 touch-manipulation rounded-lg px-3.5 text-body font-medium transition-colors duration-150 sm:px-4 ${
+                  className={`h-9 touch-manipulation rounded-lg px-3.5 text-body font-medium transition-[color,background-color,scale] duration-(--motion-press) active:scale-[0.97] sm:px-4 ${
                     view === tab.view
                       ? "bg-elevated text-accent-700 shadow-e1"
                       : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
@@ -106,12 +99,15 @@ export function App() {
             </nav>
 
             <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-              {asOfLabel && (
-                <span className="hidden items-center text-label text-stone-500 lg:inline-flex">
-                  {asOfLabel}
-                  <MetricHelp metric="asOf" />
-                </span>
-              )}
+              {/* Always rendered with a fixed minimum width, so the header does not change size when the health check answers. */}
+              <span className="hidden min-w-[19rem] items-center justify-end text-label text-stone-500 lg:inline-flex">
+                {asOfLabel && (
+                  <>
+                    {asOfLabel}
+                    <MetricHelp metric="asOf" />
+                  </>
+                )}
+              </span>
               {demoMode && (
                 <span
                   title="No live data sources or network calls; answers come from the saved snapshot, cache, and offline parser."
@@ -125,7 +121,7 @@ export function App() {
               <button
                 type="button"
                 onClick={() => openGuide()}
-                className="inline-flex h-10 touch-manipulation items-center justify-center gap-2 rounded-xl border border-stone-300 bg-elevated px-2.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98] sm:px-3.5"
+                className="inline-flex h-10 touch-manipulation items-center justify-center gap-2 rounded-xl border border-stone-300 bg-elevated px-2.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-stone-50 active:scale-[0.98] sm:px-3.5"
               >
                 <IconBook size={18} />
                 <span className="sr-only sm:not-sr-only">Guide</span>
@@ -133,12 +129,15 @@ export function App() {
             </div>
           </div>
           {/* Below lg the header row has no room, so the data date gets its own line. */}
-          {asOfLabel && (
-            <p className="mx-auto flex max-w-7xl items-center px-4 pb-2 text-label text-stone-500 md:px-6 lg:hidden">
-              {asOfLabel}
-              <MetricHelp metric="asOf" />
-            </p>
-          )}
+          {/* min-h-8 is the height of the line (24px "?" plus pb-2) once the label is there, so the page does not move when it arrives. */}
+          <p className="mx-auto flex min-h-8 max-w-7xl items-center px-4 pb-2 text-label text-stone-500 md:px-6 lg:hidden">
+            {asOfLabel && (
+              <>
+                {asOfLabel}
+                <MetricHelp metric="asOf" />
+              </>
+            )}
+          </p>
         </header>
 
         {/* In the page flow, right-aligned under the Guide button (the header's last item), so it never covers the notes below. */}
@@ -155,7 +154,7 @@ export function App() {
           <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6 md:pt-6">
             <p
               role="status"
-              className="flex items-start gap-3 rounded-xl border border-warning/25 bg-warning-soft px-4 py-3 text-body text-warning"
+              className="animate-enter flex items-start gap-3 rounded-xl border border-warning/25 bg-warning-soft px-4 py-3 text-body text-warning"
             >
               <IconInfo size={18} className="mt-0.5 shrink-0" />
               Showing older data from {formatAsOfDate(dataAsOf)}. Prices may be out of date.

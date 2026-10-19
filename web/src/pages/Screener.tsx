@@ -9,7 +9,7 @@ import { PresetBar } from "../components/PresetBar";
 import { QueryBox } from "../components/QueryBox";
 import { SearchBar } from "../components/SearchBar";
 import { SectorChart } from "../components/SectorChart";
-import { EmptyPanel, ErrorPanel, TableSkeleton } from "../components/StatePanels";
+import { ChartSkeleton, EmptyPanel, ErrorPanel, TableSkeleton } from "../components/StatePanels";
 import { StockDetail } from "../components/StockDetail";
 import { COMPARE_LIMIT, StockTable } from "../components/StockTable";
 import { useWatchlist } from "../hooks/useWatchlist";
@@ -41,7 +41,9 @@ export function Screener() {
   // All stocks matching the current filters/search (not just the visible
   // page), for SectorChart. Kept separate from the table's own paginated
   // fetch above so neither has to know about the other.
-  const [allMatching, setAllMatching] = useState<Stock[]>([]);
+  // null until the first answer, so the chart's column is held open (a skeleton) instead of the Filters card
+  // changing width when the chart arrives.
+  const [allMatching, setAllMatching] = useState<Stock[] | null>(null);
 
   const [detailTicker, setDetailTicker] = useState<string | null>(null);
   const [compareTickers, setCompareTickers] = useState<string[]>([]);
@@ -93,6 +95,7 @@ export function Screener() {
       .catch(() => {
         // SectorChart is a secondary view; if this fetch fails the main
         // table's own error state (above) already tells the user why.
+        if (!cancelled) setAllMatching((current) => current ?? []);
       });
     return () => {
       cancelled = true;
@@ -140,11 +143,11 @@ export function Screener() {
     setPage(1);
   }
 
-  const showChart = allMatching.length > 0;
+  const showChart = allMatching === null || allMatching.length > 0;
   const refreshing = state.kind === "ready" && state.refreshing;
 
   return (
-    <main id="main-content" className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 md:gap-8 md:px-6 md:py-8">
+    <main id="main-content" className="animate-fade mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 md:gap-8 md:px-6 md:py-8">
       <header className="flex flex-col gap-1">
         <h1 className="text-balance text-h1 text-stone-900">Stock Screener</h1>
       </header>
@@ -180,7 +183,7 @@ export function Screener() {
           />
         </section>
 
-        {showChart && <SectorChart items={allMatching} />}
+        {showChart && (allMatching === null ? <ChartSkeleton /> : <SectorChart items={allMatching} />)}
       </div>
 
       <section aria-labelledby="results-heading" className="flex flex-col gap-4">
@@ -195,7 +198,7 @@ export function Screener() {
           </h2>
           {/* A reserved slot, so "Updating" never pushes the table down. */}
           {refreshing && (
-            <span className="inline-flex h-7 items-center rounded-full border border-stone-200 bg-elevated px-3 text-label text-stone-600 shadow-e1">
+            <span className="animate-enter inline-flex h-7 items-center rounded-full border border-stone-200 bg-elevated px-3 text-label text-stone-600 shadow-e1">
               Updating…
             </span>
           )}
@@ -217,7 +220,7 @@ export function Screener() {
           )}
 
           {state.kind === "ready" && state.total > 0 && (
-            <div className={`transition-opacity duration-150 ${refreshing ? "opacity-60" : ""}`}>
+            <div className={`transition-opacity duration-(--motion-fast) ${refreshing ? "opacity-60" : ""}`}>
               <StockTable
                 items={state.items}
                 total={state.total}

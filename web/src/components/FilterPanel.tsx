@@ -29,7 +29,7 @@ function parseBound(raw: string): number | null {
 
 /** 44px custom number input (docs/DESIGN.md section 15). The browser's spinner arrows are hidden in index.css. */
 const NUMBER_INPUT_CLASS =
-  "h-11 w-full min-w-0 rounded-xl border border-stone-400 bg-elevated px-3.5 text-body tabular-nums text-stone-900 shadow-e1 transition-colors duration-150 placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500";
+  "h-11 w-full min-w-0 rounded-xl border border-stone-400 bg-elevated px-3.5 text-body tabular-nums text-stone-900 shadow-e1 transition-colors duration-(--motion-fast) placeholder:text-stone-500 hover:border-stone-500 focus:border-accent-500";
 
 /**
  * A choice chip (docs/DESIGN.md section 14): a real checkbox, visually hidden
@@ -41,7 +41,7 @@ function ChoiceChip({ label, checked, onToggle }: { label: string; checked: bool
   return (
     <label className="relative cursor-pointer touch-manipulation">
       <input type="checkbox" checked={checked} onChange={onToggle} className="peer sr-only" />
-      <span className="inline-flex h-9 items-center gap-1.5 rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-[background-color,border-color,color,transform] duration-150 hover:border-stone-400 hover:text-stone-900 active:scale-[0.97] peer-checked:border-accent-600 peer-checked:bg-accent-600 peer-checked:font-medium peer-checked:text-white peer-checked:hover:bg-accent-700 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent-600">
+      <span className="inline-flex h-9 items-center gap-1.5 rounded-full border border-stone-300 bg-elevated px-3.5 text-body text-stone-700 shadow-e1 transition-[background-color,border-color,color,scale] duration-(--motion-press) hover:border-stone-400 hover:text-stone-900 active:scale-[0.97] peer-checked:border-accent-600 peer-checked:bg-accent-600 peer-checked:font-medium peer-checked:text-white peer-checked:hover:bg-accent-700 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent-600">
         {checked && <IconCheck size={14} className="-ml-0.5 shrink-0" />}
         {label}
       </span>

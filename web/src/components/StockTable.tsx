@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SortField, SortSpec, Stock } from "../api/client";
 import {
   debtToEquityNote,
@@ -13,10 +13,13 @@ import {
 import { IconCheck, IconChevron, IconSort, IconStar } from "./Icons";
 import type { GlossaryKey } from "./glossary";
 import { MetricHelp } from "./MetricHelp";
-import { animateRowsIn } from "./motion";
+import { animateRowsIn, popStar } from "./motion";
 import { HISTORY_CAPTION } from "./stockMetrics";
 
 export const COMPARE_LIMIT = 3;
+
+/** True once any table has shown data, so the row entrance plays on the first load only (not when returning to a tab). */
+let introPlayed = false;
 
 type StockTableProps = {
   items: Stock[];
@@ -162,13 +165,23 @@ function ReasonList({ reasons }: { reasons: string[] }) {
 }
 
 function StarToggle({ ticker, watched, onToggle }: { ticker: string; watched: boolean; onToggle: () => void }) {
+  // Animation (c): a pop when the star turns on (not on first render, not when it turns off).
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const wasWatched = useRef(watched);
+  useEffect(() => {
+    const added = watched && !wasWatched.current;
+    wasWatched.current = watched;
+    if (added && buttonRef.current) return popStar(buttonRef.current);
+  }, [watched]);
+
   return (
     <button
+      ref={buttonRef}
       type="button"
       onClick={onToggle}
       aria-pressed={watched}
       aria-label={watched ? `Remove ${displayTicker(ticker)} from watchlist` : `Add ${displayTicker(ticker)} to watchlist`}
-      className={`flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-lg transition-colors duration-150 hover:bg-stone-100 ${
+      className={`flex size-8 shrink-0 touch-manipulation items-center justify-center rounded-lg transition-[color,background-color,scale] duration-(--motion-press) active:scale-95 hover:bg-stone-100 ${
         watched ? "text-accent-600" : "text-stone-400 hover:text-stone-700"
       }`}
     >
@@ -231,20 +244,34 @@ export function StockTable({
   const rangeStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const rangeEnd = Math.min(page * pageSize, total);
 
-  // Animation (a): rows animate in on each data load. Keyed on the tickers shown (in order),
-  // not on the `items` array itself, so ticking a compare box or a star, which re-renders with
-  // the same rows, never replays it. Desktop rows and mobile cards stagger separately.
+  // Animation (a): the rows of the layout on screen animate in the first time the app shows data and when
+  // Previous/Next turns the page, never on a filter, sort, search or tab return. Keyed on the tickers shown
+  // (in order), so ticking a compare box or a star, which re-renders the same rows, never replays it.
+  // The decision is stored per rowKey, so React StrictMode's second effect run in dev plays it too.
   const tableBodyRef = useRef<HTMLTableSectionElement>(null);
   const cardListRef = useRef<HTMLUListElement>(null);
+  const pageTurn = useRef(false);
+  const decided = useRef<{ key: string; play: boolean } | null>(null);
   const rowKey = items.map((stock) => stock.ticker).join(",");
   useLayoutEffect(() => {
-    animateRowsIn(Array.from(tableBodyRef.current?.children ?? []) as HTMLElement[]);
-    animateRowsIn(Array.from(cardListRef.current?.children ?? []) as HTMLElement[]);
+    if (decided.current?.key !== rowKey) {
+      decided.current = { key: rowKey, play: pageTurn.current || !introPlayed };
+      pageTurn.current = false;
+      introPlayed = true;
+    }
+    if (!decided.current.play) return;
+    const visible = [tableBodyRef.current, cardListRef.current].find((el) => el && el.getClientRects().length > 0);
+    return animateRowsIn(Array.from(visible?.children ?? []) as HTMLElement[]);
   }, [rowKey]);
+
+  function turnPage(next: number) {
+    pageTurn.current = true;
+    onPageChange(next);
+  }
 
   function renderPagination(className: string) {
     const buttonClass =
-      "inline-flex h-10 touch-manipulation items-center gap-1.5 rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-elevated disabled:active:scale-100";
+      "inline-flex h-10 touch-manipulation items-center gap-1.5 rounded-xl border border-stone-300 bg-elevated px-3.5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-stone-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-elevated disabled:active:scale-100";
     return (
       <div className={`flex flex-wrap items-center justify-between gap-3 text-body ${className}`}>
         <span aria-live="polite" className="tabular-nums text-stone-600">
@@ -253,7 +280,7 @@ export function StockTable({
         </span>
         {totalPages > 1 && (
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => onPageChange(page - 1)} disabled={page <= 1} className={buttonClass}>
+            <button type="button" onClick={() => turnPage(page - 1)} disabled={page <= 1} className={buttonClass}>
               <IconChevron direction="left" size={16} />
               Previous
             </button>
@@ -262,7 +289,7 @@ export function StockTable({
             </span>
             <button
               type="button"
-              onClick={() => onPageChange(page + 1)}
+              onClick={() => turnPage(page + 1)}
               disabled={page >= totalPages}
               className={buttonClass}
             >
@@ -285,7 +312,7 @@ export function StockTable({
               type="button"
               aria-pressed={view === v.key}
               onClick={() => setView(v.key)}
-              className={`inline-flex h-9 touch-manipulation items-center rounded-full border px-3.5 text-body shadow-e1 transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] ${
+              className={`inline-flex h-9 touch-manipulation items-center rounded-full border px-3.5 text-body shadow-e1 transition-[background-color,border-color,color,scale] duration-(--motion-press) active:scale-[0.97] ${
                 view === v.key
                   ? "border-accent-600 bg-accent-600 font-medium text-white hover:bg-accent-700"
                   : "border-stone-300 bg-elevated text-stone-700 hover:border-stone-400 hover:text-stone-900"
@@ -338,7 +365,7 @@ export function StockTable({
                         <button
                           type="button"
                           onClick={() => handleSort(column.field)}
-                          className="-mx-1 inline-flex touch-manipulation items-center gap-1 rounded-md px-1 py-1 transition-colors duration-150 hover:text-white focus-visible:outline-accent-300"
+                          className="-mx-1 inline-flex touch-manipulation items-center gap-1 rounded-md px-1 py-1 transition-[color,scale] duration-(--motion-press) hover:text-white active:scale-[0.97] focus-visible:outline-accent-300"
                         >
                           {column.label}
                           <IconSort
@@ -361,7 +388,7 @@ export function StockTable({
                 return (
                   <tr
                     key={stock.ticker}
-                    className={`border-b border-stone-200 transition-colors duration-150 last:border-b-0 ${
+                    className={`border-b border-stone-200 transition-colors duration-(--motion-fast) last:border-b-0 ${
                       isSelected ? "bg-accent-100/70" : "even:bg-stone-50 hover:bg-accent-100/40"
                     }`}
                   >
@@ -392,7 +419,7 @@ export function StockTable({
                                 type="button"
                                 onClick={() => onViewDetail(stock.ticker)}
                                 translate="no"
-                                className="touch-manipulation truncate rounded-md font-mono text-ticker font-semibold text-stone-900 underline-offset-4 transition-colors duration-150 hover:text-accent-700 hover:underline"
+                                className="touch-manipulation truncate rounded-md font-mono text-ticker font-semibold text-stone-900 underline-offset-4 transition-colors duration-(--motion-fast) hover:text-accent-700 hover:underline"
                               >
                                 {value}
                               </button>
@@ -461,7 +488,7 @@ export function StockTable({
           return (
             <li
               key={stock.ticker}
-              className={`rounded-2xl border bg-card p-4 shadow-e1 transition-colors duration-150 ${
+              className={`rounded-2xl border bg-card p-4 shadow-e1 transition-colors duration-(--motion-fast) ${
                 isSelected ? "border-accent-300 ring-1 ring-accent-300" : "border-stone-200"
               }`}
             >
@@ -529,7 +556,7 @@ export function StockTable({
               )}
 
               <label
-                className={`mt-4 inline-flex h-9 touch-manipulation items-center gap-2 rounded-full border px-3.5 text-body shadow-e1 transition-colors duration-150 ${
+                className={`mt-4 inline-flex h-9 touch-manipulation items-center gap-2 rounded-full border px-3.5 text-body shadow-e1 transition-colors duration-(--motion-fast) ${
                   isSelected
                     ? "border-accent-600 bg-accent-100 font-medium text-accent-800"
                     : "border-stone-300 bg-elevated text-stone-700"

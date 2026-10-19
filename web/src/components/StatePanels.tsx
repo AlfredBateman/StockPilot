@@ -30,6 +30,19 @@ export function TableSkeleton({ rows = 6, label }: { rows?: number; label: strin
   );
 }
 
+/** The sector chart's place while its first answer is on the way, about as tall as the real chart, so the page does not move when it arrives. */
+export function ChartSkeleton() {
+  return (
+    <section className="flex flex-col gap-4 self-start rounded-2xl border border-stone-200 bg-card p-4 shadow-e1 sm:p-6">
+      <span className="sr-only">Loading the sector chart…</span>
+      <div aria-hidden="true" className="flex flex-col gap-4">
+        <span className="skeleton h-7 w-2/3 rounded-full" />
+        <span className="skeleton h-[21rem] w-full rounded-2xl" />
+      </div>
+    </section>
+  );
+}
+
 /** Shimmering bars in the shape of the drawer content (name, price, chart, tiles). */
 export function BlockSkeleton({ label }: { label: string }) {
   return (
@@ -59,7 +72,7 @@ type EmptyPanelProps = {
 
 export function EmptyPanel({ title, hint, action }: EmptyPanelProps) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-stone-200 bg-card px-6 py-14 text-center shadow-e1">
+    <div className="animate-enter flex flex-col items-center gap-4 rounded-2xl border border-stone-200 bg-card px-6 py-14 text-center shadow-e1">
       <span className="flex size-14 items-center justify-center rounded-2xl bg-accent-100 text-accent-700 ring-8 ring-accent-100/40">
         <IconTray size={26} />
       </span>
@@ -71,7 +84,7 @@ export function EmptyPanel({ title, hint, action }: EmptyPanelProps) {
         <button
           type="button"
           onClick={action.onClick}
-          className="h-10 touch-manipulation rounded-xl bg-accent-600 px-5 text-body font-medium text-white shadow-e1 transition-[background-color,transform] duration-150 hover:bg-accent-700 active:scale-[0.98]"
+          className="h-10 touch-manipulation rounded-xl bg-accent-600 px-5 text-body font-medium text-white shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-accent-700 active:scale-[0.98]"
         >
           {action.label}
         </button>
@@ -92,7 +105,7 @@ export function ErrorPanel({ title, message, hint, onRetry }: ErrorPanelProps) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-4 rounded-2xl border border-error-border bg-error-soft p-5 shadow-e1"
+      className="animate-enter flex items-start gap-4 rounded-2xl border border-error-border bg-error-soft p-5 shadow-e1"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-elevated text-error shadow-e1">
         <IconWarning size={20} />
@@ -105,7 +118,7 @@ export function ErrorPanel({ title, message, hint, onRetry }: ErrorPanelProps) {
           <button
             type="button"
             onClick={onRetry}
-            className="mt-3 h-10 touch-manipulation rounded-xl border border-stone-300 bg-elevated px-5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,transform] duration-150 hover:bg-stone-50 active:scale-[0.98]"
+            className="mt-3 h-10 touch-manipulation rounded-xl border border-stone-300 bg-elevated px-5 text-body font-medium text-stone-800 shadow-e1 transition-[background-color,scale] duration-(--motion-press) hover:bg-stone-50 active:scale-[0.98]"
           >
             Retry
           </button>
