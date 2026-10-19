@@ -341,7 +341,7 @@ export function StockTable({
               <tr>
                 <th
                   scope="col"
-                  className="h-11 whitespace-nowrap rounded-tl-2xl bg-accent-900 px-3 text-left text-label text-white/80"
+                  className="h-11 whitespace-nowrap rounded-tl-2xl bg-accent-700 px-3 text-left text-label text-white/80"
                 >
                   Compare
                 </th>
@@ -353,7 +353,7 @@ export function StockTable({
                       key={column.field}
                       scope="col"
                       aria-sort={isSorted ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}
-                      className={`h-11 whitespace-nowrap bg-accent-900 px-3 text-label [&_button:focus-visible]:outline-accent-300 ${
+                      className={`h-11 whitespace-nowrap bg-accent-700 px-3 text-label [&_button:focus-visible]:outline-accent-300 ${
                         column.align === "right" ? "text-right" : "text-left"
                       } ${isLast ? "rounded-tr-2xl" : ""} ${isSorted ? "text-white" : "text-white/80"}`}
                     >
@@ -371,7 +371,7 @@ export function StockTable({
                           <IconSort
                             direction={isSorted ? sort.direction : null}
                             size={14}
-                            className={isSorted ? "text-accent-300" : "text-white/45"}
+                            className={isSorted ? "text-accent-300" : "text-white/70"}
                           />
                         </button>
                         {column.metricKey && <MetricHelp metric={column.metricKey} />}

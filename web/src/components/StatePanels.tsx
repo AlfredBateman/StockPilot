@@ -5,13 +5,13 @@ import { IconTray, IconWarning } from "./Icons";
 // app reads the same way. Pure markup: callers keep all their own state.
 // The shimmer is the CSS `skeleton` utility in index.css, not anime.js.
 
-/** A shimmering placeholder the same shape as StockTable (dark header included), so nothing jumps when data arrives. */
+/** A shimmering placeholder the same shape as StockTable (teal header included), so nothing jumps when data arrives. */
 export function TableSkeleton({ rows = 6, label }: { rows?: number; label: string }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-stone-200 bg-card shadow-e1">
       <span className="sr-only">{label}</span>
       <div aria-hidden="true">
-        <div className="flex h-11 items-center gap-6 bg-accent-900 px-4">
+        <div className="flex h-11 items-center gap-6 bg-accent-700 px-4">
           <span className="h-2.5 w-16 rounded-full bg-white/15" />
           <span className="hidden h-2.5 w-24 rounded-full bg-white/15 sm:block" />
           <span className="ml-auto h-2.5 w-14 rounded-full bg-white/15" />
