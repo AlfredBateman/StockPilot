@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+// @ts-expect-error The web package has no @types/node; vitest runs this file in Node, where node:fs exists.
 import { readFileSync } from "node:fs";
 import { animateRowsIn, countUp, MOTION, popStar, prefersReducedMotion } from "./motion";
 
 // The CSS tokens and the anime.js numbers are written twice (index.css @theme and MOTION), so a test
 // keeps them equal. The raw CSS is also checked for the two things the motion rules promise.
-const cssSource = readFileSync(new URL("../index.css", import.meta.url), "utf8");
+const cssSource: string = readFileSync(new URL("../index.css", import.meta.url), "utf8");
 
 describe("motion tokens", () => {
   const token = (name: string) => cssSource.match(new RegExp(`--${name}:\\s*([^;]+);`))?.[1].trim();
