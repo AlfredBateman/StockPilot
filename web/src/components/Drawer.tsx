@@ -8,8 +8,6 @@ type DrawerProps = {
   onClose: () => void;
   /** Up to 960px wide instead of 576px, for content that needs side-by-side columns. Never wider than the screen. */
   wide?: boolean;
-  /** Where keyboard focus goes when the drawer closes. Omitted = whatever had focus when it opened (the control that opened it). */
-  returnFocusTo?: HTMLElement | null;
   children: React.ReactNode;
 };
 
@@ -22,17 +20,12 @@ type DrawerProps = {
 // Closing (X, backdrop or Esc) hands everything to the parent at once: the drawer unmounts, focus goes back
 // to the control that opened it, and the Esc layer is released. The exit animation (motion.ts, animateDrawerOut)
 // plays on an inert copy, so nothing here ever waits for it.
-export function Drawer({ title, onClose, wide = false, returnFocusTo, children }: DrawerProps) {
+export function Drawer({ title, onClose, wide = false, children }: DrawerProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-  // Read once, on the first render, while focus is still on the control that opened the drawer.
-  const [opener] = useState(() =>
-    returnFocusTo !== undefined
-      ? returnFocusTo
-      : document.activeElement instanceof HTMLElement && document.activeElement !== document.body
-        ? document.activeElement
-        : null
-  );
+  // The control that opened the drawer, read once on the first render while it still has focus
+  // (MetricHelp focuses its "?" before opening the Guide, so that case works too).
+  const [opener] = useState(() => (document.activeElement instanceof HTMLElement ? document.activeElement : null));
 
   function close() {
     if (rootRef.current) animateDrawerOut(rootRef.current);

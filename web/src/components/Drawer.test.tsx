@@ -113,14 +113,17 @@ describe("Drawer closing", () => {
   });
 
   it("does not throw when the control that opened it has gone", () => {
+    const outside = document.body.appendChild(document.createElement("button"));
+    outside.focus();
     const onClose = vi.fn();
     act(() =>
       root.render(
-        <Drawer title="x" onClose={onClose} returnFocusTo={document.createElement("button")}>
+        <Drawer title="x" onClose={onClose}>
           <p>x</p>
         </Drawer>
       )
     );
+    outside.remove();
     expect(() => pressEsc()).not.toThrow();
     expect(onClose).toHaveBeenCalledOnce();
   });

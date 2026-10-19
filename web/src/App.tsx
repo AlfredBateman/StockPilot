@@ -26,8 +26,7 @@ export function App() {
   const [dataAsOf, setDataAsOf] = useState<string | null | undefined>(undefined);
   const [stale, setStale] = useState(false);
   // null = Guide closed; { key: null } = open at the top; { key } = open at that term.
-  // `opener` is where focus was when it opened, so the Guide's drawer can put focus back there on close.
-  const [guide, setGuide] = useState<{ key: GlossaryKey | null; opener: HTMLElement | null } | null>(null);
+  const [guide, setGuide] = useState<{ key: GlossaryKey | null } | null>(null);
   const { visible: hintVisible, dismiss: dismissHint } = useGuideHint();
 
   // The server decides these (DEMO_MODE, which data it loaded), so ask it
@@ -45,7 +44,7 @@ export function App() {
 
   const openGuide = useCallback(
     (key?: GlossaryKey) => {
-      setGuide({ key: key ?? null, opener: document.activeElement instanceof HTMLElement ? document.activeElement : null });
+      setGuide({ key: key ?? null });
       dismissHint();
     },
     [dismissHint]
@@ -182,7 +181,7 @@ export function App() {
 
         {view === "screener" ? <Screener /> : <Watchlist />}
 
-        {guide && <Guide onClose={closeGuide} focusKey={guide.key} returnFocusTo={guide.opener} />}
+        {guide && <Guide onClose={closeGuide} focusKey={guide.key} />}
       </div>
     </GuideContext.Provider>
   );

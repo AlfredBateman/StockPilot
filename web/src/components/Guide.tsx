@@ -9,8 +9,6 @@ type GuideProps = {
   onClose: () => void;
   /** When set, the Guide opens scrolled to this term and highlights it. */
   focusKey: GlossaryKey | null;
-  /** The control that opened the Guide, for focus return on close. It may be gone by then (a closed popover or hint), in which case focus is left alone. */
-  returnFocusTo: HTMLElement | null;
 };
 
 // Written for a total beginner. Every feature named here exists in the app today.
@@ -36,7 +34,7 @@ const STEPS: { title: string; text: string }[] = [
  * the last two cases it scrolls to that term. Reads the same glossary.json as
  * the popovers, so the explanations cannot disagree.
  */
-export function Guide({ onClose, focusKey, returnFocusTo }: GuideProps) {
+export function Guide({ onClose, focusKey }: GuideProps) {
   const [search, setSearch] = useState("");
   const searchId = useId();
   const matches = searchGlossary(search);
@@ -52,7 +50,7 @@ export function Guide({ onClose, focusKey, returnFocusTo }: GuideProps) {
   }, [focusKey]);
 
   return (
-    <Drawer title="Guide" onClose={onClose} returnFocusTo={returnFocusTo}>
+    <Drawer title="Guide" onClose={onClose}>
       <section aria-labelledby="guide-steps-heading" className="flex flex-col gap-3.5">
         <h3 id="guide-steps-heading" className="text-h3 text-stone-900">
           How to use StockPilot
