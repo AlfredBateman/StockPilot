@@ -43,7 +43,7 @@ function formatStockValue(field: FilterField, value: string | number | null): st
   if (value === null) return NA;
   if (typeof value === "string") return value;
   if (field === "profitMargin") return `${(value * 100).toFixed(1)}%`;
-  if (field === "debtToEquity") return `${value.toFixed(1)}×`;
+  if (field === "debtToEquity") return `${value.toFixed(2)}×`;
   if (SIGNED_FIELDS.has(field)) return signedPercent(value);
   if (PERCENT_FIELDS.has(field)) return `${value.toFixed(1)}%`;
   return value.toFixed(1);
@@ -118,7 +118,7 @@ function debtReading(stock: Stock): string {
       : de > high.limit
         ? `above ${high.limit}×, which StockPilot calls ${high.word}`
         : `between ${low.limit}× and ${high.limit}×, so StockPilot calls it neither ${low.word} nor ${high.word}`;
-  return `Debt/Equity ${de.toFixed(1)}×: ${band}. It owes about ₹${de.toFixed(2)} for every ₹1 of its owners’ money.`;
+  return `Debt/Equity ${de.toFixed(2)}×: ${band}. It owes about ₹${de.toFixed(2)} for every ₹1 of its owners’ money.`;
 }
 
 function marginReading(margin: number | null): string {
