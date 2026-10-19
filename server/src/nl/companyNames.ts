@@ -15,6 +15,13 @@ const GENERIC_WORDS = new Set(
   )
 );
 
+/**
+ * Everyday words that are only part of a name (State Bank of India, United
+ * Spirits). Alone they say nothing about which company is meant, so they count
+ * only when another unmatched word comes with them.
+ */
+const WEAK_WORDS = new Set(["state", "united"]);
+
 const MIN_WORD_LENGTH = 3;
 
 /**
@@ -109,6 +116,7 @@ export function findCompanies(stocks: Stock[], text: string, unmatched: string[]
   const groups: { words: string[]; tickers: Set<string> }[] = [];
   for (const word of unmatched) {
     if (used.has(word)) continue;
+    if (WEAK_WORDS.has(word) && unmatched.length < 2) continue;
     const key = resolveWord(word, index);
     if (!key) continue;
     used.add(word);
