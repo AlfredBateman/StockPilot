@@ -262,6 +262,11 @@ server is in demo mode.
   Units sit inside the input on the right ("%" on profit margin). The P/E
   range pair is joined by a "to" separator.
 - Disabled: `opacity-40`, no hover change, `cursor-not-allowed`.
+- **Hover beyond color** on the header and Guide hint controls: the Guide
+  button and "Open the Guide" lift like the preset tiles (`-translate-y-px`
+  + `shadow-e2`); an unselected header tab and the hint's Dismiss X get a
+  raised fill (`shadow-e1`, the tab also `elevated/70`). All use
+  `--motion-press`; the global reduced-motion rule makes them instant.
 
 ## 16. Focus ring
 
