@@ -1,6 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useGuide } from "../hooks/guideContext";
+import { useEscapeLayer } from "../hooks/useEscapeLayer";
 import { GLOSSARY, type GlossaryKey } from "./glossary";
 import { GlossaryEntryBody } from "./GlossaryEntryBody";
 import { IconClose, IconExternal } from "./Icons";
@@ -57,6 +58,12 @@ export function MetricHelp({ metric }: MetricHelpProps) {
     popover.style.top = `${placeBelow ? anchor.bottom + ANCHOR_GAP : anchor.top - ANCHOR_GAP - height}px`;
   }
 
+  // Esc closes only this popover, not a drawer it sits in (see useEscapeLayer), and returns focus to the "?".
+  useEscapeLayer(() => {
+    setOpen(false);
+    triggerRef.current?.focus();
+  }, open);
+
   // Before the first paint, so the popover never flashes in the top-left corner.
   useLayoutEffect(() => {
     if (open) place();
@@ -70,9 +77,6 @@ export function MetricHelp({ metric }: MetricHelpProps) {
       setOpen(false);
       if (returnFocus) triggerRef.current?.focus();
     }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") close(true);
-    }
     function handlePointerDown(e: PointerEvent) {
       const target = e.target as Node;
       if (popoverRef.current?.contains(target) || triggerRef.current?.contains(target)) return;
@@ -85,12 +89,10 @@ export function MetricHelp({ metric }: MetricHelpProps) {
       place();
     }
 
-    document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("pointerdown", handlePointerDown);
     window.addEventListener("resize", handleReposition);
     window.addEventListener("scroll", handleReposition, true);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("resize", handleReposition);
       window.removeEventListener("scroll", handleReposition, true);

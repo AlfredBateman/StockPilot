@@ -21,6 +21,8 @@ export function dailyCapFromEnv(): number {
 export type LlmGuard = {
   /** Records one LLM call for this IP and returns true, or returns false (recording nothing) if a limit is reached. */
   tryAcquire(ip: string): boolean;
+  /** Which limit the most recent refused tryAcquire hit, for /api/health. */
+  lastDenial: "rate_capped_ip" | "rate_capped_daily" | null;
 };
 
 export function createLlmGuard(now: () => number = Date.now): LlmGuard {
@@ -29,6 +31,7 @@ export function createLlmGuard(now: () => number = Date.now): LlmGuard {
   let usedToday = 0;
 
   return {
+    lastDenial: null,
     tryAcquire(ip) {
       const time = now();
 
@@ -46,8 +49,14 @@ export function createLlmGuard(now: () => number = Date.now): LlmGuard {
       }
 
       const recent = callsByIp.get(ip) ?? [];
-      if (recent.length >= PER_IP_PER_MINUTE) return false;
-      if (usedToday >= dailyCapFromEnv()) return false;
+      if (recent.length >= PER_IP_PER_MINUTE) {
+        this.lastDenial = "rate_capped_ip";
+        return false;
+      }
+      if (usedToday >= dailyCapFromEnv()) {
+        this.lastDenial = "rate_capped_daily";
+        return false;
+      }
 
       callsByIp.set(ip, [...recent, time]);
       usedToday++;

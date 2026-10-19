@@ -3,6 +3,7 @@ import { filterNote } from "./filterLabel.js";
 import { callLlm, isLlmConfigured } from "./llmClient.js";
 import { llmGuard, type LlmGuard } from "./llmGuard.js";
 import type { LlmReply, ParseIntent } from "./llmPrompt.js";
+import { recordLlmError } from "./llmStatus.js";
 import { readCacheEntry, writeCacheEntry } from "./nlCache.js";
 import { parseQuery, type ParseResult } from "./ruleParser.js";
 import { fixTypos } from "./typoFix.js";
@@ -98,8 +99,16 @@ export async function parseWithTiers(rawQuery: string, options: ParseOptions = {
 
 /** The cloud LLM (rate-limited and capped). Null if it is off, over its limit or gave no valid reply. */
 async function askLlm(text: string, { ip = "unknown", guard = llmGuard }: ParseOptions): Promise<LlmReply | null> {
+  if (!isLlmConfigured()) {
+    recordLlmError("not_configured");
+    return null;
+  }
   // Only take a slot from the guard when a call will actually be made.
-  return isLlmConfigured() && guard.tryAcquire(ip) ? callLlm(text) : null;
+  if (!guard.tryAcquire(ip)) {
+    recordLlmError(guard.lastDenial ?? "rate_capped_ip");
+    return null;
+  }
+  return callLlm(text);
 }
 
 /**

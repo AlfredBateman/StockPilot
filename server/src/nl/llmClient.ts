@@ -1,4 +1,5 @@
-import { buildParsePrompt, parseModelOutput, type LlmReply } from "./llmPrompt.js";
+import { buildParsePrompt, checkModelOutput, type LlmReply } from "./llmPrompt.js";
+import { clearLlmError, recordLlmError } from "./llmStatus.js";
 
 /** Gemini gets 5 seconds; past that the rule parser is a better answer than a slow one. */
 const LLM_TIMEOUT_MS = 5000;
@@ -78,6 +79,18 @@ const PROVIDERS = new Map<string, (apiKey: string, model: string, prompt: string
   ["gemini", geminiCall],
 ]);
 
+/** Only the error's name is looked at, never its message (it can carry the URL). */
+function isTimeout(error: unknown): boolean {
+  const name = (error as { name?: string } | null)?.name;
+  return name === "TimeoutError" || name === "AbortError";
+}
+
+/** The configured provider's name if it is one we support, else null. Never the key or model. */
+export function llmProviderName(): string | null {
+  const provider = process.env.LLM_PROVIDER?.trim().toLowerCase() ?? "";
+  return PROVIDERS.has(provider) ? provider : null;
+}
+
 /** True when provider, key and model are all set and the provider is one we support. No network. */
 export function isLlmConfigured(): boolean {
   const provider = process.env.LLM_PROVIDER?.trim().toLowerCase() ?? "";
@@ -99,24 +112,47 @@ export async function callLlm(query: string): Promise<LlmReply | null> {
   const model = process.env.LLM_MODEL?.trim();
 
   const buildCall = PROVIDERS.get(provider);
-  if (!buildCall || !apiKey || !model) return null;
+  if (!buildCall || !apiKey || !model) {
+    recordLlmError("not_configured");
+    return null;
+  }
 
   const call = buildCall(apiKey, model, buildParsePrompt(query));
 
+  let response: Response;
   try {
-    const response = await fetch(call.url, {
+    response = await fetch(call.url, {
       method: "POST",
       headers: call.headers,
       body: JSON.stringify(call.body),
       signal: AbortSignal.timeout(call.timeoutMs),
     });
-    if (!response.ok) return null;
-
-    const text = call.readText(await response.json());
-    return text === null ? null : parseModelOutput(text);
-  } catch {
-    // Timeout, DNS failure, no internet, malformed JSON body — all the same
-    // to us: this tier didn't answer.
+  } catch (error) {
+    recordLlmError(isTimeout(error) ? "timeout" : "network_error");
     return null;
   }
+
+  if (!response.ok) {
+    recordLlmError(`http_${response.status}`);
+    return null;
+  }
+
+  let text: string | null = null;
+  try {
+    text = call.readText(await response.json());
+  } catch (error) {
+    // The timeout signal also covers reading the body, so a stall here is a timeout, anything else is not JSON.
+    if (isTimeout(error)) {
+      recordLlmError("timeout");
+      return null;
+    }
+  }
+  const result = text === null ? "bad_json" : checkModelOutput(text);
+  if (typeof result === "string") {
+    recordLlmError(result);
+    return null;
+  }
+
+  clearLlmError();
+  return result;
 }

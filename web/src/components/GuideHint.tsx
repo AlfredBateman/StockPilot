@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEscapeLayer } from "../hooks/useEscapeLayer";
 import { IconClose } from "./Icons";
 
 type GuideHintProps = {
@@ -10,17 +10,12 @@ type GuideHintProps = {
  * The first-visit nudge that points at the header's Guide button. The caller
  * places it in the page flow right under that button, so it pushes content
  * down instead of covering it. It never takes focus and stays gone once dismissed (useGuideHint
- * remembers that). Esc dismisses it too. No animation, so nothing to gate on
+ * remembers that). Esc dismisses it too, but only when nothing opened later
+ * (a drawer or popover) is on top of it (see useEscapeLayer). No animation, so nothing to gate on
  * reduced motion.
  */
 export function GuideHint({ onOpen, onDismiss }: GuideHintProps) {
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onDismiss();
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onDismiss]);
+  useEscapeLayer(onDismiss);
 
   return (
     <div
