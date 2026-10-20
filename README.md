@@ -140,6 +140,7 @@ Commands, run from the repo root:
 
 - [@AlfredBateman](https://github.com/AlfredBateman): Team Lead and Backend Engineer
 - [@sidxharthx](https://github.com/sidxharthx): QA and Database Engineer
+- [@Saurabh-1885](https://github.com/Saurabh-1885): Frontend Engineer
 
 ## Disclaimer
 
